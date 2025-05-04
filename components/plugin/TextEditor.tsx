@@ -24,7 +24,8 @@ const TextEditor = ({ editorData, setEditorData, disabled = false, toolbar = 'fu
     initialValue={content}
     disabled={disabled}
     init={{
-      height: 300,
+      height: 600,
+     width: '100%',
       menubar: toolbar === 'full' ? true : false,
       images_upload_base_path: '/file/straight-upload',
       images_upload_credentials: true,

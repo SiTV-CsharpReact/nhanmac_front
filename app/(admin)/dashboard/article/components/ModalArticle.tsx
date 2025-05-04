@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 // import { Button, Form, Space } from "antd";
 import TextEditor from "@/components/plugin/TextEditor";
-import MetadataForm from "./components/MetadataForm";
+import MetadataForm from "./MetadataForm";
 import {
   Form,
   Input,
@@ -16,7 +16,7 @@ import {
   Tag,
 } from "antd";
 import { UploadOutlined, DeleteOutlined } from "@ant-design/icons";
-import PublishInfoForm from "./components/PublishInfoForm";
+import PublishInfoForm from "./PublishInfoForm";
 // import TextEditor from "@/components/plugin/TextEditor";
 
 const initialMetadata = {
@@ -27,7 +27,7 @@ const initialMetadata = {
 };
 const { Option } = Select;
 const { TextArea } = Input;
-const Page = () => {
+const ModalArticle = () => {
   const [editorData, setEditorData] = useState("");
   const [form] = Form.useForm();
   const [imageUrl, setImageUrl] = useState<string | null>(null);
@@ -219,5 +219,5 @@ const Page = () => {
   );
 };
 
-export default Page;
+export default ModalArticle;
 
