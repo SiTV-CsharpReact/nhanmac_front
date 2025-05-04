@@ -2,7 +2,7 @@
 import React from 'react';
 // @ts-ignore
 import { CKEditor } from '@ckeditor/ckeditor5-react';
-import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import ClassicEditor from "ckeditor5-build-full";
 
 export default function CustomEditor() {
   return (
@@ -21,6 +21,71 @@ export default function CustomEditor() {
       }}
       onFocus={(event, editor) => {
         console.log('Focus.', editor);
+      }}
+      
+      config={{
+        toolbar: {
+          items: [
+            "undo",
+            "redo",
+            "|",
+            "exportPdf",
+            "exportWord",
+            "importWord",
+            "|",
+            "showBlocks",
+            "formatPainter",
+            "findAndReplace",
+            "selectAll",
+            "wproofreader",
+            "|",
+            "heading",
+            "|",
+            "style",
+            "|",
+            "fontSize",
+            "fontFamily",
+            "fontColor",
+            "fontBackgroundColor",
+            "-",
+            "bold",
+            "italic",
+            "underline",
+            "strikethrough",
+            "subscript",
+            "superscript",
+            "code",
+            "|",
+            "removeFormat",
+            "|",
+            "specialCharacters",
+            "horizontalLine",
+            "pageBreak",
+            "|",
+            "link",
+            "insertImage",
+            "ckbox",
+            "insertTable",
+            "tableOfContents",
+            "insertTemplate",
+            "highlight",
+            "blockQuote",
+            "mediaEmbed",
+            "codeBlock",
+            "htmlEmbed",
+
+            "|",
+            "alignment",
+            "|",
+            "bulletedList",
+            "numberedList",
+            "outdent",
+            "indent",
+            "insertImage",
+            "sourceEditing"
+          ],
+          shouldNotGroupWhenFull: true
+        }
       }}
     />
   );

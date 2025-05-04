@@ -1,0 +1,100 @@
+import React, {useEffect, useState} from "react";
+import { Editor } from '@tinymce/tinymce-react';
+import {getLocalStorage} from "utils/utils";
+import { env } from '../../../configs/Config';
+import { listAPI } from 'services/apiLibrary';
+import axios from 'axios'
+
+const TextEditor = ({editorData, setEditorData, disabled = false, toolbar = 'full', content}) => {
+
+    const handleEditorChange = (e) => {
+        setEditorData(e.target.getContent())
+    }
+
+    const handleImageUpload = (blobInfo, progress) => new Promise((resolve, reject) => {
+      const formData = new FormData()
+      formData.append('file', blobInfo.blob())
+      var url = env.setting_uploadFile + listAPI.uploadStraight;
+      axios.post(url, formData, {
+        headers: {
+          Authorization: "Bearer" + " " + getLocalStorage("access_token"),
+        }
+      }).then(function (res) {
+          resolve(res.data)
+      }).catch((error) => {
+        reject(error)
+      })
+    })
+
+    const toolBarBase = 'link formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify ' +
+        '| bullist numlist outdent indent | removeformat';
+    const toolBarFull = 'undo redo| link code image | formatselect | bold italic backcolor | ' +
+        'alignleft aligncenter alignright alignjustify | ' +
+        'bullist numlist outdent indent | removeformat | help'
+
+    return (
+        <Editor
+            tinymceScriptSrc='/assets/tinymce/tinymce.min.js'
+            licenseKey='gpl'
+            initialValue={content}
+            disabled={disabled}
+            init={{
+                height: 300,
+                menubar: toolbar === 'full' ? true : false,
+                images_upload_base_path: env.setting_uploadFile + listAPI.uploadStraight,
+                images_upload_credentials: true,
+                convert_urls: false,
+                plugins: [
+                    'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview', 'anchor',
+                    'searchreplace', 'visualblocks', 'code', 'fullscreen',
+                    'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount',
+                ],
+                toolbar: toolbar === 'full' ? toolBarFull : (toolbar === 'base' ? toolBarBase : false),
+                image_title: true,
+                automatic_uploads: true,
+                file_picker_types: 'image',
+                images_upload_handler: handleImageUpload,
+                file_picker_callback: function (cb, value, meta) {
+                    var input = document.createElement("input");
+                    input.setAttribute("type", "file");
+                    input.setAttribute("accept", "image/*");
+                    var url = env.setting_uploadFile + listAPI.uploadStraight;
+                    var xhr = new XMLHttpRequest();
+                    var fd = new FormData();
+                    xhr.open("POST", url, true);
+                    xhr.setRequestHeader("Authorization", "Bearer" + " " + getLocalStorage("access_token"));
+                    input.onchange = function () {
+                        var file = this.files[0];
+                        var reader = new FileReader();
+                        xhr.onload = function () {
+                            if (xhr.readyState === 4 && xhr.status === 200) {
+                                var url = xhr.responseText;
+                                cb(url);
+                            }
+                        };
+
+                        reader.onload = function () {
+                            var id = "blobid" + new Date().getTime();
+                            var blobCache = window.tinymce.activeEditor.editorUpload.blobCache;
+                            var base64 = reader.result.split(",")[1];
+                            var blobInfo = blobCache.create(id, file, base64);
+                            blobCache.add(blobInfo);
+                            fd.append("file", blobInfo.blob(), blobInfo.filename());
+                            xhr.send(fd);
+                        };
+
+                        reader.readAsDataURL(file);
+                    };
+
+                    input.click();
+                },
+            }}
+            onChange={handleEditorChange}
+        />
+    );
+};
+
+export default TextEditor
+
+
+ls9n12mosetj64wsxzgq7wuxnthcj022co290q0x5nw59vdv
