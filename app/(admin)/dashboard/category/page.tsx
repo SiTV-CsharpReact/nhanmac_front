@@ -2,11 +2,11 @@
 import React, { useState, useEffect } from "react";
 import { Table, Button, Modal, Input, Select, Dropdown, Menu, message, Form } from "antd";
 import { MoreOutlined, PlusOutlined } from "@ant-design/icons";
-import { categoryApi } from '@/utils/admin/categoryApi';
+import { categoryApi } from '@/modules/admin/categoryApi';
 import { Category } from "@/types/categoryItem";
 import { debounce } from 'lodash';
 const { Option } = Select;
-console.log(React.version);
+// console.log(React.version);
 // Hàm chuyển mảng phẳng thành tree
 function buildTree(data: Category[], parentId = 0): any[] {
   return data

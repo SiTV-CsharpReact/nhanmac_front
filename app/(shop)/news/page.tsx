@@ -4,7 +4,7 @@ import { Post } from "@/types/contentItem";
 import { notification } from "antd";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { fetchNewTopPosts } from "@/utils/admin/newApi";
+import { fetchNewTopPosts } from "@/modules/admin/newApi";
 const products = [
   { id: 1, name: "Tem nhôm phay xước", img: "/images/product.jpg" },
   { id: 2, name: "Tem nhôm phủ keo", img: "/images/product.jpg" },

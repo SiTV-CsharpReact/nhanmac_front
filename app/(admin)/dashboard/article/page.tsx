@@ -1,223 +1,200 @@
 "use client";
-import React, { useState } from "react";
-// import { Button, Form, Space } from "antd";
-import TextEditor from "@/components/plugin/TextEditor";
-import MetadataForm from "./components/MetadataForm";
-import {
-  Form,
-  Input,
-  Select,
-  Button,
-  Upload,
-  message,
-  Space,
-  Typography,
-  Image,
-  Tag,
-} from "antd";
-import { UploadOutlined, DeleteOutlined } from "@ant-design/icons";
-import PublishInfoForm from "./components/PublishInfoForm";
-// import TextEditor from "@/components/plugin/TextEditor";
+import React, { useEffect, useState } from "react";
+import { Table, Button, Tag, Tooltip, Form, Modal } from "antd";
+import type { ColumnsType } from "antd/es/table";
+import { dateFormat, statusXB } from "@/config/config";
+import { formatMoney, getConstantLabel, getTagColor } from "@/utils/util";
+import moment from "moment";
+import { FileSearchOutlined } from "@ant-design/icons";
+import { DeleteIcon, EditIcon } from "@/components/icons/Icons";
+import SearchComponent from "./components/SearchComponent";
 
-const initialMetadata = {
-  description: "",
-  keywords: "",
-  robots: "",
-  author: "",
+function CustomRow(props) {
+  return (
+    <>
+      <Tooltip title="Click 2 lần để xem chi tiết">
+        <tr {...props} style={{ cursor: "pointer" }}>
+          {props.children}
+        </tr>
+      </Tooltip>
+    </>
+  );
+}
+interface Content {
+  id: number;
+  title: string;
+  state: string;
+  created: string;
+}
+
+const initialValues = {
+  created: moment().subtract(1, "days").format(dateFormat), // Lấy ngày cách đây 7 ngày, định dạng theo dateFormat
+  pageNo: 1,
+  pageSize: 10,
 };
-const { Option } = Select;
-const { TextArea } = Input;
-const Page = () => {
-  const [editorData, setEditorData] = useState("");
+const Page: React.FC = () => {
+  const [data, setData] = useState<Content[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [total, setTotal] = useState(0);
   const [form] = Form.useForm();
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [onReload, setOnReload] = useState(false);
+  const [fixedParams, setFixedParams] = useState(initialValues);
+  const [onResetFilter, setOnResetFilter] = useState(false);
+  // Hàm fetch dữ liệu bằng fetch API
 
-  // Xử lý upload ảnh
-  const handleImageChange = (info: any) => {
-    if (info.file.status === "done" || info.file.status === "uploading") {
-      // Hiển thị ảnh preview
-      const reader = new FileReader();
-      reader.onload = (e) => setImageUrl(e.target?.result as string);
-      reader.readAsDataURL(info.file.originFileObj);
+// Hàm lấy chi tiết bài viết
+const fetchDetail = async (id: number) => {
+  try {
+    const res = await fetch(`http://localhost:3000/contents/${id}`);
+    if (!res.ok) throw new Error("Không tìm thấy bài viết");
+    const detail = await res.json();
+    // Xử lý hiển thị chi tiết, ví dụ: mở modal hoặc chuyển trang
+    alert(`Tiêu đề: ${detail.title}\nTrạng thái: ${detail.state}`);
+  } catch (error) {
+    alert("Có lỗi khi lấy chi tiết bài viết!");
+  }
+};
+
+// Hàm xóa bài viết
+const deleteContent = async (id: number) => {
+  if (!window.confirm("Bạn có chắc chắn muốn xóa bài viết này?")) return;
+  try {
+    const res = await fetch(`http://localhost:3000/contents/${id}`, {
+      method: "DELETE",
+    });
+    if (!res.ok) throw new Error("Xóa thất bại");
+    alert("Đã xóa thành công!");
+    fetchData(); // Refresh lại danh sách sau khi xóa
+  } catch (error) {
+    alert("Có lỗi khi xóa bài viết!");
+  }
+};
+
+  const fetchData = async (pageNumber = 1, pageSize = 5) => {
+    setLoading(true);
+    try {
+      const res = await fetch(
+        `http://localhost:3000/contents?pageNumber=${pageNumber}&pageSize=${pageSize}`
+      );
+      const result = await res.json();
+      setData(result);
+      // setTotal(result.total);
+    } catch (error) {
+      alert("Có lỗi khi lấy dữ liệu!");
     }
+    setLoading(false);
   };
 
-  // Xóa ảnh
-  const handleRemoveImage = () => setImageUrl(null);
+  useEffect(() => {
+    if (onReload) {
+      fetchData();
+    }
+  }, [onReload]);
 
-  // Submit form
-  const onFinish = (values: any) => {
-    message.success("Đã lưu bài viết!");
-    // Gửi dữ liệu lên server ở đây
-    console.log(values);
-  };
+  const columns: ColumnsType<Content> = [
+    {
+      title: "#",
+      dataIndex: "id",
+    },
+    {
+      title: "Trạng thái",
+      dataIndex: "state",
+      render: (text: string) => {
+        console.log(text);
+        return (
+          <Tag color={getTagColor(statusXB, text)}>
+            {getConstantLabel(statusXB, text)}
+          </Tag>
+        );
+        // return <span className="font-semibold">{getConstantLabel(statusXB, text)}</span>;
+      },
+    },
+    {
+      title: "Ngày xuất bản",
+      dataIndex: "created",
+      render: (text) => (
+        <span className="font-semibold">
+          {moment(text).format("DD/MM/YYYY HH:mm")}
+        </span>
+      ),
+    },
+    {
+      title: "Tiêu đề",
+      dataIndex: "title",
+
+      render: (text) => <span className="text-blue-600">{text}</span>,
+    },
+    {
+      title: "Thao tác",
+
+      render: (_, record) => (
+        <div className="flex gap-5 cursor-pointer">
+      <Tooltip title="Xem">
+        <FileSearchOutlined
+          style={{ fontSize: 18 }}
+          onClick={() => fetchDetail(record.id)}
+        />
+      </Tooltip>
+      <EditIcon />
+      <Tooltip title="Xóa">
+        <DeleteIcon
+         onClick={() => deleteContent(record.id)} />
+      </Tooltip>
+    </div>
+      ),
+    },
+  ];
 
   return (
-    <div className="p-6 w-full">
-      {/* Header */}
-
-      {/* Nội dung 2 cột */}
-      <div
-        style={{
-          display: "flex",
-          gap: 24,
-          alignItems: "flex-start",
-          width: "100%",
-          // border:'1px solid #131313'
-        }}
-      >
-        {/* Editor bên trái */}
-        <div
-          style={{
-            flex: 2,
-            minWidth: 0,
-            border: "1px solid #d9d9d9",
-            borderRadius: 8,
-            padding: 16,
-            boxShadow: "0 2px 8px #f0f1f2",
-          }}
-        >
-          <div
-            style={{
-              background: "#eaf6ff",
-              padding: 12,
-              borderRadius: 4,
-              marginBottom: 24,
-            }}
-          >
-            <Space>
-              <Tag color="green">Đã xuất bản</Tag>
-              <Typography.Text strong>
-                Công ty Cổ phần Thương mại Du lịch Lan Phương
-              </Typography.Text>
-            </Space>
-            <Button style={{ float: "right" }} type="primary">
-              Lấy tin nhanh
-            </Button>
+    <div className="mx-4  w-full">
+      <SearchComponent
+        setOnReload={setOnReload}
+        form={form}
+        setFixedParams={setFixedParams}
+        productTypeOptions={statusXB}
+        // showType={false}
+        setOnResetFilter={setOnResetFilter}
+      />
+      <div className="mt-5 bg-white rounded">
+        <div className="flex justify-between pt-4 pl-4">
+          <div className="flex gap-2 text-muted">
+            <div>
+              Tổng bài viết:{" "}
+              <span className="text-success">
+                {/* {formatMoney(summary?.totalBaseTransaction)} */}
+              </span>
+            </div>
+            <div>
+              Tổng bài viết chưa duyệt:{" "}
+              <span className="text-body fw-bold">
+                {/* {formatMoney(summary?.totalBaseAmt, "đ")} */}
+              </span>
+            </div>
           </div>
-          <Form
-            form={form}
-            layout="vertical"
-            onFinish={onFinish}
-            initialValues={{
-              status: "published",
-              postType: "Tổng hợp",
-              postKind: "Bài viết",
-              title: "",
-              description: "",
-              quote: "",
-              content: "",
-            }}
-          >
-            <Form.Item label="Trạng thái" name="status">
-              <Select disabled>
-                <Option value="published">Đã xuất bản</Option>
-              </Select>
-            </Form.Item>
-
-            <Form.Item
-              label="Loại bài viết"
-              name="postType"
-              rules={[{ required: true }]}
-            >
-              <Select>
-                <Option value="Tổng hợp">Tổng hợp</Option>
-                <Option value="Tin tức">Tin tức</Option>
-                <Option value="Khuyến mãi">Khuyến mãi</Option>
-              </Select>
-            </Form.Item>
-
-            <Form.Item
-              label="Kiểu bài viết"
-              name="postKind"
-              rules={[{ required: true }]}
-            >
-              <Select>
-                <Option value="Bài viết">Bài viết</Option>
-                <Option value="Sản phẩm">Sản phẩm</Option>
-              </Select>
-            </Form.Item>
-
-            <Form.Item
-              label="Tiêu đề"
-              name="title"
-              rules={[{ required: true, message: "Nhập tiêu đề!" }]}
-            >
-              <TextArea rows={2} placeholder="Nhập tiêu đề bài viết" />
-            </Form.Item>
-
-            <Form.Item label="Hình ảnh">
-              <Space align="start">
-                {imageUrl && (
-                  <div style={{ textAlign: "center" }}>
-                    <Image
-                      src={imageUrl}
-                      width={180}
-                      style={{ marginBottom: 8 }}
-                    />
-                    <Button
-                      icon={<DeleteOutlined />}
-                      danger
-                      size="small"
-                      onClick={handleRemoveImage}
-                    >
-                      Xóa
-                    </Button>
-                  </div>
-                )}
-                {!imageUrl && (
-                  <Upload
-                    showUploadList={false}
-                    beforeUpload={() => false} // Không upload lên server ngay
-                    onChange={handleImageChange}
-                    accept="image/*"
-                  >
-                    <Button icon={<UploadOutlined />}>Chọn file</Button>
-                  </Upload>
-                )}
-              </Space>
-            </Form.Item>
-
-            <Form.Item label="Mô tả ảnh" name="description">
-              <Input placeholder="Mô tả ảnh minh họa" />
-            </Form.Item>
-
-            <Form.Item
-              label="Trích dẫn"
-              name="quote"
-              rules={[{ required: true, message: "Nhập trích dẫn!" }]}
-            >
-              <Input placeholder="VD: 13,000,000 / khách" />
-            </Form.Item>
-
-            <Form.Item
-              label="Nội dung"
-              name="content"
-              rules={[{ required: true, message: "Nhập nội dung!" }]}
-            >
-              <TextEditor
-                content={editorData}
-                editorData={editorData}
-                setEditorData={setEditorData}
-              />
-            </Form.Item>
-
-            <Form.Item>
-              <Button type="primary" htmlType="submit">
-                Lưu bài viết
-              </Button>
-            </Form.Item>
-          </Form>
         </div>
-        {/* Metadata bên phải */}
-        <div style={{ flex: 1, minWidth: 300, maxWidth: 400 }}>
-          <PublishInfoForm form={form} initialValues={initialMetadata} />
-          <MetadataForm form={form} initialValues={initialMetadata} />
-        </div>
+        <Table
+          columns={columns}
+          dataSource={data}
+          rowKey="id"
+          loading={loading}
+          components={{
+            body: {
+              row: data?.length !== 0 && CustomRow,
+            },
+          }}
+          pagination={{
+            total,
+            pageSize: 5,
+            onChange: (page) => fetchData(page, 5),
+          }}
+          className="shadow-lg p-4"
+        />
+        <Modal >
+          
+        </Modal>
       </div>
     </div>
   );
 };
 
 export default Page;
-

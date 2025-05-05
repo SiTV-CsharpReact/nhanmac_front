@@ -1,5 +1,5 @@
 import { Post } from "@/types/contentItem";
-import { fetchNewTopPosts } from "@/utils/admin/newApi";
+import { fetchNewTopPosts } from "@/modules/admin/newApi";
 import Image from "next/image";
 
 // Component con cho Social Icon (tách riêng để tái sử dụng)

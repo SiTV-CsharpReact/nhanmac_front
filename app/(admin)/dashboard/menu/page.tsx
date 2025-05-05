@@ -4,7 +4,7 @@ import { Table, Button, Modal, Form, Input, notification, Popconfirm } from "ant
 import { PlusOutlined, DeleteOutlined, EditOutlined, PlusCircleOutlined } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
 import type { MenuItem } from "@/types/MenuItem";
-import { fetchMenus, addMenu, editMenu, deleteMenu } from "@/utils/admin/menuApi";
+import { fetchMenus, addMenu, editMenu, deleteMenu } from "@/modules/admin/menuApi";
 import 'antd/dist/reset.css';
 // Hàm chuyển flat array sang tree
 function buildMenuTree(data: MenuItem[], parent = 0): MenuItem[] {

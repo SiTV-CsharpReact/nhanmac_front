@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { MenuUnfoldOutlined, MenuFoldOutlined, CaretDownOutlined, } from '@ant-design/icons';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { fetchMenus } from "@/utils/client/menuApi";
+import { fetchMenus } from "@/modules/client/menuApi";
 import { notification } from 'antd';
 import { MenuItem } from '@/types/MenuItem';
 // interface MenuItem {

@@ -1,7 +1,7 @@
 import PostNews from "@/components/share/PostNews";
 import TitlePage from "@/components/share/TitlePage";
 import { Post } from "@/types/contentItem";
-import { fetchContentAlias, fetchContentId } from "@/utils/admin/contentApi";
+import { fetchContentAlias, fetchContentId } from "@/modules/admin/contentApi";
 import { Metadata, ResolvingMetadata } from "next";
 
 type Props = {

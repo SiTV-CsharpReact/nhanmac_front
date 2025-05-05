@@ -20,7 +20,7 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta charSet="UTF-8" />
       </head>
-      <body >
+      <body className="bg-[#d7d7d780]">
 
         <HeaderAdmin />
         <div className="flex">
