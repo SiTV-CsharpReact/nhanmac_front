@@ -18,7 +18,7 @@ export function getConstantLabel(
 export const futureDate = (dateDisable:any) => {
     return dateDisable && dateDisable > moment();
   };
-  export const formatMoney = (x, currency) => {
+export const formatMoney = (x:number, currency) => {
     if (x === 0) return "0" + (currency ? ` ${currency}` : "");
     if (x) {
       const parts = x.toString().split(".");

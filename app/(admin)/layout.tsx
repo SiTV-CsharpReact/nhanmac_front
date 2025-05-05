@@ -20,17 +20,16 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta charSet="UTF-8" />
       </head>
-      <body className="bg-[#d7d7d780]">
-
-        <HeaderAdmin />
-        <div className="flex">
-        <Navbar />
-        {children}
+      <body>
+        <div className="bg-[#d7d7d780] h-full container-admin">
+          <HeaderAdmin />
+          <div className="flex">
+            <Navbar />
+            {children}
+          </div>
+          <ScrollToTop />
         </div>
-   
-        <ScrollToTop />
 
-        {/* {children} */}
       </body>
     </html>
   );

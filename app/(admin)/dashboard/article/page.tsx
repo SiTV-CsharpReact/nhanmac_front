@@ -8,6 +8,10 @@ import moment from "moment";
 import { FileSearchOutlined } from "@ant-design/icons";
 import { DeleteIcon, EditIcon } from "@/components/icons/Icons";
 import SearchComponent from "./components/SearchComponent";
+import { fetchContent, fetchContentId } from "@/modules/admin/contentApi";
+import { Post } from "@/types/contentItem";
+import CustomModal from "@/components/share/CustomModal";
+import ContentArticle from "./components/ContentArticle";
 
 function CustomRow(props) {
   return (
@@ -32,52 +36,57 @@ const initialValues = {
   pageNo: 1,
   pageSize: 10,
 };
+interface StatusModal {
+  idContent?: number | undefined;
+  openModal: boolean;
+  typeModal: number | undefined;
+}
 const Page: React.FC = () => {
-  const [data, setData] = useState<Content[]>([]);
+  const [data, setData] = useState<Post[]>([]);
+  const [dataDetail, setDataDetail] = useState<Post>();
   const [loading, setLoading] = useState(false);
   const [total, setTotal] = useState(0);
   const [form] = Form.useForm();
   const [onReload, setOnReload] = useState(false);
   const [fixedParams, setFixedParams] = useState(initialValues);
   const [onResetFilter, setOnResetFilter] = useState(false);
+  const [totalPage, setTotalPage] = useState(0);
+  const [isSttModal, setIsSttModal] = useState<StatusModal>();
   // Hàm fetch dữ liệu bằng fetch API
 
-// Hàm lấy chi tiết bài viết
-const fetchDetail = async (id: number) => {
-  try {
-    const res = await fetch(`http://localhost:3000/contents/${id}`);
-    if (!res.ok) throw new Error("Không tìm thấy bài viết");
-    const detail = await res.json();
-    // Xử lý hiển thị chi tiết, ví dụ: mở modal hoặc chuyển trang
-    alert(`Tiêu đề: ${detail.title}\nTrạng thái: ${detail.state}`);
-  } catch (error) {
-    alert("Có lỗi khi lấy chi tiết bài viết!");
-  }
-};
+  // Hàm lấy chi tiết bài viết
+  const fetchDetail = async (id: number) => {
+    try {
+      const result = await fetchContentId(id);
+      setDataDetail(result);
+      console.log(dataDetail)
+    } catch (error) {
+      alert("Có lỗi khi lấy chi tiết bài viết!");
+    }
+  };
 
-// Hàm xóa bài viết
-const deleteContent = async (id: number) => {
-  if (!window.confirm("Bạn có chắc chắn muốn xóa bài viết này?")) return;
-  try {
-    const res = await fetch(`http://localhost:3000/contents/${id}`, {
-      method: "DELETE",
-    });
-    if (!res.ok) throw new Error("Xóa thất bại");
-    alert("Đã xóa thành công!");
-    fetchData(); // Refresh lại danh sách sau khi xóa
-  } catch (error) {
-    alert("Có lỗi khi xóa bài viết!");
-  }
-};
+  // Hàm xóa bài viết
+  const deleteContent = async (id: number) => {
+    if (!window.confirm("Bạn có chắc chắn muốn xóa bài viết này?")) return;
+    try {
+      const res = await fetch(`http://localhost:3000/contents/${id}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) throw new Error("Xóa thất bại");
+      alert("Đã xóa thành công!");
+      fetchData(); // Refresh lại danh sách sau khi xóa
+    } catch (error) {
+      alert("Có lỗi khi xóa bài viết!");
+    }
+  };
 
   const fetchData = async (pageNumber = 1, pageSize = 5) => {
     setLoading(true);
     try {
-      const res = await fetch(
-        `http://localhost:3000/contents?pageNumber=${pageNumber}&pageSize=${pageSize}`
-      );
-      const result = await res.json();
-      setData(result);
+      const result = await fetchContent();
+      setData(result?.data);
+      setTotalPage(result?.pagination?.total);
+      // console.log(totalPage)
       // setTotal(result.total);
     } catch (error) {
       alert("Có lỗi khi lấy dữ liệu!");
@@ -90,7 +99,9 @@ const deleteContent = async (id: number) => {
       fetchData();
     }
   }, [onReload]);
-
+  useEffect(() => {
+    fetchDetail(isSttModal?.idContent || 0);
+  }, [isSttModal?.openModal])
   const columns: ColumnsType<Content> = [
     {
       title: "#",
@@ -129,18 +140,18 @@ const deleteContent = async (id: number) => {
 
       render: (_, record) => (
         <div className="flex gap-5 cursor-pointer">
-      <Tooltip title="Xem">
-        <FileSearchOutlined
-          style={{ fontSize: 18 }}
-          onClick={() => fetchDetail(record.id)}
-        />
-      </Tooltip>
-      <EditIcon />
-      <Tooltip title="Xóa">
-        <DeleteIcon
-         onClick={() => deleteContent(record.id)} />
-      </Tooltip>
-    </div>
+          <Tooltip title="Xem">
+            <FileSearchOutlined
+              style={{ fontSize: 18 }}
+              onClick={() => setIsSttModal({ idContent: record?.id, typeModal: 0, openModal: true })}
+            />
+          </Tooltip>
+          <EditIcon />
+          <Tooltip title="Xóa">
+            <DeleteIcon
+              onClick={() => deleteContent(record.id)} />
+          </Tooltip>
+        </div>
       ),
     },
   ];
@@ -161,14 +172,12 @@ const deleteContent = async (id: number) => {
             <div>
               Tổng bài viết:{" "}
               <span className="text-success">
-                {/* {formatMoney(summary?.totalBaseTransaction)} */}
+                {formatMoney(totalPage, '')}
               </span>
             </div>
             <div>
               Tổng bài viết chưa duyệt:{" "}
-              <span className="text-body fw-bold">
-                {/* {formatMoney(summary?.totalBaseAmt, "đ")} */}
-              </span>
+
             </div>
           </div>
         </div>
@@ -189,9 +198,11 @@ const deleteContent = async (id: number) => {
           }}
           className="shadow-lg p-4"
         />
-        <Modal >
-          
-        </Modal>
+        <CustomModal
+          onCancel={() => setIsSttModal({ typeModal: 0, openModal: false })} // Xử lý đóng modal
+          open={isSttModal?.openModal} width={1200} children={<ContentArticle typeModal={isSttModal?.typeModal} data={dataDetail} />}>
+
+        </CustomModal>
       </div>
     </div>
   );

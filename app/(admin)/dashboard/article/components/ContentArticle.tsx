@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 // import { Button, Form, Space } from "antd";
 import TextEditor from "@/components/plugin/TextEditor";
 import MetadataForm from "./MetadataForm";
@@ -17,6 +17,7 @@ import {
 } from "antd";
 import { UploadOutlined, DeleteOutlined } from "@ant-design/icons";
 import PublishInfoForm from "./PublishInfoForm";
+import { Post } from "@/types/contentItem";
 // import TextEditor from "@/components/plugin/TextEditor";
 
 const initialMetadata = {
@@ -27,8 +28,15 @@ const initialMetadata = {
 };
 const { Option } = Select;
 const { TextArea } = Input;
-const ModalArticle = () => {
+
+interface typeContentArticle {
+  typeModal: number | undefined;
+  data: Post|undefined
+}
+
+const ContentArticle: React.FC<typeContentArticle> = ({ typeModal, data }) => {
   const [editorData, setEditorData] = useState("");
+  const [content, setContent] = useState("");
   const [form] = Form.useForm();
   const [imageUrl, setImageUrl] = useState<string | null>(null);
 
@@ -51,7 +59,9 @@ const ModalArticle = () => {
     // Gửi dữ liệu lên server ở đây
     console.log(values);
   };
-
+ useEffect(()=>{
+  setContent(data?.introtext)
+ },[data])
   return (
     <div className="p-6 w-full">
       {/* Header */}
@@ -60,7 +70,7 @@ const ModalArticle = () => {
       <div
         style={{
           display: "flex",
-          gap: 24,
+          gap: 12,
           alignItems: "flex-start",
           width: "100%",
           // border:'1px solid #131313'
@@ -86,14 +96,16 @@ const ModalArticle = () => {
             }}
           >
             <Space>
-              <Tag color="green">Đã xuất bản</Tag>
+
               <Typography.Text strong>
                 Công ty Cổ phần Thương mại Du lịch Lan Phương
               </Typography.Text>
+              <Tag color="green" className="pl-3">Đã xuất bản</Tag>
             </Space>
-            <Button style={{ float: "right" }} type="primary">
+            {/* <Button style={{ float: "right" }} type="primary">
               Lấy tin nhanh
-            </Button>
+            </Button> */}
+         
           </div>
           <Form
             form={form}
@@ -109,34 +121,16 @@ const ModalArticle = () => {
               content: "",
             }}
           >
-            <Form.Item label="Trạng thái" name="status">
-              <Select disabled>
-                <Option value="published">Đã xuất bản</Option>
-              </Select>
-            </Form.Item>
+            {typeModal !==0 &&
+               <Form.Item label="Trạng thái" name="status">
+               <Select disabled>
+                 <Option value="published">Đã xuất bản</Option>
+               </Select>
+             </Form.Item>
+            }
+         
 
-            <Form.Item
-              label="Loại bài viết"
-              name="postType"
-              rules={[{ required: true }]}
-            >
-              <Select>
-                <Option value="Tổng hợp">Tổng hợp</Option>
-                <Option value="Tin tức">Tin tức</Option>
-                <Option value="Khuyến mãi">Khuyến mãi</Option>
-              </Select>
-            </Form.Item>
-
-            <Form.Item
-              label="Kiểu bài viết"
-              name="postKind"
-              rules={[{ required: true }]}
-            >
-              <Select>
-                <Option value="Bài viết">Bài viết</Option>
-                <Option value="Sản phẩm">Sản phẩm</Option>
-              </Select>
-            </Form.Item>
+          
 
             <Form.Item
               label="Tiêu đề"
@@ -196,7 +190,7 @@ const ModalArticle = () => {
               rules={[{ required: true, message: "Nhập nội dung!" }]}
             >
               <TextEditor
-                content={editorData}
+                content={content}
                 editorData={editorData}
                 setEditorData={setEditorData}
               />
@@ -210,14 +204,16 @@ const ModalArticle = () => {
           </Form>
         </div>
         {/* Metadata bên phải */}
-        <div style={{ flex: 1, minWidth: 300, maxWidth: 400 }}>
-          <PublishInfoForm form={form} initialValues={initialMetadata} />
-          <MetadataForm form={form} initialValues={initialMetadata} />
-        </div>
+        {
+          typeModal !== 0 && <div style={{ flex: 1, minWidth: 300, maxWidth: 400 }}>
+            <PublishInfoForm form={form} initialValues={initialMetadata} />
+            <MetadataForm form={form} initialValues={initialMetadata} />
+          </div>
+        }
       </div>
     </div>
   );
 };
 
-export default ModalArticle;
+export default ContentArticle;
 
