@@ -1,4 +1,4 @@
-export const dateFormat ="DD/MM/YYYY HH:mm";
+export const dateFormat ="DD/MM/YYYY";
 export const statusXB = [
     {
         label: "Tất cả",

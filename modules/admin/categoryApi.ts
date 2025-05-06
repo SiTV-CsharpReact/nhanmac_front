@@ -2,7 +2,7 @@ import { Category } from "@/types/categoryItem";
 
 // categoryApi.ts
 // categoryApi.ts
-const API_URL = "http://localhost:3000/api/categories";
+const API_URL = "http://localhost:3600/api/categories";
 
 export const categoryApi = {
   async getAll(): Promise<Category[]> {

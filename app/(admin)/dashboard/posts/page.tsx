@@ -9,7 +9,7 @@ const AdminPostManagement: React.FC = () => {
 
   useEffect(() => {
     setLoading(true);
-    fetch('http://localhost:3000/api/contents')
+    fetch('http://localhost:3600/api/contents')
       .then(res => res.json())
       .then(data => {
         setPosts(data);

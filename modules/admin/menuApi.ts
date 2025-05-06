@@ -2,14 +2,14 @@ import type { MenuItem } from "@/types/MenuItem";
 
 // Lấy danh sách menu
 export async function fetchMenus(): Promise<MenuItem[]> {
-  const res = await fetch("http://localhost:3000/api/menu");
+  const res = await fetch("http://localhost:3600/api/menu");
   if (!res.ok) throw new Error("Lỗi lấy danh sách menu");
   return await res.json();
 }
 
 // Thêm menu mới
 export async function addMenu(data: Omit<MenuItem, "id" | "children" | "key">) {
-  const res = await fetch("http://localhost:3000/api/menu/add", {
+  const res = await fetch("http://localhost:3600/api/menu/add", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
@@ -23,7 +23,7 @@ export async function addMenu(data: Omit<MenuItem, "id" | "children" | "key">) {
 
 // Sửa menu
 export async function editMenu(id: number, data: Omit<MenuItem, "id" | "children" | "key">) {
-  const res = await fetch(`http://localhost:3000/api/menu/edit/${id}`, {
+  const res = await fetch(`http://localhost:3600/api/menu/edit/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
@@ -37,7 +37,7 @@ export async function editMenu(id: number, data: Omit<MenuItem, "id" | "children
 
 // Xóa menu
 export async function deleteMenu(id: number) {
-  const res = await fetch(`http://localhost:3000/api/menu/delete/${id}`, {
+  const res = await fetch(`http://localhost:3600/api/menu/delete/${id}`, {
     method: "DELETE",
   });
   if (!res.ok) {

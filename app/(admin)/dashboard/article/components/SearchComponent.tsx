@@ -4,7 +4,7 @@ import moment from "moment";
 import { futureDate } from "@/utils/util";
 import { RedoOutlined, SearchOutlined } from "@ant-design/icons";
 
-const dateFormat = "DD/MM/YYYY HH:mm";
+const dateFormat = "DD/MM/YYYY";
 
 function SearchComponent({ setOnReload, form, setFixedParams ,setOnResetFilter,productTypeOptions}) {
   const initialValues = {
@@ -70,9 +70,6 @@ function SearchComponent({ setOnReload, form, setFixedParams ,setOnResetFilter,p
           >
             <DatePicker
               style={{ width: "100%" }}
-              showTime={{
-                format: "HH:mm",
-              }}
               format={dateFormat}
               disabledDate={(current) => futureDate(current)}
             />
