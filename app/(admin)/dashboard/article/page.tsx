@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Table, Button, Tag, Tooltip, Form, Modal } from "antd";
+import { Table, Button, Tag, Tooltip, Form, Modal, notification } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { dateFormat, statusXB } from "@/config/config";
 import { formatMoney, getConstantLabel, getTagColor } from "@/utils/util";
@@ -44,6 +44,13 @@ interface StatusModal {
   openModal: boolean;
   typeModal: number | undefined;
 }
+
+export const defaultPagin = {
+  current: 1,
+  pageSize: 10,
+  total: 0,
+}
+
 const Page: React.FC = () => {
   const [data, setData] = useState<Post[]>([]);
   const [dataDetail, setDataDetail] = useState<Post>();
@@ -55,6 +62,7 @@ const Page: React.FC = () => {
   const [onResetFilter, setOnResetFilter] = useState(false);
   const [totalPage, setTotalPage] = useState(0);
   const [isSttModal, setIsSttModal] = useState<StatusModal>();
+  const [pagination, setPagination] = useState(defaultPagin);
   // Hàm fetch dữ liệu bằng fetch API
 
   // Hàm lấy chi tiết bài viết
@@ -83,45 +91,40 @@ const Page: React.FC = () => {
     }
   };
 
-  const fetchData = async (
-    pageNumber = fixedParams.pageNumber,
-    pageSize = fixedParams.pageSize,
-    filters = {
-      created: fixedParams.created,
-      state: fixedParams.state,
-      keySearch: fixedParams.keySearch,
-    }
-  ) => {
+  const fetchData = async () => {
+    const { created, ...remain } = form.getFieldsValue();
+    const params = {
+      startTime: moment(created?.[0])
+        ?.startOf("day")
+        ?.format(dateFormat),
+      endTime: moment(created?.[1])
+        ?.endOf("day")
+        ?.format(dateFormat),
+      page: pagination?.current - 1,
+      pageSize: pagination?.pageSize,
+      ...remain,
+    };
+    console.log(params)
     setLoading(true);
     try {
-      const result = await fetchContent({
-        pageNumber,
-        pageSize,
-        ...filters,
-      });
+      const result = await fetchContent(params);
       setData(result.data);
       setTotalPage(result.pagination.total);
       setTotal(result.pagination.total);
     } catch (error) {
-      alert("Có lỗi khi lấy dữ liệu!");
+      notification.error({
+        message: "Lỗi",
+        description: "Có lỗi khi lấy dữ liệu!",
+      });
     }
     setLoading(false);
   };
   
 
   useEffect(() => {
-    fetchData(fixedParams.pageNo, fixedParams.pageSize, {
-      created: fixedParams.created,
-      state: fixedParams.state,
-      keySearch: fixedParams.keySearch,
-    });
-  }, [fixedParams, onReload]);
-
-  // useEffect(() => {
-  //   if (onReload) {
-  //     fetchData();
-  //   }
-  // }, [onReload]);
+   
+    fetchData();
+  }, [onReload,pagination?.current, pagination?.pageSize]);
 
   useEffect(() => {
     if (isSttModal?.openModal && isSttModal?.idContent !== 0) {
@@ -190,6 +193,10 @@ const Page: React.FC = () => {
     },
   ];
 
+  const handleTableChange = (newPagination) => {
+    setPagination(newPagination);
+  };
+
   return (
     <div className="mx-4  w-full">
       <SearchComponent
@@ -220,15 +227,24 @@ const Page: React.FC = () => {
               row: data?.length !== 0 && CustomRow,
             },
           }}
+          // pagination={{
+          //   total: totalPage,
+          //   pageSize: fixedParams.pageSize,
+          //   current: fixedParams.pageNumber,
+          //   onChange: (page, pageSize) => {
+          //     setFixedParams((prev) => ({ ...prev, pageNumber: page, pageSize }));
+          //     setOnReload((prev) => !prev);
+          //   },
+          // }}
           pagination={{
-            total: totalPage,
-            pageSize: fixedParams.pageSize,
-            current: fixedParams.pageNo,
-            onChange: (page, pageSize) => {
-              setFixedParams((prev) => ({ ...prev, pageNo: page, pageSize }));
-              setOnReload((prev) => !prev);
+            ...pagination,
+            showTotal: (total, range) => {
+              const rangeNumber = range[1] - range[0] + 1;
+              return `Hiển thị ${rangeNumber} trên ${total} kết quả`;
             },
+            showSizeChanger: true,
           }}
+          onChange={handleTableChange}
           className="shadow-lg p-4"
         />
         <CustomModal

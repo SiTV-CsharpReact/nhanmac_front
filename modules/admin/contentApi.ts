@@ -2,25 +2,32 @@ import { Post } from "@/types/contentItem";
 import { notification } from "antd";
 
 interface FetchContentParams {
-  pageNumber?: number;
+  page?: number;
   pageSize?: number;
-  created?: string;
-  state?: string;
+  endTime?: string;
+  startTime?:string;
+  state?: number;
   keySearch?: string;
+  keyword?:string
 }
 
 // Lấy danh sách menu
 
 export async function fetchContent(params: FetchContentParams = {}): Promise<Post[]> {
   try {
+    console.log('fetchContent',params)
     // Build query string từ params
     const query = new URLSearchParams();
 
-    if (params.pageNumber !== undefined) query.append('pageNumber', params.pageNumber.toString());
+    if (params.page !== undefined) query.append('page', params.page.toString());
     if (params.pageSize !== undefined) query.append('pageSize', params.pageSize.toString());
-    if (params.created) query.append('created', params.created);
-    if (params.state) query.append('state', params.state);
-    if (params.keySearch) query.append('keySearch', params.keySearch);
+    if (params.startTime) query.append('startTime', params.startTime);
+    if (params.endTime) query.append('endTime', params.endTime);
+    if (params.state) query.append('state', params.state.toString());
+    if (params.keyword) query.append('keyword', params.keyword);
+    console.log(query)
+    // if (params.keySearch) query.append('keySearch', params.keySearch);
+    // if (params.keySearch) query.append('keySearch', params.keySearch);
 
     const url = `http://localhost:3600/api/contents?${query.toString()}`;
 

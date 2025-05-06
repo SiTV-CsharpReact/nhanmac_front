@@ -1,11 +1,6 @@
 export const dateFormat ="DD/MM/YYYY";
 export const statusXB = [
     {
-        label: "Tất cả",
-        value: 'ALL',
-        color: "green",
-      },
-    {
       label: "Đã xuất bản",
       value: 1,
       color: "green",
