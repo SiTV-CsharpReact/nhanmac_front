@@ -150,9 +150,6 @@ export default function CategoryTable() {
     },
   ];
 
-
-
-
   // Tạo hàm debounce với useCallback để tránh recreate function mỗi lần render
   const debouncedUpdateAlias = debounce((title: string) => {
     const currentAlias = form.getFieldValue('alias');

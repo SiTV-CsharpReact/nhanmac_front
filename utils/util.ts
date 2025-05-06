@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import moment from "moment";
 
 export function getConstantLabel(
@@ -16,7 +17,7 @@ export function getConstantLabel(
   }
   // For disable future date in Antd DatePicker
 export const futureDate = (dateDisable:any) => {
-    return dateDisable && dateDisable > moment();
+    return dateDisable && dateDisable > dayjs();
   };
 export const formatMoney = (x:number, currency) => {
     if (x === 0) return "0" + (currency ? ` ${currency}` : "");

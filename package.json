@@ -13,6 +13,7 @@
     "@tinymce/tinymce-react": "3.13.1",
     "antd": "^5.24.9",
     "ckeditor5-build-full": "^25.0.0",
+    "dayjs": "^1.11.13",
     "debounce": "^2.2.0",
     "lodash": "^4.17.21",
     "moment": "^2.30.1",

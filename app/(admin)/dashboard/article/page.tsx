@@ -4,7 +4,8 @@ import { Table, Button, Tag, Tooltip, Form, Modal, notification } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { dateFormat, statusXB } from "@/config/config";
 import { formatMoney, getConstantLabel, getTagColor } from "@/utils/util";
-import moment from "moment";
+// import moment from "moment";
+import dayjs from'dayjs';
 import { FileSearchOutlined } from "@ant-design/icons";
 import { DeleteIcon, EditIcon } from "@/components/icons/Icons";
 import SearchComponent from "./components/SearchComponent";
@@ -13,6 +14,7 @@ import { Post } from "@/types/contentItem";
 import CustomModal from "@/components/share/CustomModal";
 import ContentArticle from "./components/ContentArticle";
 import ViewArticle from "./components/ViewArticle";
+import { categoryApi } from "@/modules/admin/categoryApi";
 
 function CustomRow(props) {
   return (
@@ -33,7 +35,7 @@ interface Content {
 }
 
 const initialParams = {
-  created: moment().subtract(1, "days").format(dateFormat), // ví dụ 'YYYY-MM-DD'
+  created: [dayjs().subtract(1, "days"), dayjs()], // ví dụ 'YYYY-MM-DD'
   pageNumber: 1,
   pageSize: 10,
   state: undefined,
@@ -64,7 +66,6 @@ const Page: React.FC = () => {
   const [isSttModal, setIsSttModal] = useState<StatusModal>();
   const [pagination, setPagination] = useState(defaultPagin);
   // Hàm fetch dữ liệu bằng fetch API
-
   // Hàm lấy chi tiết bài viết
   const fetchDetail = async (id: number) => {
     try {
@@ -75,7 +76,7 @@ const Page: React.FC = () => {
       alert("Có lỗi khi lấy chi tiết bài viết!");
     }
   };
-
+  
   // Hàm xóa bài viết
   const deleteContent = async (id: number) => {
     if (!window.confirm("Bạn có chắc chắn muốn xóa bài viết này?")) return;
@@ -94,12 +95,8 @@ const Page: React.FC = () => {
   const fetchData = async () => {
     const { created, ...remain } = form.getFieldsValue();
     const params = {
-      startTime: moment(created?.[0])
-        ?.startOf("day")
-        ?.format(dateFormat),
-      endTime: moment(created?.[1])
-        ?.endOf("day")
-        ?.format(dateFormat),
+      startTime: dayjs(created?.[0])?.startOf("day")?.format(dateFormat),
+      endTime: dayjs(created?.[1])?.endOf("day")?.format(dateFormat),
       page: pagination?.current - 1,
       pageSize: pagination?.pageSize,
       ...remain,
@@ -108,9 +105,9 @@ const Page: React.FC = () => {
     setLoading(true);
     try {
       const result = await fetchContent(params);
-      setData(result.data);
-      setTotalPage(result.pagination.total);
-      setTotal(result.pagination.total);
+      setData(result?.data);
+      // setTotalPage(result.pagination.total);
+      // setTotal(result.pagination.total);
     } catch (error) {
       notification.error({
         message: "Lỗi",
@@ -122,9 +119,8 @@ const Page: React.FC = () => {
   
 
   useEffect(() => {
-   
     fetchData();
-  }, [onReload,pagination?.current, pagination?.pageSize]);
+  }, [fixedParams, pagination.current, pagination.pageSize]);
 
   useEffect(() => {
     if (isSttModal?.openModal && isSttModal?.idContent !== 0) {
@@ -156,7 +152,7 @@ const Page: React.FC = () => {
       dataIndex: "created",
       render: (text) => (
         <span className="font-semibold">
-          {moment(text).format("DD/MM/YYYY")}
+          {dayjs(text).format("DD/MM/YYYY")}
         </span>
       ),
     },
@@ -200,7 +196,7 @@ const Page: React.FC = () => {
   return (
     <div className="mx-4  w-full">
       <SearchComponent
-        setOnReload={setOnReload}
+        setOnReload={() => setOnReload(prev => !prev)}
         form={form}
         setFixedParams={setFixedParams}
         productTypeOptions={statusXB}

@@ -1,9 +1,16 @@
 import React, { useEffect } from "react";
 import { Button, DatePicker, Form, Input, message, Select } from "antd";
-import moment from "moment";
+import dayjs from "dayjs";
+import weekday from "dayjs/plugin/weekday";
+import localeData from "dayjs/plugin/localeData";
+
+dayjs.extend(weekday);
+dayjs.extend(localeData);
+dayjs.locale("en");
+dayjs.locale("vi");
 import { futureDate } from "@/utils/util";
 import { RedoOutlined, SearchOutlined } from "@ant-design/icons";
-
+import { useCategories } from "@/hooks/useCategories";
 const dateFormat = "DD/MM/YYYY";
 
 const { RangePicker } = DatePicker;
@@ -13,9 +20,9 @@ interface SearchComponentProps {
   form: any;
   setFixedParams: (params: any) => void;
   setOnResetFilter?: (value: boolean) => void;
-  productTypeOptions: { label: string; value: string }[];
+  productTypeOptions: { label: string; value: number,color:string }[];
 }
-
+const { Option } = Select;
 const SearchComponent: React.FC<SearchComponentProps> = ({
   setOnReload,
   form,
@@ -23,10 +30,11 @@ const SearchComponent: React.FC<SearchComponentProps> = ({
   setOnResetFilter,
   productTypeOptions,
 }) => {
+  const { selectOptions, loading } = useCategories();
   const initialValues = {
-    created: [moment().startOf("day"), moment().endOf("day")], // RangePicker expects array of moments
-    state: undefined,
-    category: undefined,
+    created: [dayjs(), dayjs()], // RangePicker expects array of moments
+    state: 1,
+    alias: undefined,
     keyword: "",
   };
 
@@ -36,33 +44,37 @@ const SearchComponent: React.FC<SearchComponentProps> = ({
     setFixedParams({
       createdFrom: initialValues.created[0].format(dateFormat),
       createdTo: initialValues.created[1].format(dateFormat),
-      state: undefined,
-      category: undefined,
+      state: 1,
+      alias: undefined,
       keyword: "",
     });
   }, []);
 
-  const search = () => {
-    const { created, state, category, keyword } = form.getFieldsValue();
+  const search = async () => {
+   
+      const values = await form.validateFields();
+      const { created, state, alias, keyword } = values;
   
-    if (
-      Array.isArray(created) &&
-      created.length === 2 &&
-      moment.isMoment(created[0]) &&
-      moment.isMoment(created[1])
-    ) {
-      setFixedParams({
-        createdFrom: created[0].format(dateFormat),
-        createdTo: created[1].format(dateFormat),
-        state,
-        category,
-        keyword,
-      });
-      setOnReload && setOnReload(true);
-    } else {
-      message.error("Giá trị ngày không hợp lệ");
-    }
+      if (
+        Array.isArray(created) &&
+        created.length === 2 &&
+        dayjs.isDayjs(created[0]) &&
+        dayjs.isDayjs(created[1])
+      ) {
+        setFixedParams({
+          createdFrom: created[0].format(dateFormat),
+          createdTo: created[1].format(dateFormat),
+          state,
+          alias,
+          keyword,
+        });
+        setOnReload && setOnReload(true);
+      } else {
+        message.error("Giá trị ngày không hợp lệ");
+      }
+   
   };
+  
 
   const resetFields = () => {
     form.resetFields();
@@ -79,20 +91,38 @@ const SearchComponent: React.FC<SearchComponentProps> = ({
             <RangePicker
               style={{ width: "100%" }}
               format={dateFormat}
-              disabledDate={(current) => futureDate(current)}
+              onChange={(dates) => {
+                // Cập nhật trường "created" trong form khi chọn ngày mới
+                form.setFieldValue("created", dates);
+          
+                // Nếu muốn tự động tìm kiếm luôn khi đổi ngày:
+                // Gọi hàm search() ở đây nếu muốn auto-search
+                // search();
+              }}
+               disabledDate={(current) => futureDate(current)}
             />
           </Form.Item>
         </div>
 
         <div style={{ width: "100%", maxWidth: "300px" }}>
           <Form.Item name="state" label="Trạng thái:">
-            <Select style={{ width: "100%" }} options={productTypeOptions} defaultValue={1} allowClear />
+            <Select style={{ width: "100%" }} options={productTypeOptions}  allowClear />
           </Form.Item>
         </div>
 
         <div style={{ width: "100%", maxWidth: "300px" }}>
-          <Form.Item name="category" label="Chuyên mục:">
-            <Select style={{ width: "100%" }} options={productTypeOptions} allowClear />
+          <Form.Item name="alias" label="Chuyên mục:">
+            <Select
+              showSearch
+              loading={loading}
+              placeholder="Chọn chuyên mục"
+              options={selectOptions}
+              filterOption={(input, option) =>
+                (option?.label as string).toLowerCase().includes(input.toLowerCase())
+              }
+              style={{ width: '100%' }}
+              allowClear
+            />
           </Form.Item>
         </div>
 
@@ -118,12 +148,14 @@ const SearchComponent: React.FC<SearchComponentProps> = ({
           >
             Làm mới bộ lọc
           </Button>
+      
           <Button
             type="primary"
             onClick={search}
             style={{ width: "10rem" }}
             icon={<SearchOutlined />}
           >
+           
             Tìm kiếm
           </Button>
         </div>

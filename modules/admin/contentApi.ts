@@ -8,7 +8,8 @@ interface FetchContentParams {
   startTime?:string;
   state?: number;
   keySearch?: string;
-  keyword?:string
+  keyword?:string;
+  alias?:string;
 }
 
 // Lấy danh sách menu
@@ -25,6 +26,7 @@ export async function fetchContent(params: FetchContentParams = {}): Promise<Pos
     if (params.endTime) query.append('endTime', params.endTime);
     if (params.state) query.append('state', params.state.toString());
     if (params.keyword) query.append('keyword', params.keyword);
+    if (params.alias) query.append('alias', params.alias.toString());
     console.log(query)
     // if (params.keySearch) query.append('keySearch', params.keySearch);
     // if (params.keySearch) query.append('keySearch', params.keySearch);
