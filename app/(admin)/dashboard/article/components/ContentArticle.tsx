@@ -31,22 +31,58 @@ const { TextArea } = Input;
 
 interface typeContentArticle {
   typeModal: number | undefined;
-  data: Post|undefined
+  data: Post | undefined;
+  reset?: boolean;
 }
 
-const ContentArticle: React.FC<typeContentArticle> = ({ typeModal, data }) => {
+const ContentArticle: React.FC<typeContentArticle> = ({
+  typeModal,
+  data,
+  reset,
+}) => {
   const [editorData, setEditorData] = useState("");
   const [content, setContent] = useState("");
   const [form] = Form.useForm();
   const [imageUrl, setImageUrl] = useState<string | null>(null);
 
+  // Reset form khi modal mở
+  useEffect(() => {
+    if (reset) {
+      form.resetFields();
+      setEditorData("");
+      setContent("");
+      setImageUrl(null);
+    }
+  }, [reset, form]);
+
   // Xử lý upload ảnh
-  const handleImageChange = (info: any) => {
-    if (info.file.status === "done" || info.file.status === "uploading") {
-      // Hiển thị ảnh preview
-      const reader = new FileReader();
-      reader.onload = (e) => setImageUrl(e.target?.result as string);
-      reader.readAsDataURL(info.file.originFileObj);
+  const handleImageChange = async (info: any) => {
+    if (info.file.status === "uploading") {
+      return;
+    }
+    if (info.file.status === "done") {
+      try {
+        const formData = new FormData();
+        formData.append("image", info.file.originFileObj);
+
+        const response = await fetch("http://localhost:3600/api/upload/image", {
+          method: "POST",
+          body: formData,
+        });
+
+        const data = await response.json();
+        if (data.success) {
+          // URL đầy đủ của ảnh
+          const fullImageUrl = `http://localhost:3600${data.imageUrl}`;
+          setImageUrl(fullImageUrl);
+          message.success("Upload ảnh thành công!");
+        } else {
+          throw new Error(data.error || "Upload failed");
+        }
+      } catch (error) {
+        message.error("Upload ảnh thất bại!");
+        console.error("Upload error:", error);
+      }
     }
   };
 
@@ -59,11 +95,11 @@ const ContentArticle: React.FC<typeContentArticle> = ({ typeModal, data }) => {
     // Gửi dữ liệu lên server ở đây
     console.log(values);
   };
- useEffect(()=>{
-  setContent(data?.introtext)
- },[data])
+  useEffect(() => {
+    setContent(data?.introtext);
+  }, [data]);
   return (
-    <div className="p-6 w-full">
+    <div className="px-4 py-2 w-full">
       {/* Header */}
 
       {/* Nội dung 2 cột */}
@@ -92,20 +128,18 @@ const ContentArticle: React.FC<typeContentArticle> = ({ typeModal, data }) => {
               background: "#eaf6ff",
               padding: 12,
               borderRadius: 4,
-              marginBottom: 24,
+              marginBottom: 10,
             }}
           >
             <Space>
-
               <Typography.Text strong>
                 Công ty Cổ phần Thương mại Du lịch Lan Phương
               </Typography.Text>
-              <Tag color="green" className="pl-3">Đã xuất bản</Tag>
+              {/* <Tag color="green" className="pl-3">Đã xuất bản</Tag> */}
             </Space>
             {/* <Button style={{ float: "right" }} type="primary">
               Lấy tin nhanh
             </Button> */}
-         
           </div>
           <Form
             form={form}
@@ -120,18 +154,13 @@ const ContentArticle: React.FC<typeContentArticle> = ({ typeModal, data }) => {
               quote: "",
               content: "",
             }}
+            className="[&_.ant-form-item]:!mb-[10px]"
           >
-            {typeModal !==0 &&
-               <Form.Item label="Trạng thái" name="status">
-               <Select disabled>
-                 <Option value="published">Đã xuất bản</Option>
-               </Select>
-             </Form.Item>
-            }
-         
-
-          
-
+            {/* <Form.Item label="Trạng thái" name="status">
+              <Select disabled={typeModal !== 1}>
+                <Option value="published">Đã xuất bản</Option>
+              </Select>
+            </Form.Item> */}
             <Form.Item
               label="Tiêu đề"
               name="title"
@@ -162,9 +191,17 @@ const ContentArticle: React.FC<typeContentArticle> = ({ typeModal, data }) => {
                 {!imageUrl && (
                   <Upload
                     showUploadList={false}
-                    beforeUpload={() => false} // Không upload lên server ngay
+                    beforeUpload={(file) => {
+                      const isLt5M = file.size / 1024 / 1024 < 5;
+                      if (!isLt5M) {
+                        message.error("Ảnh phải nhỏ hơn 5MB!");
+                        return Upload.LIST_IGNORE;
+                      }
+                      return false;
+                    }}
                     onChange={handleImageChange}
                     accept="image/*"
+                    maxCount={1}
                   >
                     <Button icon={<UploadOutlined />}>Chọn file</Button>
                   </Upload>
@@ -204,16 +241,15 @@ const ContentArticle: React.FC<typeContentArticle> = ({ typeModal, data }) => {
           </Form>
         </div>
         {/* Metadata bên phải */}
-        {
-          typeModal !== 0 && <div style={{ flex: 1, minWidth: 300, maxWidth: 400 }}>
+        {typeModal !== 0 && (
+          <div style={{ flex: 1, minWidth: 300, maxWidth: 400 }}>
             <PublishInfoForm form={form} initialValues={initialMetadata} />
             <MetadataForm form={form} initialValues={initialMetadata} />
           </div>
-        }
+        )}
       </div>
     </div>
   );
 };
 
 export default ContentArticle;
-

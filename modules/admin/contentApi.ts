@@ -1,88 +1,168 @@
+import { ApiResponse } from "@/types/apiResponse";
 import { Post } from "@/types/contentItem";
 import { notification } from "antd";
+import { env } from "@/config/env";
 
 interface FetchContentParams {
   page?: number;
   pageSize?: number;
   endTime?: string;
-  startTime?:string;
+  startTime?: string;
   state?: number;
   keySearch?: string;
-  keyword?:string;
-  alias?:string;
+  keyword?: string;
+  alias?: string;
 }
 
-// Lấy danh sách menu
-
-export async function fetchContent(params: FetchContentParams = {}): Promise<Post[]> {
+// Lấy danh sách bài viết
+export const fetchContent = async (params: FetchContentParams = {}): Promise<ApiResponse<Post[]>> => {
   try {
-    console.log('fetchContent',params)
-    // Build query string từ params
-    const query = new URLSearchParams();
+    const queryParams = new URLSearchParams();
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        queryParams.append(key, String(value));
+      }
+    });
 
-    if (params.page !== undefined) query.append('page', params.page.toString());
-    if (params.pageSize !== undefined) query.append('pageSize', params.pageSize.toString());
-    if (params.startTime) query.append('startTime', params.startTime);
-    if (params.endTime) query.append('endTime', params.endTime);
-    if (params.state) query.append('state', params.state.toString());
-    if (params.keyword) query.append('keyword', params.keyword);
-    if (params.alias) query.append('alias', params.alias.toString());
-    console.log(query)
-    // if (params.keySearch) query.append('keySearch', params.keySearch);
-    // if (params.keySearch) query.append('keySearch', params.keySearch);
-
-    const url = `http://localhost:3600/api/contents?${query.toString()}`;
-
-    const res = await fetch(url);
-
-    if (!res.ok) throw new Error("Failed to fetch contents");
-
-    // API trả về { data: Post[], pagination: {...} } theo backend bạn đã sửa
-    const json = await res.json();
-
-    // Trả về mảng dữ liệu bài viết
-    return json.data;
-
+    const response = await fetch(`${env.apiUrl}/contents?${queryParams}`);
+    const data: ApiResponse<Post[]> = await response.json();
+    
+    if (data.Code !== 200) {
+      throw new Error(data.Message || 'Có lỗi xảy ra');
+    }
+    
+    return data;
   } catch (error: any) {
     if (typeof window !== "undefined") {
       notification.error({
         message: "Lỗi",
-        description: error.message || "Không thể lấy danh sách nội dung",
+        description: error.message || "Không thể lấy danh sách bài viết",
       });
     }
     throw error;
   }
-}
+};
 
-export async function fetchContentId(id: number): Promise<Post> {
+// Lấy chi tiết bài viết theo ID
+export const fetchContentId = async (id: number): Promise<ApiResponse<Post>> => {
   try {
-    const res = await fetch(`http://localhost:3600/api/contents/${id}`);
-    if (!res.ok) throw new Error("Failed to fetch content");
-    return await res.json();
+    const response = await fetch(`${env.apiUrl}/contents/${id}`);
+    const data: ApiResponse<Post> = await response.json();
+    
+    if (data.Code !== 200) {
+      throw new Error(data.Message || 'Có lỗi xảy ra');
+    }
+    
+    return data;
   } catch (error: any) {
-    // Hiển thị thông báo lỗi (chỉ hoạt động ở client-side)
     if (typeof window !== "undefined") {
       notification.error({
         message: "Lỗi",
-        description: error.message || "Không thể lấy nội dung",
+        description: error.message || "Không thể lấy chi tiết bài viết",
       });
     }
     throw error;
   }
-}
-export async function fetchContentAlias(alias: string): Promise<Post> {
+};
+
+// Lấy bài viết theo alias
+export const fetchContentAlias = async (alias: string): Promise<ApiResponse<Post>> => {
   try {
-    const res = await fetch(`http://localhost:3600/api/contents/alias/${alias}`);
-    if (!res.ok) throw new Error("Failed to fetch content");
-    return await res.json();
+    const response = await fetch(`${env.apiUrl}/contents/alias/${alias}`);
+    const data: ApiResponse<Post> = await response.json();
+    
+    if (data.Code !== 200) {
+      throw new Error(data.Message || 'Có lỗi xảy ra');
+    }
+    
+    return data;
   } catch (error: any) {
-    // Hiển thị thông báo lỗi (chỉ hoạt động ở client-side)
     if (typeof window !== "undefined") {
       notification.error({
         message: "Lỗi",
-        description: error.message || "Không thể lấy nội dung",
+        description: error.message || "Không thể lấy bài viết",
       });
     }
     throw error;
   }
-}
+};
+
+// Tạo bài viết mới
+export const createContent = async (content: Partial<Post>): Promise<ApiResponse<Post>> => {
+  try {
+    const response = await fetch(`${env.apiUrl}/contents`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(content),
+    });
+    const data: ApiResponse<Post> = await response.json();
+    
+    if (data.Code !== 200) {
+      throw new Error(data.Message || 'Có lỗi xảy ra');
+    }
+    
+    return data;
+  } catch (error: any) {
+    if (typeof window !== "undefined") {
+      notification.error({
+        message: "Lỗi",
+        description: error.message || "Không thể tạo bài viết",
+      });
+    }
+    throw error;
+  }
+};
+
+// Cập nhật bài viết
+export const updateContent = async (id: number, content: Partial<Post>): Promise<ApiResponse<Post>> => {
+  try {
+    const response = await fetch(`${env.apiUrl}/contents/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(content),
+    });
+    const data: ApiResponse<Post> = await response.json();
+    
+    if (data.Code !== 200) {
+      throw new Error(data.Message || 'Có lỗi xảy ra');
+    }
+    
+    return data;
+  } catch (error: any) {
+    if (typeof window !== "undefined") {
+      notification.error({
+        message: "Lỗi",
+        description: error.message || "Không thể cập nhật bài viết",
+      });
+    }
+    throw error;
+  }
+};
+
+// Xóa bài viết
+export const deleteContent = async (id: number): Promise<ApiResponse<void>> => {
+  try {
+    const response = await fetch(`${env.apiUrl}/contents/${id}`, {
+      method: 'DELETE',
+    });
+    const data: ApiResponse<void> = await response.json();
+    
+    if (data.Code !== 200) {
+      throw new Error(data.Message || 'Có lỗi xảy ra');
+    }
+    
+    return data;
+  } catch (error: any) {
+    if (typeof window !== "undefined") {
+      notification.error({
+        message: "Lỗi",
+        description: error.message || "Không thể xóa bài viết",
+      });
+    }
+    throw error;
+  }
+};
