@@ -6,10 +6,10 @@ interface TitlePageAdminProps {
 }
 
 const TitlePageAdmin: React.FC<TitlePageAdminProps> = ({ text }) => (
-  <Breadcrumb className='!ml-4 !pt-2'
+  <Breadcrumb className='!ml-4 !pt-1'
     items={[
       {
-        href: '/admin/dashboard',
+        href: '/dashboard',
         title: <HomeOutlined style={{fontSize:18,verticalAlign:'middle'}}/>,
       },
       {

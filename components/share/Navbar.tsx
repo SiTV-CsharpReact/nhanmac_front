@@ -49,10 +49,11 @@ const Navbar: React.FC = () => {
   return (
     <Menu
       onClick={onClick}
-      style={{ width: 256 }}
+      style={{ width: 256,cursor:'pointer' }}
       selectedKeys={[pathname]} // LUÔN active đúng route hiện tại
       mode="inline"
       items={items}
+      
     />
   );
 };

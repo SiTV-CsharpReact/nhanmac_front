@@ -24,6 +24,7 @@ import { getBase64 } from "@/utils/util";
 import { env } from "@/config/env";
 import { uploadImage, createContent, updateContent } from "@/modules/admin/contentApi";
 import dayjs from "dayjs";
+import moment from "moment";
 
 const initialMetadata = {
   description: "",
@@ -32,17 +33,25 @@ const initialMetadata = {
   author: "",
 };
 const { TextArea } = Input;
+interface StatusModal {
+  idContent?: number | undefined;
+  openModal: boolean;
+  typeModal: number | undefined;
+}
+
 
 interface typeContentArticle {
   typeModal: number | undefined;
   data: Post;
   reset?: boolean;
-  setTypeModal:()=>void;
+  setTypeModal: (modal: StatusModal) => void;
+  setOnReload:()=>void;
 }
 
 const ContentArticle: React.FC<typeContentArticle> = ({
   typeModal,
   setTypeModal,
+  setOnReload,
   data,
   reset,
 }) => {
@@ -145,6 +154,20 @@ const ContentArticle: React.FC<typeContentArticle> = ({
     fileList,
   };
 
+
+  const reloadPage=()=>{
+    setTypeModal({
+      // idContent: record?.id,
+      typeModal: 4,
+      openModal: false,
+    })
+    form.resetFields();
+    setEditorData("");
+    setImageUrl(null);
+    setFileList([]);
+    setUrlFile({});
+    setOnReload();
+  }
   // Submit form
   const onFinish = async (values: any) => {
     try {
@@ -164,17 +187,7 @@ const ContentArticle: React.FC<typeContentArticle> = ({
         // Tạo mới
         const response = await createContent(formData);
         if (response.Code === 200) {
-          message.success("Tạo bài viết thành công!");
-          setTypeModal({
-            // idContent: record?.id,
-            typeModal: 4,
-            openModal: false,
-          })
-          form.resetFields();
-          setEditorData("");
-          setImageUrl(null);
-          setFileList([]);
-          setUrlFile({});
+          reloadPage()
         } else {
           message.error(response.Message || "Tạo bài viết thất bại!");
         }
@@ -184,11 +197,7 @@ const ContentArticle: React.FC<typeContentArticle> = ({
         const response = await updateContent(data?.id,formData);
         if (response.Code === 200) {
           message.success("Cập nhật bài viết thành công!");
-          form.resetFields();
-          setEditorData("");
-          setImageUrl(null);
-          setFileList([]);
-          setUrlFile({});
+          reloadPage();
         } else {
           message.error(response.Message || "Cập nhật bài viết thất bại!");
         }
@@ -201,20 +210,27 @@ const ContentArticle: React.FC<typeContentArticle> = ({
 
   useEffect(() => {
     if (data) {
+     
+      // const formattedDate = moment(data?.publish_up).format("DD/MM/YYYY HH:mm:ss");
+      console.log('dayjs:', dayjs(publish_up).isValid());
       form.setFieldsValue({
         title: data.title,
-        description: data.description,
-        quote: data.quote,
+        // description: data.description,
+        image_desc: data.image_desc,
         content: data.introtext,
+        catid:data.catid,
+        publish_up: data.publish_up ? dayjs(data.publish_up) : null,
         // picture:'test'
         // Thêm các trường khác nếu cần
       });
       setEditorData(data.introtext || "");
       setContent(data.introtext || "");
       setImageUrl(data?.urls);
-      setFileList([
+      setIsUpload(false);
+      setUrlFile({});
+      data?.urls &&  setFileList([
         {
-          // uid: '-1', // Thêm một uid tạm thời
+          uid: '-1', // Thêm một uid tạm thời
           name: data?.images, // Tên tạm thời của ảnh
           status: 'done', // Đặt trạng thái là đã hoàn thành để hiển thị hình ảnh
           url: data?.urls, // Sử dụng đường dẫn ảnh từ API
@@ -224,24 +240,7 @@ const ContentArticle: React.FC<typeContentArticle> = ({
         pictureName: data?.images,
         pictureUrl: data?.urls,
       });
-      setIsUpload(true);
-      // if (data.picture) {
-      //   setImageUrl(data.picture.pictureUrl);
-      //   setUrlFile(data.picture);
-      //   // setFileList([
-      //   //   {
-      //   //     // uid: '-1', // Thêm một uid tạm thời
-      //   //     name: res?.data?.data?.pictureName ? res?.data?.data?.pictureName : 'Image', // Tên tạm thời của ảnh
-      //   //     status: 'done', // Đặt trạng thái là đã hoàn thành để hiển thị hình ảnh
-      //   //     url: res?.data?.data?.picture, // Sử dụng đường dẫn ảnh từ API
-      //   //   },
-      //   // ]);
-      //   setUrlFile({
-      //     pictureName: res?.data?.data?.pictureName,
-      //     pictureUrl: res.data.data.picture,
-      //   });
-
-      // }
+      // setIsUpload(true);
     }
   }, [data, form]);
 
@@ -336,7 +335,7 @@ const ContentArticle: React.FC<typeContentArticle> = ({
               />
             )}
 
-            <Form.Item label="Mô tả ảnh" name="description">
+            <Form.Item label="Mô tả ảnh" name="image_desc">
               <Input placeholder="Mô tả ảnh minh họa" />
             </Form.Item>
 

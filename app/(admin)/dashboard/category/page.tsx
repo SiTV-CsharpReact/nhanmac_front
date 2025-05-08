@@ -5,6 +5,7 @@ import { MoreOutlined, PlusOutlined } from "@ant-design/icons";
 import { categoryApi } from '@/modules/admin/categoryApi';
 import { Category } from "@/types/categoryItem";
 import { debounce } from 'lodash';
+import TitlePageAdmin from "@/components/share/TitlePageAdmin";
 const { Option } = Select;
 // console.log(React.version);
 // Hàm chuyển mảng phẳng thành tree
@@ -45,7 +46,7 @@ export default function CategoryTable() {
   const fetchCategories = async () => {
     try {
       const data = await categoryApi.getAll();
-      setCategories(data);
+      setCategories(data.Data);
     } catch (error: any) {
       message.error(error.message);
     }
@@ -164,9 +165,9 @@ export default function CategoryTable() {
   }, []);
 
   return (
-    <div style={{ padding: 24 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 16 }}>
-        <h3>CHUYÊN MỤC</h3>
+    <div className="pl-4">
+      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 16,background:'white',padding:6,borderRadius:5 }}>
+      <TitlePageAdmin text={'Quản lý chuyên mục'} />
 
         <Button
           // type="primary"
@@ -209,15 +210,6 @@ export default function CategoryTable() {
             <Input
               placeholder="Tiêu đề"
               onChange={(e) => debouncedUpdateAlias(e.target.value)}
-            // onBlur={() => {
-            //   const title = form.getFieldValue("title");
-            //   const alias = form.getFieldValue("alias");
-            //   if (!alias || alias.trim() === "") {
-            //     form.setFieldsValue({
-            //       alias: removeVietnameseTones(title),
-            //     });
-            //   }
-            // }}
             />
           </Form.Item>
           <Form.Item label="Alias" name="alias">

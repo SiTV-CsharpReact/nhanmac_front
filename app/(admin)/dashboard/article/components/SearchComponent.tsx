@@ -88,14 +88,9 @@ const SearchComponent: React.FC<SearchComponentProps> = ({
             <RangePicker
               style={{ width: "100%" }}
               format={dateFormat}
-              onChange={(dates) => {
-                // Cập nhật trường "created" trong form khi chọn ngày mới
-                form.setFieldValue("created", dates);
-
-                // Nếu muốn tự động tìm kiếm luôn khi đổi ngày:
-                // Gọi hàm search() ở đây nếu muốn auto-search
-                // search();
-              }}
+              // onChange={(dates) => {
+              //   form.setFieldValue("created", dates);
+              // }}
               disabledDate={(current) => futureDate(current)}
             />
           </Form.Item>

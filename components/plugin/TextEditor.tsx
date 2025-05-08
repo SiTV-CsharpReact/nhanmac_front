@@ -1,3 +1,4 @@
+import { env } from '@/config/env';
 import { Editor } from '@tinymce/tinymce-react';
 // import { env } from '../../../configs/Config';
 // import axios from 'axios';
@@ -58,7 +59,7 @@ const TextEditor = ({ editorData, setEditorData, disabled = false, toolbar = 'fu
         var input = document.createElement('input');
         input.setAttribute('type', 'file');
         input.setAttribute('accept', 'image/*');
-        var url = ' listAPI.uploadStraight';
+        var url = env.uploadUrl;
         var xhr = new XMLHttpRequest();
         var fd = new FormData();
         xhr.open('POST', url, true);
@@ -68,29 +69,38 @@ const TextEditor = ({ editorData, setEditorData, disabled = false, toolbar = 'fu
           var file = this.files[0];
           var reader = new FileReader();
           xhr.onload = function () {
-            if (xhr.readyState === 4 && xhr.status === 200) {
-              var url = xhr.responseText;
-              cb(url);
+            if (xhr.status === 200) {
+              const response = JSON.parse(xhr.responseText);
+              const imageUrl = response?.url || response?.data?.url; // tùy vào backend bạn trả
+              cb(imageUrl); // Phải là đường dẫn URL ảnh hợp lệ
             } else {
-            //   if (xhr.status === 401) {
-            //     const element = document.getElementsByClassName('tox-dialog-wrap')?.[0];
-            //     element.remove();
-
-            //     // buttonClose.remove()
-            //     Modal.error({
-            //       title: 'Hết phiên đăng nhập, vui lòng đăng nhập lại',
-            //       onOk() {
-            //         localStorage.clear();
-            //         removeCookie('userData');
-            //         removeCookie('access_token');
-            //         removeCookie('refresh_token');
-            //         // window.location.reload();
-            //         window.location.replace('/login');
-            //       },
-            //     });
-            //   }
+              console.log("Upload thất bại");
             }
           };
+          // xhr.onload = function () {
+          //   if (xhr.readyState === 4 && xhr.status === 200) {
+          //     var url = xhr.responseText;
+          //     cb(url);
+          //   } else {
+          //   //   if (xhr.status === 401) {
+          //   //     const element = document.getElementsByClassName('tox-dialog-wrap')?.[0];
+          //   //     element.remove();
+
+          //   //     // buttonClose.remove()
+          //   //     Modal.error({
+          //   //       title: 'Hết phiên đăng nhập, vui lòng đăng nhập lại',
+          //   //       onOk() {
+          //   //         localStorage.clear();
+          //   //         removeCookie('userData');
+          //   //         removeCookie('access_token');
+          //   //         removeCookie('refresh_token');
+          //   //         // window.location.reload();
+          //   //         window.location.replace('/login');
+          //   //       },
+          //   //     });
+          //   //   }
+          //   }
+          // };
 
           reader.onload = function () {
             var id = 'blobid' + new Date().getTime();
@@ -109,20 +119,38 @@ const TextEditor = ({ editorData, setEditorData, disabled = false, toolbar = 'fu
       },
       images_upload_handler: (blobInfo, success, failure) => {
         let data = new FormData();
-        var reader = new FileReader();
-        var url = 'env.setting_uploadFile + listAPI.uploadStraigh't;
         data.append('file', blobInfo.blob(), blobInfo.filename());
-        // axios
-        //   .post(url, data, {
-        //     headers: {
-        //       Authorization: 'Bearer' + ' ' + getLocalStorage('access_token'),
-        //     },
-        //   })
-        //   .then(function (res) {
-        //     success(res.data);
-        //   });
-        reader.readAsDataURL(blobInfo.blob());
+      
+        // Cần gửi FormData này bằng fetch hoặc axios
+        fetch(env.uploadUrl, {
+          method: 'POST',
+          body: data,
+        })
+          .then((res) => res.json())
+          .then((res) => {
+            const url = res?.url || res?.Data?.imageUrl; // kiểm tra lại
+            success(url); // Phải truyền URL ảnh thực sự
+          })
+          .catch(() => {
+            failure('Upload thất bại');
+          });
       },
+      // images_upload_handler: (blobInfo, success, failure) => {
+      //   let data = new FormData();
+      //   var reader = new FileReader();
+      //   var url = 'env.setting_uploadFile + listAPI.uploadStraigh't;
+      //   data.append('file', blobInfo.blob(), blobInfo.filename());
+      //   axios
+      //     .post(url, data, {
+      //       headers: {
+      //         Authorization: 'Bearer' + ' ' + getLocalStorage('access_token'),
+      //       },
+      //     })
+      //     .then(function (res) {
+      //       success(res.data);
+      //     });
+      //   reader.readAsDataURL(blobInfo.blob());
+      // },
       paste_as_text: true,
       paste_text_sticky: true,
       paste_auto_cleanup_on_paste: true,

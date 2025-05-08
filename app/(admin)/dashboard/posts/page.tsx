@@ -1,75 +1,160 @@
 'use client'
-import React, { useEffect, useState } from 'react';
-import { Table, Button, Space, Popconfirm, message, Tag, Tooltip } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Table, Button, Space, message } from 'antd';
+import Image from 'next/image';
+import TitlePageAdmin from '@/components/share/TitlePageAdmin';
 import { Post } from '@/types/contentItem';
+import { fetchPost } from '@/modules/admin/slideApi';
+import { updateSlideOrder } from '@/modules/admin/slideApi'; // API lưu thứ tự
+
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+
+import {
+  arrayMove,
+  SortableContext,
+  verticalListSortingStrategy,
+  useSortable,
+} from '@dnd-kit/sortable';
+
+import { CSS } from '@dnd-kit/utilities';
+
+interface SortableRowProps {
+  id: string;
+  children: React.ReactNode;
+}
+
+function SortableRow({ id, children }: SortableRowProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    backgroundColor: isDragging ? '#fafafa' : undefined,
+    boxShadow: isDragging ? '0 4px 8px rgba(0,0,0,0.15)' : undefined,
+    cursor: 'grab',
+  };
+
+  return (
+    <tr ref={setNodeRef} style={style} {...attributes} {...listeners}>
+      {children}
+    </tr>
+  );
+}
 
 const AdminPostManagement: React.FC = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
+  const fetchData = async () => {
     setLoading(true);
-    fetch('http://localhost:3600/api/contents')
-      .then(res => res.json())
-      .then(data => {
-        setPosts(data);
-      })
-      .catch(() => message.error('Không lấy được dữ liệu bài viết!'))
-      .finally(() => setLoading(false));
+    try {
+      const response = await fetchPost();
+      if (response.Code === 200 && response.Data) {
+        setPosts(response.Data);
+      } else {
+        setPosts([]);
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      setPosts([]);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchData();
   }, []);
 
   const onDelete = (id: number) => {
-    // Gọi API xóa nếu có, ở đây chỉ xóa trên UI
-    setPosts(prev => prev.filter(p => p.id !== id));
+    setPosts((prev) => prev.filter((p) => p.id !== id));
     message.success('Đã xóa bài viết!');
   };
 
+  const sensors = useSensors(useSensor(PointerSensor));
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (over && active.id !== over.id) {
+      const oldIndex = posts.findIndex((item) => String(item.id) === String(active.id));
+      const newIndex = posts.findIndex((item) => String(item.id) === String(over.id));
+      const newItems = arrayMove(posts, oldIndex, newIndex);
+      setPosts(newItems);
+      message.success('Sắp xếp thành công!');
+    }
+  };
+
+  // Hàm lưu thứ tự mới
+  const handleSaveOrder = async () => {
+    setLoading(true);
+    try {
+      // Lấy danh sách ID theo thứ tự mới
+      const orderedIds = posts.map(post => post.id);
+
+      // Gọi API
+      const response = await updateSlideOrder(orderedIds);
+
+      if (response.Code === 200) {
+        message.success('Lưu thứ tự thành công!');
+      } else {
+        message.error('Lỗi khi lưu thứ tự: ' + response.Message);
+      }
+    } catch (error: any) {
+      console.error('Lỗi khi gọi API lưu thứ tự:', error);
+      message.error('Lỗi khi lưu thứ tự: ' + error.message);
+    }
+    setLoading(false);
+  };
+
   const columns = [
+    {
+      title: 'Sắp xếp',
+      dataIndex: 'sort',
+      width: 90,
+      align: 'center',
+      render: () =>  <span
+      style={{
+        cursor: 'grab',
+        fontSize: 18,
+        userSelect: 'none',
+        lineHeight: 1,
+        display: 'inline-block',
+        padding: '0 4px',
+      }}
+      aria-label="Kéo thả"
+      title="Kéo thả"
+    >
+      &#8942;&#8942;
+    </span>,
+    },
     { title: 'ID', dataIndex: 'id', key: 'id', width: 60 },
     { title: 'Tiêu đề', dataIndex: 'title', key: 'title', ellipsis: true },
-    { title: 'Alias', dataIndex: 'alias', key: 'alias', ellipsis: true },
     {
-        title: 'Danh mục',
-        dataIndex: 'metakey',
-        key: 'metakey',
-        width: 200,
-        ellipsis: true, // giúp ẩn text dài trong cell
-       render: (text: string) => {
-  const tags = text ? text.split('|').map(t => t.trim()) : [];
-  const maxTagCount = 3;
-  const displayTags = tags.slice(0, maxTagCount);
-  const moreCount = tags.length - maxTagCount;
-
-  return (
-    <Tooltip title={text}>
-      <div
-        style={{
-          maxHeight: 48,
-          overflow: 'hidden',
-          whiteSpace: 'normal',
-        }}
-      >
-        {displayTags.map((tag, idx) => (
-          <Tag color="blue" key={idx} style={{ marginBottom: 4 }}>
-            {tag}
-          </Tag>
-        ))}
-        {moreCount > 0 && <Tag>+{moreCount} thêm</Tag>}
-      </div>
-    </Tooltip>
-  );
-}
-
-      }
-,      
-    { title: 'Trạng thái', dataIndex: 'state', key: 'state', width: 100,
-      render: (state: number) => (
-        <Tag color={state === 1 ? 'green' : 'red'}>
-          {state === 1 ? 'Hiển thị' : 'Ẩn'}
-        </Tag>
-      ),
+      title: 'Ảnh',
+      dataIndex: 'urls',
+      key: 'alias',
+      render: (_: any) => <Image src={_} width={100} height={50} alt="" />,
     },
-    { title: 'Ngày tạo', dataIndex: 'created', key: 'created', width: 160 },
+    {
+      title: 'Chú thích ảnh',
+      dataIndex: 'image_desc',
+      key: 'image_desc',
+      width: 200,
+    },
+    { title: 'Ngày tạo', dataIndex: 'created', key: 'created', width: 300 },
     {
       title: 'Hành động',
       key: 'action',
@@ -77,33 +162,59 @@ const AdminPostManagement: React.FC = () => {
       render: (_: any, record: Post) => (
         <Space>
           <Button type="link">Sửa</Button>
-          <Popconfirm
-            title="Bạn có chắc muốn xóa?"
-            onConfirm={() => onDelete(record.id)}
-            okText="Có"
-            cancelText="Không"
-          >
-            <Button type="link" danger>Xóa</Button>
-          </Popconfirm>
+          <Button type="link" danger onClick={() => onDelete(record.id)}>
+            Xóa
+          </Button>
         </Space>
       ),
     },
   ];
 
+  // Tạo body wrapper để dùng SortableContext
+  const DraggableContainer = (props: any) => {
+    return (
+      <SortableContext items={posts.map((item) => String(item.id))} strategy={verticalListSortingStrategy}>
+        <tbody {...props} />
+      </SortableContext>
+    );
+  };
+
+  // Tạo row wrapper để dùng useSortable
+  const DraggableBodyRow = (props: any) => {
+    const { 'data-row-key': rowKey, children, ...restProps } = props;
+    return (
+      <SortableRow id={String(rowKey)}>
+        {children}
+      </SortableRow>
+    );
+  };
+
   return (
-    <div style={{ padding: 24 }}>
-      <h2>Quản trị bài viết</h2>
-      <Button type="primary" style={{ marginBottom: 16 }}>
-        Thêm bài viết mới
-      </Button>
-      <Table
-        rowKey="id"
-        columns={columns}
-        dataSource={posts}
-        loading={loading}
-        pagination={{ pageSize: 10 }}
-        scroll={{ x: true }}
-      />
+    <div className="px-3">
+      <div className="p-2 bg-white rounded flex justify-between items-center">
+        <TitlePageAdmin text={'Quản lý slide'} />
+        <Button type="primary" onClick={handleSaveOrder} loading={loading}>
+          Lưu thứ tự
+        </Button>
+      </div>
+
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+        <Table
+          className="mt-3"
+          rowKey="id"
+          columns={columns}
+          dataSource={posts}
+          loading={loading}
+          pagination={false}
+          scroll={{ x: true }}
+          components={{
+            body: {
+              wrapper: DraggableContainer,
+              row: DraggableBodyRow,
+            },
+          }}
+        />
+      </DndContext>
     </div>
   );
 };

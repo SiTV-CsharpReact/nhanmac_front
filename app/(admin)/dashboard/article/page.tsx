@@ -4,8 +4,7 @@ import { Table, Button, Tag, Tooltip, Form, Modal, notification, Space } from "a
 import type { ColumnsType } from "antd/es/table";
 import { dateFormat, statusXB } from "@/config/config";
 import { formatMoney, getConstantLabel, getTagColor } from "@/utils/util";
-// import moment from "moment";
-import dayjs from'dayjs';
+import dayjs from 'dayjs';
 import { FileSearchOutlined, PlusCircleOutlined } from "@ant-design/icons";
 import { DeleteIcon, EditIcon } from "@/components/icons/Icons";
 import SearchComponent from "./components/SearchComponent";
@@ -14,28 +13,8 @@ import { Post } from "@/types/contentItem";
 import CustomModal from "@/components/share/CustomModal";
 import ContentArticle from "./components/ContentArticle";
 import ViewArticle from "./components/ViewArticle";
-import { categoryApi } from "@/modules/admin/categoryApi";
-import TitlePage from "@/components/share/TitlePage";
 import TitlePageAdmin from "@/components/share/TitlePageAdmin";
-import { ApiResponse } from "@/types/apiResponse";
-import { useRouter } from "next/navigation";
 import type { TablePaginationConfig } from "antd/es/table";
-
-interface CustomRowProps {
-  children: React.ReactNode;
-  onClick?: () => void;
-}
-
-function CustomRow({ children, onClick }: CustomRowProps) {
-  return (
-    <tr
-      onClick={onClick}
-      className="cursor-pointer hover:bg-gray-50 transition-colors"
-    >
-      {children}
-    </tr>
-  );
-}
 
 interface TableParams {
   pagination?: TablePaginationConfig;
@@ -86,10 +65,6 @@ const Page: React.FC = () => {
       pageSize: 10,
     },
   });
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedId, setSelectedId] = useState<number | null>(null);
-  const router = useRouter();
-
   // Reset form khi mở modal
   useEffect(() => {
     if (isSttModal?.openModal) {
@@ -111,9 +86,9 @@ const Page: React.FC = () => {
         endTime: created[1].format(dateFormat),
         page: tableParams.pagination?.current ? tableParams.pagination.current - 1 : 0,
         pageSize: tableParams.pagination?.pageSize,
-        state:state,
-        alias:alias,
-        keyword:keyword
+        state: state,
+        alias: alias,
+        keyword: keyword
       });
 
       if (response.Code === 200 && response.Data) {
@@ -124,10 +99,10 @@ const Page: React.FC = () => {
         }));
         setData(formattedData);
         setTotalPage(response.Data?.total)
-      
+
       } else {
         setData([]);
-       
+
       }
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -142,13 +117,13 @@ const Page: React.FC = () => {
       const result = await fetchContentId(id);
       if (result.Code === 200) {
         setDataDetail(result.Data);
-        console.log(dataDetail)
+
       }
     } catch (error) {
       // Error đã được xử lý trong API
     }
   };
-  
+
   // Hàm xóa bài viết
   const handleDeleteContent = async (id: number) => {
     if (!window.confirm("Bạn có chắc chắn muốn xóa bài viết này?")) return;
@@ -172,7 +147,11 @@ const Page: React.FC = () => {
 
   useEffect(() => {
     // Chỉ gọi API khi typeModal là 2 (chỉnh sửa) và có idContent
-    if (isSttModal?.openModal && (isSttModal?.typeModal === 0 || isSttModal?.typeModal === 2) && isSttModal?.idContent) {
+    if (
+      isSttModal?.openModal &&
+      isSttModal?.idContent &&
+      (isSttModal?.typeModal === 0 || isSttModal?.typeModal === 2)
+    ) {
       fetchDetail(isSttModal.idContent);
     }
   }, [isSttModal?.openModal, isSttModal?.idContent, isSttModal?.typeModal]);
@@ -181,13 +160,13 @@ const Page: React.FC = () => {
     {
       title: "#",
       dataIndex: "id",
-      width:70
+      width: 70
     },
     {
 
       title: "Trạng thái",
       dataIndex: "state",
-      width:120,
+      width: 120,
       render: (text: string) => {
         return (
           <Tag color={getTagColor(statusXB, text)}>
@@ -205,7 +184,7 @@ const Page: React.FC = () => {
           {dayjs(text).format("DD/MM/YYYY")}
         </span>
       ),
-      width:130
+      width: 130
     },
     {
       title: "Tiêu đề",
@@ -221,7 +200,6 @@ const Page: React.FC = () => {
     {
       title: "Thao tác",
       width: 90,
-      fixed: "right",
       render: (_, record) => (
         <div className="flex gap-5 cursor-pointer">
           <Tooltip title="Xem">
@@ -236,15 +214,15 @@ const Page: React.FC = () => {
               }
             />
           </Tooltip>
-          <div onClick={() => 
+          <div onClick={() =>
             setIsSttModal({
               idContent: record?.id,
               typeModal: 2,
               openModal: true,
             })
           }>
-          <EditIcon 
-           />
+            <EditIcon
+            />
           </div>
           <Tooltip title="Xóa">
             <DeleteIcon onClick={() => handleDeleteContent(record.id)} />
@@ -261,28 +239,20 @@ const Page: React.FC = () => {
     });
   };
 
- const handleEdit = (id: number) => {
-    setSelectedId(id);
-    setIsModalOpen(true);
-  };
-
-  // Thay thế console.log đơn giản bằng cách log chi tiết hơn
- 
-
   return (
     <div className="mx-4  w-full">
-      <div className="bg-white">
-      <TitlePageAdmin text={'Quản lý bài viết'}/>
-      <SearchComponent
-        setOnReload={() => setOnReload(prev => !prev)}
-        form={form}
-        setFixedParams={setFixedParams}
-        productTypeOptions={statusXB}
-        // showType={false}
-        setOnResetFilter={setOnResetFilter}
-      />
+      <div className="bg-white pt-2">
+        <TitlePageAdmin text={'Quản lý bài viết'} />
+        <SearchComponent
+          setOnReload={() => setOnReload(prev => !prev)}
+          form={form}
+          setFixedParams={setFixedParams}
+          productTypeOptions={statusXB}
+          // showType={false}
+          setOnResetFilter={setOnResetFilter}
+        />
       </div>
-      
+
       <div className="mt-5 bg-white rounded">
         <div className="flex justify-between pt-4 px-4">
           <div className="flex gap-2 text-muted">
@@ -293,10 +263,10 @@ const Page: React.FC = () => {
             {/* <div>Tổng bài viết chưa duyệt: </div> */}
           </div>
           <div className="pb-2">
-            <Button icon={<PlusCircleOutlined />} onClick={()=>setIsSttModal({ typeModal: 1, openModal: true })}>
-              Tạo mới 
+            <Button icon={<PlusCircleOutlined />} onClick={() => setIsSttModal({ typeModal: 1, openModal: true })}>
+              Tạo mới
             </Button>
-          
+
           </div>
         </div>
         <Table
@@ -313,20 +283,11 @@ const Page: React.FC = () => {
           loading={loading}
           onChange={handleTableChange}
           rowKey="id"
-          components={{
-            body: {
-              row: (props: any) => (
-                <CustomRow onClick={() => handleEdit(props['data-row-key'])}>
-                  {props.children}
-                </CustomRow>
-              ),
-            },
-          }}
+          className="px-4"
         />
         <CustomModal
-          header={`${
-            isSttModal?.typeModal == 0 ? `Chi tiết` : isSttModal?.typeModal == 1? `Thêm mới`:`Chỉnh sửa`
-          } bài viết`}
+          header={`${isSttModal?.typeModal == 0 ? `Chi tiết` : isSttModal?.typeModal == 1 ? `Thêm mới` : `Chỉnh sửa`
+            } bài viết`}
           onCancel={() => setIsSttModal({ typeModal: 0, openModal: false })} // Xử lý đóng modal
           open={isSttModal?.openModal}
           width={1200}
@@ -340,6 +301,7 @@ const Page: React.FC = () => {
                   setTypeModal={setIsSttModal}
                   data={dataDetail}
                   reset={resetForm}
+                  setOnReload={() => setOnReload(prev => !prev)}
                 />
               )}
             </>

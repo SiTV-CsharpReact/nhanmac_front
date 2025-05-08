@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import 'antd/dist/reset.css'; // Nếu dùng Ant Design v5+
 import "../globals.css";
 import ScrollToTop from "@/components/share/ScrollToTop";
 import HeaderAdmin from "@/components/share/HeaderAdmin";

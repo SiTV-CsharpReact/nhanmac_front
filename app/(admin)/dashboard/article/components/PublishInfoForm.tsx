@@ -2,11 +2,12 @@ import React from "react";
 import { Form, DatePicker, TimePicker, Select, Collapse, Tooltip } from "antd";
 import { CalendarOutlined, InfoCircleOutlined } from "@ant-design/icons";
 import { useCategories } from "@/hooks/useCategories";
+import dayjs from "dayjs";
 
 const { Option } = Select;
 const { Panel } = Collapse;
 
-export default function PublishInfoForm({ initialValues }) {
+export default function PublishInfoForm() {
   const { selectOptions, loading } = useCategories();
   return (
     <Collapse defaultActiveKey={['1']} style={{ marginBottom: 14 }}>
@@ -22,32 +23,18 @@ export default function PublishInfoForm({ initialValues }) {
         {/* KHÔNG dùng <Form> ở đây, chỉ dùng Form.Item */}
         <Form.Item
           label="Ngày giờ xuất bản"
-          name="publishDate"
-          // rules={[{ required: true, message: "Chọn ngày xuất bản!" }]}
+          name="publish_up"
+        // rules={[{ required: true, message: "Chọn ngày xuất bản!" }]}
         >
           <DatePicker
-            format="DD/MM/YYYY"
+            showTime={{ format: 'HH:mm:ss' }} // Thêm dòng này để chọn giờ:phút
+            format="DD/MM/YYYY HH:mm:ss"      // Định dạng hiển thị cả ngày và giờ
             style={{ width: "100%" }}
-            placeholder="Chọn ngày xuất bản"
+            placeholder="Chọn ngày giờ xuất bản"
+            defaultValue={dayjs()}
           />
         </Form.Item>
 
-        <Form.Item
-          label="Chọn giờ thủ công"
-          name="publishTime"
-          // rules={[{ required: true, message: "Chọn giờ xuất bản!" }]}
-          tooltip={{
-            title: "Chọn giờ xuất bản bài viết",
-            icon: <InfoCircleOutlined />,
-          }}
-        >
-          <TimePicker
-            use12Hours
-            format="h:mm:ss A"
-            style={{ width: "100%" }}
-            placeholder="Chọn giờ xuất bản"
-          />
-        </Form.Item>
         <Form.Item name="catid" label="Chuyên mục:">
           <Select
             showSearch
