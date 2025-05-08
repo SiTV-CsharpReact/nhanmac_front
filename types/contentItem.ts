@@ -14,3 +14,7 @@ export interface Post {
     catid: number;
     // ... các trường khác nếu có
   }
+export interface ListPost{
+  list:Post[];
+  total:number
+}

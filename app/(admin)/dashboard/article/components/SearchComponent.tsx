@@ -20,7 +20,7 @@ interface SearchComponentProps {
   form: any;
   setFixedParams: (params: any) => void;
   setOnResetFilter?: (value: boolean) => void;
-  productTypeOptions: { label: string; value: number,color:string }[];
+  productTypeOptions: { label: string; value: number; color: string }[];
 }
 const { Option } = Select;
 const SearchComponent: React.FC<SearchComponentProps> = ({
@@ -51,30 +51,27 @@ const SearchComponent: React.FC<SearchComponentProps> = ({
   }, []);
 
   const search = async () => {
-   
-      const values = await form.validateFields();
-      const { created, state, alias, keyword } = values;
-  
-      if (
-        Array.isArray(created) &&
-        created.length === 2 &&
-        dayjs.isDayjs(created[0]) &&
-        dayjs.isDayjs(created[1])
-      ) {
-        setFixedParams({
-          createdFrom: created[0].format(dateFormat),
-          createdTo: created[1].format(dateFormat),
-          state,
-          alias,
-          keyword,
-        });
-        setOnReload && setOnReload(true);
-      } else {
-        message.error("Giá trị ngày không hợp lệ");
-      }
-   
+    const values = await form.validateFields();
+    const { created, state, alias, keyword } = values;
+
+    if (
+      Array.isArray(created) &&
+      created.length === 2 &&
+      dayjs.isDayjs(created[0]) &&
+      dayjs.isDayjs(created[1])
+    ) {
+      setFixedParams({
+        createdFrom: created[0].format(dateFormat),
+        createdTo: created[1].format(dateFormat),
+        state,
+        alias,
+        keyword,
+      });
+      setOnReload && setOnReload(true);
+    } else {
+      message.error("Giá trị ngày không hợp lệ");
+    }
   };
-  
 
   const resetFields = () => {
     form.resetFields();
@@ -94,19 +91,23 @@ const SearchComponent: React.FC<SearchComponentProps> = ({
               onChange={(dates) => {
                 // Cập nhật trường "created" trong form khi chọn ngày mới
                 form.setFieldValue("created", dates);
-          
+
                 // Nếu muốn tự động tìm kiếm luôn khi đổi ngày:
                 // Gọi hàm search() ở đây nếu muốn auto-search
                 // search();
               }}
-               disabledDate={(current) => futureDate(current)}
+              disabledDate={(current) => futureDate(current)}
             />
           </Form.Item>
         </div>
 
         <div style={{ width: "100%", maxWidth: "300px" }}>
           <Form.Item name="state" label="Trạng thái:">
-            <Select style={{ width: "100%" }} options={productTypeOptions}  allowClear />
+            <Select
+              style={{ width: "100%" }}
+              options={productTypeOptions}
+              allowClear
+            />
           </Form.Item>
         </div>
 
@@ -118,9 +119,11 @@ const SearchComponent: React.FC<SearchComponentProps> = ({
               placeholder="Chọn chuyên mục"
               options={selectOptions}
               filterOption={(input, option) =>
-                (option?.label as string).toLowerCase().includes(input.toLowerCase())
+                (option?.label as string)
+                  .toLowerCase()
+                  .includes(input.toLowerCase())
               }
-              style={{ width: '100%' }}
+              style={{ width: "100%" }}
               allowClear
             />
           </Form.Item>
@@ -148,14 +151,13 @@ const SearchComponent: React.FC<SearchComponentProps> = ({
           >
             Làm mới bộ lọc
           </Button>
-      
+
           <Button
             type="primary"
             onClick={search}
             style={{ width: "10rem" }}
             icon={<SearchOutlined />}
           >
-           
             Tìm kiếm
           </Button>
         </div>

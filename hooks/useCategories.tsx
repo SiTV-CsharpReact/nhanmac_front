@@ -12,7 +12,7 @@ export const useCategories = () => {
     const fetchData = async () => {
       try {
         const result = await categoryApi.getAll();
-        setCategories(result);
+        setCategories(result.Data);
       } catch (err: any) {
         setError(err);
       } finally {
@@ -27,7 +27,7 @@ export const useCategories = () => {
     () =>
       categories.map(cat => ({
         label: cat.title,
-        value: cat.alias,
+        value: cat.id,
       })),
     [categories]
   );

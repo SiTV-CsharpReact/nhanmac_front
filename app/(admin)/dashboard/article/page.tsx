@@ -20,25 +20,22 @@ import TitlePageAdmin from "@/components/share/TitlePageAdmin";
 import { ApiResponse } from "@/types/apiResponse";
 import { useRouter } from "next/navigation";
 import type { TablePaginationConfig } from "antd/es/table";
-import type { GetRowKey } from "antd/es/table/interface";
-import type { OnRow } from "antd/es/table/interface";
 
 interface CustomRowProps {
   children: React.ReactNode;
   onClick?: () => void;
-  className?: string;
 }
 
-const CustomRow: React.FC<CustomRowProps> = ({ children, onClick, className }) => {
+function CustomRow({ children, onClick }: CustomRowProps) {
   return (
     <tr
       onClick={onClick}
-      className={`cursor-pointer hover:bg-gray-50 transition-colors ${className || ''}`}
+      className="cursor-pointer hover:bg-gray-50 transition-colors"
     >
       {children}
     </tr>
   );
-};
+}
 
 interface TableParams {
   pagination?: TablePaginationConfig;
@@ -89,10 +86,6 @@ const Page: React.FC = () => {
       pageSize: 10,
     },
   });
-  const [searchText, setSearchText] = useState("");
-  const [selectedState, setSelectedState] = useState<number | undefined>(undefined);
-  const [startDate, setStartDate] = useState<string | undefined>(undefined);
-  const [endDate, setEndDate] = useState<string | undefined>(undefined);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const router = useRouter();
@@ -107,51 +100,38 @@ const Page: React.FC = () => {
 
   // Hàm fetch dữ liệu bằng fetch API
   const fetchData = async () => {
+
     setLoading(true);
+    const values = await form.validateFields();
+    const { created, state, alias, keyword } = values;
+
     try {
       const response = await fetchContent({
+        startTime: created[0].format(dateFormat),
+        endTime: created[1].format(dateFormat),
         page: tableParams.pagination?.current ? tableParams.pagination.current - 1 : 0,
         pageSize: tableParams.pagination?.pageSize,
-        keySearch: searchText,
-        state: selectedState,
-        startTime: startDate,
-        endTime: endDate,
+        state:state,
+        alias:alias,
+        keyword:keyword
       });
 
       if (response.Code === 200 && response.Data) {
-        const rawData = Array.isArray(response.Data) ? response.Data : [];
+        const rawData = Array.isArray(response.Data.list) ? response.Data.list : [];
         const formattedData = rawData.map((item) => ({
           ...item,
           key: item.id,
         }));
         setData(formattedData);
-        setTableParams({
-          ...tableParams,
-          pagination: {
-            ...tableParams.pagination,
-            total: response.Total || 0,
-          },
-        });
+        setTotalPage(response.Data?.total)
+      
       } else {
         setData([]);
-        setTableParams({
-          ...tableParams,
-          pagination: {
-            ...tableParams.pagination,
-            total: 0,
-          },
-        });
+       
       }
     } catch (error) {
       console.error("Error fetching data:", error);
       setData([]);
-      setTableParams({
-        ...tableParams,
-        pagination: {
-          ...tableParams.pagination,
-          total: 0,
-        },
-      });
     }
     setLoading(false);
   };
@@ -162,6 +142,7 @@ const Page: React.FC = () => {
       const result = await fetchContentId(id);
       if (result.Code === 200) {
         setDataDetail(result.Data);
+        console.log(dataDetail)
       }
     } catch (error) {
       // Error đã được xử lý trong API
@@ -187,11 +168,11 @@ const Page: React.FC = () => {
 
   useEffect(() => {
     fetchData();
-  }, [JSON.stringify(tableParams), searchText, selectedState, startDate, endDate]);
+  }, [onReload]);
 
   useEffect(() => {
     // Chỉ gọi API khi typeModal là 2 (chỉnh sửa) và có idContent
-    if (isSttModal?.openModal && isSttModal?.typeModal === 2 && isSttModal?.idContent) {
+    if (isSttModal?.openModal && (isSttModal?.typeModal === 0 || isSttModal?.typeModal === 2) && isSttModal?.idContent) {
       fetchDetail(isSttModal.idContent);
     }
   }, [isSttModal?.openModal, isSttModal?.idContent, isSttModal?.typeModal]);
@@ -200,12 +181,14 @@ const Page: React.FC = () => {
     {
       title: "#",
       dataIndex: "id",
+      width:70
     },
     {
+
       title: "Trạng thái",
       dataIndex: "state",
+      width:120,
       render: (text: string) => {
-        console.log(text);
         return (
           <Tag color={getTagColor(statusXB, text)}>
             {getConstantLabel(statusXB, text)}
@@ -216,12 +199,13 @@ const Page: React.FC = () => {
     },
     {
       title: "Ngày xuất bản",
-      dataIndex: "created_at",
+      dataIndex: "created",
       render: (text) => (
         <span className="font-semibold">
           {dayjs(text).format("DD/MM/YYYY")}
         </span>
       ),
+      width:130
     },
     {
       title: "Tiêu đề",
@@ -252,13 +236,16 @@ const Page: React.FC = () => {
               }
             />
           </Tooltip>
-          <EditIcon onClick={() => 
+          <div onClick={() => 
             setIsSttModal({
               idContent: record?.id,
               typeModal: 2,
               openModal: true,
             })
-          } />
+          }>
+          <EditIcon 
+           />
+          </div>
           <Tooltip title="Xóa">
             <DeleteIcon onClick={() => handleDeleteContent(record.id)} />
           </Tooltip>
@@ -274,60 +261,13 @@ const Page: React.FC = () => {
     });
   };
 
-  const handleSearch = (value: string) => {
-    setSearchText(value);
-    setTableParams({
-      ...tableParams,
-      pagination: {
-        ...tableParams.pagination,
-        current: 1,
-      },
-    });
-  };
-
-  const handleStateChange = (value: number) => {
-    setSelectedState(value);
-    setTableParams({
-      ...tableParams,
-      pagination: {
-        ...tableParams.pagination,
-        current: 1,
-      },
-    });
-  };
-
-  const handleDateChange = (dates: any) => {
-    if (dates) {
-      setStartDate(dates[0]?.startOf("day")?.format(dateFormat));
-      setEndDate(dates[1]?.endOf("day")?.format(dateFormat));
-    } else {
-      setStartDate(undefined);
-      setEndDate(undefined);
-    }
-    setTableParams({
-      ...tableParams,
-      pagination: {
-        ...tableParams.pagination,
-        current: 1,
-      },
-    });
-  };
-
-  const handleEdit = (id: number) => {
+ const handleEdit = (id: number) => {
     setSelectedId(id);
     setIsModalOpen(true);
   };
 
-  const handleAdd = () => {
-    setSelectedId(null);
-    setIsModalOpen(true);
-  };
-
-  const handleModalClose = () => {
-    setIsModalOpen(false);
-    setSelectedId(null);
-    fetchData();
-  };
+  // Thay thế console.log đơn giản bằng cách log chi tiết hơn
+ 
 
   return (
     <div className="mx-4  w-full">
@@ -348,11 +288,11 @@ const Page: React.FC = () => {
           <div className="flex gap-2 text-muted">
             <div>
               Tổng bài viết:{" "}
-              <span className="text-success">{formatMoney(totalPage, "")}</span>
+              <span className="text-success text-[#00b350] font-semibold text-italic">{formatMoney(totalPage, "")}</span>
             </div>
-            <div>Tổng bài viết chưa duyệt: </div>
+            {/* <div>Tổng bài viết chưa duyệt: </div> */}
           </div>
-          <div>
+          <div className="pb-2">
             <Button icon={<PlusCircleOutlined />} onClick={()=>setIsSttModal({ typeModal: 1, openModal: true })}>
               Tạo mới 
             </Button>
@@ -362,28 +302,25 @@ const Page: React.FC = () => {
         <Table
           columns={columns}
           dataSource={data}
-          pagination={tableParams.pagination}
+          pagination={{
+            ...pagination,
+            showTotal: (total, range) => {
+              const rangeNumber = range[1] - range[0] + 1;
+              return `Hiển thị ${rangeNumber} trên ${total} kết quả`;
+            },
+            showSizeChanger: true,
+          }}
           loading={loading}
           onChange={handleTableChange}
           rowKey="id"
-          onRow={(record: TableItem) => {
-            const rowProps: React.HTMLAttributes<HTMLTableRowElement> = {
-              onClick: () => handleEdit(record.id),
-              style: { cursor: 'pointer' }
-            };
-            return rowProps;
-          }}
           components={{
             body: {
-              row: (props: any) => {
-                const { children, ...restProps } = props;
-                return (
-                  <tr {...restProps} style={{ cursor: 'pointer' }}>
-                    {children}
-                  </tr>
-                );
-              }
-            }
+              row: (props: any) => (
+                <CustomRow onClick={() => handleEdit(props['data-row-key'])}>
+                  {props.children}
+                </CustomRow>
+              ),
+            },
           }}
         />
         <CustomModal
@@ -395,11 +332,12 @@ const Page: React.FC = () => {
           width={1200}
           children={
             <>
-              {isSttModal?.typeModal == 0 ? (
+              {isSttModal?.typeModal === 0 ? (
                 <ViewArticle data={dataDetail?.introtext} />
               ) : (
                 <ContentArticle
                   typeModal={isSttModal?.typeModal}
+                  setTypeModal={setIsSttModal}
                   data={dataDetail}
                   reset={resetForm}
                 />

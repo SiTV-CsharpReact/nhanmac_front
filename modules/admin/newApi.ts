@@ -1,9 +1,11 @@
 import { Post } from "@/types/contentItem";
+import { ApiResponse } from "@/types/apiResponse";
+import { env } from "@/config/env";
 
-// Lấy danh sách menu
-export async function fetchNewTopPosts(): Promise<Post[]> {
-    const res = await fetch("http://localhost:3600/api/news/top-posts");
-    if (!res.ok) throw new Error("Lỗi lấy danh sách menu");
-    return await res.json();
-  }
+// Lấy danh sách bài viết mới nhất
+export async function fetchNewTopPosts(): Promise<ApiResponse<Post[]>> {
+  const res = await fetch(`${env.apiUrl}/api/news/top-posts`);
+  if (!res.ok) throw new Error("Lỗi lấy danh sách bài viết");
+  return await res.json();
+}
   

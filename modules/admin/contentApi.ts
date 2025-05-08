@@ -1,5 +1,5 @@
 import { ApiResponse } from "@/types/apiResponse";
-import { Post } from "@/types/contentItem";
+import { ListPost, Post } from "@/types/contentItem";
 import { notification } from "antd";
 import { env } from "@/config/env";
 
@@ -15,7 +15,7 @@ interface FetchContentParams {
 }
 
 // Lấy danh sách bài viết
-export const fetchContent = async (params: FetchContentParams = {}): Promise<ApiResponse<Post[]>> => {
+export const fetchContent = async (params: FetchContentParams = {}): Promise<ApiResponse<ListPost[]>> => {
   try {
     const queryParams = new URLSearchParams();
     Object.entries(params).forEach(([key, value]) => {
@@ -25,7 +25,7 @@ export const fetchContent = async (params: FetchContentParams = {}): Promise<Api
     });
 
     const response = await fetch(`${env.apiUrl}/contents?${queryParams}`);
-    const data: ApiResponse<Post[]> = await response.json();
+    const data: ApiResponse<ListPost[]> = await response.json();
     
     if (data.Code !== 200) {
       throw new Error(data.Message || 'Có lỗi xảy ra');
@@ -161,6 +161,34 @@ export const deleteContent = async (id: number): Promise<ApiResponse<void>> => {
       notification.error({
         message: "Lỗi",
         description: error.message || "Không thể xóa bài viết",
+      });
+    }
+    throw error;
+  }
+};
+
+// Upload ảnh
+export const uploadImage = async (file: File): Promise<ApiResponse<{ imageUrl: string }>> => {
+  try {
+    const formData = new FormData();
+    formData.append("image", file);
+
+    const response = await fetch(env.uploadUrl, {
+      method: "POST",
+      body: formData,
+    });
+    const data: ApiResponse<{ imageUrl: string }> = await response.json();
+    
+    if (data.Code !== 200) {
+      throw new Error(data.Message || 'Có lỗi xảy ra');
+    }
+    
+    return data;
+  } catch (error: any) {
+    if (typeof window !== "undefined") {
+      notification.error({
+        message: "Lỗi",
+        description: error.message || "Không thể upload ảnh",
       });
     }
     throw error;

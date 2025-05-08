@@ -1,15 +1,17 @@
 import type { MenuItem } from "@/types/MenuItem";
+import { ApiResponse } from "@/types/apiResponse";
+import { env } from "@/config/env";
 
 // Lấy danh sách menu
-export async function fetchMenus(): Promise<MenuItem[]> {
-  const res = await fetch("http://localhost:3600/api/menu");
+export async function fetchMenus(): Promise<ApiResponse<MenuItem[]>> {
+  const res = await fetch(`${env.apiUrl}/api/menu`);
   if (!res.ok) throw new Error("Lỗi lấy danh sách menu");
   return await res.json();
 }
 
 // Thêm menu mới
-export async function addMenu(data: Omit<MenuItem, "id" | "children" | "key">) {
-  const res = await fetch("http://localhost:3600/api/menu/add", {
+export async function addMenu(data: Omit<MenuItem, "id" | "children" | "key">): Promise<ApiResponse<MenuItem>> {
+  const res = await fetch(`${env.apiUrl}/api/menu/add`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
@@ -22,8 +24,8 @@ export async function addMenu(data: Omit<MenuItem, "id" | "children" | "key">) {
 }
 
 // Sửa menu
-export async function editMenu(id: number, data: Omit<MenuItem, "id" | "children" | "key">) {
-  const res = await fetch(`http://localhost:3600/api/menu/edit/${id}`, {
+export async function editMenu(id: number, data: Omit<MenuItem, "id" | "children" | "key">): Promise<ApiResponse<MenuItem>> {
+  const res = await fetch(`${env.apiUrl}/api/menu/edit/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
@@ -36,8 +38,8 @@ export async function editMenu(id: number, data: Omit<MenuItem, "id" | "children
 }
 
 // Xóa menu
-export async function deleteMenu(id: number) {
-  const res = await fetch(`http://localhost:3600/api/menu/delete/${id}`, {
+export async function deleteMenu(id: number): Promise<ApiResponse<void>> {
+  const res = await fetch(`${env.apiUrl}/api/menu/delete/${id}`, {
     method: "DELETE",
   });
   if (!res.ok) {
