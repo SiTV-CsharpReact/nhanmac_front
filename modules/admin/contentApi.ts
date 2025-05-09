@@ -68,7 +68,12 @@ export const fetchContentId = async (id: number): Promise<ApiResponse<Post>> => 
 // Lấy bài viết theo alias
 export const fetchContentAlias = async (alias: string): Promise<ApiResponse<Post>> => {
   try {
-    const response = await fetch(`${env.apiUrl}/contents/alias/${alias}`);
+ 
+    const response = await fetch(`${env.apiUrl}/contents/alias/${alias}`,{
+      next: {
+        revalidate: 60, // Cache trong 60 giây
+      },
+  });
     const data: ApiResponse<Post> = await response.json();
     
     if (data.Code !== 200) {

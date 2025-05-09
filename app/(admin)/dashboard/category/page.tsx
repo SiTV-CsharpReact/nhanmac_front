@@ -1,11 +1,12 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Table, Button, Modal, Input, Select, Dropdown, Menu, message, Form } from "antd";
+import { Table, Button, Modal, Input, Select, Dropdown, Menu, message, Form, Tooltip } from "antd";
 import { MoreOutlined, PlusOutlined } from "@ant-design/icons";
 import { categoryApi } from '@/modules/admin/categoryApi';
 import { Category } from "@/types/categoryItem";
 import { debounce } from 'lodash';
 import TitlePageAdmin from "@/components/share/TitlePageAdmin";
+import { DeleteIcon, EditIcon } from "@/components/icons/Icons";
 const { Option } = Select;
 // console.log(React.version);
 // Hàm chuyển mảng phẳng thành tree
@@ -51,13 +52,6 @@ export default function CategoryTable() {
       message.error(error.message);
     }
   };
-
-  const renderMenu = (category: Category) => (
-    <Menu>
-      <Menu.Item key="edit" onClick={() => showModal(category)}>Sửa</Menu.Item>
-      <Menu.Item key="delete" onClick={() => handleDelete(category.id)}>Xóa</Menu.Item>
-    </Menu>
-  );
 
   const showModal = (category?: Category) => {
     if (category) {
@@ -130,7 +124,7 @@ export default function CategoryTable() {
   };
 
   const columns = [
-    { title: "ID", dataIndex: "id", key: "id", },
+    { title: "ID", dataIndex: "id", key: "id",align: 'center',  width: 100, },
     { title: "Tiêu đề", dataIndex: "title", key: "title" },
     { title: "Alias", dataIndex: "alias", key: "alias" },
     {
@@ -140,13 +134,19 @@ export default function CategoryTable() {
       render: (published: number) => (published === 1 ? "Đã xuất bản" : "Chưa xuất bản"),
     },
     {
-      title: "",
+      title: "Thao tác",
       key: "action",
       width: 80,
       render: (_: any, record: Category) => (
-        <Dropdown overlay={renderMenu(record)} trigger={["click"]}>
-          <Button icon={<MoreOutlined />} />
-        </Dropdown>
+       <div className="flex gap-5">
+          <div onClick={() => showModal(record)}>
+            <EditIcon
+            />
+          </div>
+          <Tooltip title="Xóa">
+            <DeleteIcon  onClick={() => handleDelete(record.id)} />
+          </Tooltip>
+       </div>
       ),
     },
   ];
@@ -181,12 +181,17 @@ export default function CategoryTable() {
       </div>
 
       <Table
+        style={{
+          width:900,
+          marginTop:20
+        }}
         columns={columns}
         dataSource={buildTree(categories)}
         pagination={false}
         expandable={{ expandRowByClick: true, indentSize: 24 }}
         bordered
         rowClassName={rowClassName}
+         className="[&_.ant-table-cell]:!p-2"
       />
 
       <Modal
@@ -199,7 +204,7 @@ export default function CategoryTable() {
         footer={null}
         onCancel={() => setIsModalOpen(false)}
         centered
-        styles={{ body: { paddingBottom: 8 } }}
+        styles={{ body: { paddingBottom: 8,padding:16 } }}
       >
         <Form form={form} layout="vertical">
           <Form.Item

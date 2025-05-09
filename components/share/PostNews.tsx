@@ -1,6 +1,8 @@
 import { Post } from "@/types/contentItem";
 import { fetchNewTopPosts } from "@/modules/admin/newApi";
 import Image from "next/image";
+import { fetchSlides } from "@/modules/client/hompageApi";
+import Link from "next/link";
 
 // Component con cho Social Icon (tách riêng để tái sử dụng)
 const SocialIcon = ({
@@ -98,7 +100,9 @@ export default async function PostNews() {
     // Fetch data trực tiếp trên server
     let posts: Post[] = [];
     try {
-        posts = await fetchNewTopPosts();
+        // posts = await fetchNewTopPosts();
+        const res = await fetchSlides();
+        posts = res.Data;
     } catch (error) {
         console.error("Lỗi khi tải bài viết:", error);
         // Có thể redirect hoặc trả về UI fallback tại đây
@@ -117,9 +121,10 @@ export default async function PostNews() {
                 ) : (
                     <ul>
                         {posts.map((post) => (
+                             <Link href={`/products/${post.alias}`} title={post.title}>
                             <li key={post.id} className="flex bg-white gap-2 mb-3 hover:bg-gray-100 rounded p-2">
                                 <Image
-                                    src="/images/post.jpg"
+                                    src={post?.urls ?? "/images/Carousel.png"}
                                     width={80}
                                     height={60}
                                     alt={`Ảnh minh họa cho bài viết ${post.title}`}
@@ -127,14 +132,16 @@ export default async function PostNews() {
                                     priority={false}
                                     loading="lazy"
                                 />
-                                <a
+                                
+                                <span
                                     href={`/bai-viet/${post.id}`}
                                     className="m-4 text-base line-clamp-2"
                                     aria-label={`Đọc bài viết: ${post.title}`}
                                 >
                                     {post.title}
-                                </a>
+                                </span>
                             </li>
+                            </Link>
                         ))}
                     </ul>
                 )}

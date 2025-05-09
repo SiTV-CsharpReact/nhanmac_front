@@ -2,7 +2,7 @@ import Image from "next/image";
 import { Carousel } from "antd";
 import CountUpNumber from "@/components/share/CountUpNumber";
 import styles from "./Carousel.module.css"; //
-
+import SlideImage from "./slide/SlideImage";
 
 const testimonials = [
   {
@@ -23,30 +23,6 @@ const testimonials = [
     author: "Mrs. Lê Thị Cúc - HTX Nông Sản",
     company: "HTX Nông Sản 123",
   },
-];
-
-const items = [
-  {
-    id: 1,
-    title: "Tem nhôm làm logo nhãn mác tag name plate máy móc",
-    img: "/images/item-1.png",
-  },
-  {
-    id: 2,
-    title: "Tem nhôm làm logo nhãn mác tag name plate máy móc",
-    img: "/images/item-2.png",
-  },
-  {
-    id: 3,
-    title: "Tem nhôm làm logo nhãn mác tag name plate máy móc",
-    img: "/images/item-1.png",
-  },
-  {
-    id: 4,
-    title: "Tem nhôm làm logo nhãn mác tag name plate máy móc",
-    img: "/images/item-2.png",
-  },
-  // … thêm bao nhiêu mục tùy ý
 ];
 
 const sections = [{ title: "TEM KIM LOẠI" }];
@@ -99,47 +75,7 @@ export default function Home() {
     <main className="m-auto grid place-items-center">
       {/* 12 cột, gap tuỳ ý */}
       <div className="container my-4">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-          <div className="lg:col-span-7">
-            <Carousel arrows infinite={false} className="mb-2.5">
-              {[1, 2, 3, 4].map((num) => (
-                <div key={num}>
-                  <Image
-                    src="/images/Carousel.png"
-                    width={764}
-                    height={515}
-                    alt=""
-                    style={{ height: "515px", objectFit: "cover" }}
-                  />
-                </div>
-              ))}
-            </Carousel>
-          </div>
-
-          {/* 3/12 = 25 % */}
-          <div className="lg:col-span-5">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 h-full overflow-auto pb-2.5">
-              {items.map((item) => (
-                <article
-                  key={item.id}
-                  className="flex flex-col h-full cursor-pointer  bg-white shadow-custom hover:shadow--md transition overflow-hidden"
-                >
-                  <Image
-                    src={item.img}
-                    alt={item.title}
-                    width={300}
-                    height={160}
-                    className="h-40 w-full object-cover"
-                    priority
-                  />
-                  <h3 className="p-3 text-sm font-normal leading-5 line-clamp-2 text-[#2F80ED]">
-                    {item.title}
-                  </h3>
-                </article>
-              ))}
-            </div>
-          </div>
-        </div>
+        <SlideImage/>
         <div className="text-center text-[28px] mt-8 font-semibold md:text-[32px]">
           <span>Bạn đang tìm đơn vị sản xuất tem nhãn uy tín?</span>
         </div>
@@ -182,9 +118,6 @@ export default function Home() {
                         duration={2}
                       />
                     </span>
-                    {/* <span className="absolute text-[19px] font-bold left-[61px] top-3.5">
-                      +
-                    </span> */}
                   </div>
                 </div>
               </div>

@@ -6,19 +6,6 @@ import { useRouter } from 'next/navigation';
 import { fetchMenus } from "@/modules/client/menuApi";
 import { notification } from 'antd';
 import { MenuItem } from '@/types/MenuItem';
-// interface MenuItem {
-//     id: number;
-//     type: string;
-//     name: string;
-//     alias: string;
-//     link: string;
-//     menutype: string;
-//     published: number;
-//     parent: number;
-//     menu_type_title: string;
-//     ordering: number;
-//     children?: MenuItem[];
-// }
 
 export default function MenuTest() {
     const [menus, setMenus] = useState<MenuItem[]>([]);
@@ -42,7 +29,7 @@ export default function MenuTest() {
         // setLoading(true);
         try {
             const data = await fetchMenus();
-            const sorted = data.sort((a, b) => a.ordering - b.ordering);
+            const sorted = data.Data.sort((a, b) => a.ordering - b.ordering);
             const tree = buildTree(sorted);
             setMenus(tree);
         } catch (e: any) {
@@ -89,12 +76,10 @@ export default function MenuTest() {
                     width={56}
                     height={20}
                     alt="Logo"
-                    className="mx-auto md:mx-0"
+                    className="mx-auto md:mx-0 !mr-[5%]"
                 />
                 {items.map(item => {
-                    if (item?.menutype === 'username'  || item?.parent !== 0 || item?.published !== 1) return null;
-
-
+                    // if (item?.parent !== 0 || item?.published !== 1) return null;
                     return (
                         <li
                             key={item.id}

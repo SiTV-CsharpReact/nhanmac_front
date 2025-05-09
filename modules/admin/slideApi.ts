@@ -87,26 +87,6 @@ export const fetchContentId = async (id: number): Promise<ApiResponse<Post>> => 
 };
 
 // Lấy bài viết theo alias
-export const fetchContentAlias = async (alias: string): Promise<ApiResponse<Post>> => {
-  try {
-    const response = await fetch(`${env.apiUrl}/contents/alias/${alias}`);
-    const data: ApiResponse<Post> = await response.json();
-    
-    if (data.Code !== 200) {
-      throw new Error(data.Message || 'Có lỗi xảy ra');
-    }
-    
-    return data;
-  } catch (error: any) {
-    if (typeof window !== "undefined") {
-      notification.error({
-        message: "Lỗi",
-        description: error.message || "Không thể lấy bài viết",
-      });
-    }
-    throw error;
-  }
-};
 
 // Tạo bài viết mới
 // export const createContent = async (content: Partial<Post>): Promise<ApiResponse<Post>> => {
@@ -139,7 +119,7 @@ export const fetchContentAlias = async (alias: string): Promise<ApiResponse<Post
 // Cập nhật bài viết
 export const updateContent = async (id: number, content: Partial<Post>): Promise<ApiResponse<Post>> => {
   try {
-    const response = await fetch(`${env.apiUrl}/slides/${id}`, {
+    const response = await fetch(`${env.apiUrl}/slides/edit/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',

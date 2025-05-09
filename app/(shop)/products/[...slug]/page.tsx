@@ -3,6 +3,7 @@ import TitlePage from "@/components/share/TitlePage";
 import { Post } from "@/types/contentItem";
 import { fetchContentAlias, fetchContentId } from "@/modules/admin/contentApi";
 import { Metadata, ResolvingMetadata } from "next";
+import { redirect } from "next/navigation";
 
 type Props = {
   params: { 
@@ -17,14 +18,26 @@ export async function generateMetadata(
 ): Promise<Metadata> {
   try {
     const [category = '', id = ''] = params.slug || [];
-    const decodedCategory = decodeURIComponent(category).replace(/-/g, ' ');
-    
+
+    // Gọi API lấy chi tiết nội dung
+    const res = await fetchContentAlias(category);
+    const post: Post = res?.Data;
+    // Nếu không có dữ liệu
+    if (!post) {
+      return {
+        title: "Sản phẩm không tồn tại",
+        description: "Không tìm thấy thông tin sản phẩm",
+      };
+    }
+
     return {
-      title: `${decodedCategory} | Sản phẩm ${id}`,
-      description: `Chi tiết sản phẩm ${decodedCategory} - Mã ${id}`,
+      title: post.title || `Sản phẩm ${id}`,
+      description: post.metadesc || `Chi tiết sản phẩm mã ${id}`,
+      keywords: post.metakey || '',
       openGraph: {
-        title: `${decodedCategory} | Thông tin sản phẩm`,
-        description: `Xem chi tiết sản phẩm ${decodedCategory}`,
+        title: post.title,
+        description: post.metadesc || '',
+        images: post.urls ? [post.urls] : undefined,
       },
     };
   } catch (error) {
@@ -37,24 +50,17 @@ export async function generateMetadata(
 }
 
 export default async function Page({ params }: Props) {
-  // Xử lý slug an toàn
-  const [category = '', id = ''] = params.slug || [];
-  const decodedCategory = decodeURIComponent(category).replace(/-/g, ' ');
+  const [category = '', rawId = ''] = params?.slug || [];
+  const id = rawId.replace(/\.html$/, ''); // 🔥 loại bỏ .html
+  console.log('id',id)
 
-  let post: Post | undefined;
+  const decodedCategory = decodeURIComponent(category).replace(/-/g, ' ');
+  let post: Post;
   try {
-    // Nên thay bằng API lấy theo slug hoặc id thực tế
-    post = await fetchContentAlias(category);
+    const res = await fetchContentAlias(id);
+    post = res.Data;
   } catch (error) {
-    console.error("Lỗi khi tải dữ liệu:", error);
-    return (
-      <div className="container py-10 text-center">
-        <h2 className="text-2xl font-bold text-red-500 mb-4">Lỗi khi tải dữ liệu sản phẩm</h2>
-        <a href="/products" className="text-blue-600 hover:underline">
-          Quay lại trang sản phẩm
-        </a>
-      </div>
-    );
+    redirect("/not-found")
   }
 
   return (

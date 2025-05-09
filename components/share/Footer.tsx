@@ -1,5 +1,5 @@
 // components/Footer.js
-'use client'
+
 import Image from "next/image";
 import FacebookPagePlugin from "../plugin/FaceBookPlugin";
 // import dynamic from "next/dynamic";

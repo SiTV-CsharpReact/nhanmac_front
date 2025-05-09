@@ -4,6 +4,7 @@ import Header from "@/components/share/Header";
 import RightMenu from "@/components/share/RightMenu";
 import Footer from "@/components/share/Footer";
 import ScrollToTop from "@/components/share/ScrollToTop";
+import StyledComponentsRegistry from "@/lib/AntdRegistry";
 
 export const metadata: Metadata = {
   title: "Nhãn mác xịn",
@@ -25,7 +26,7 @@ export default function RootLayout({
       <body >
         <Header />
         <RightMenu/>
-        {children}
+       {children}
         <ScrollToTop />
         <Footer/>
         {/* {children} */}
