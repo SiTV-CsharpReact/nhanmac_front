@@ -17,10 +17,24 @@ export async function generateMetadata(
   parent: ResolvingMetadata
 ): Promise<Metadata> {
   try {
-    const [category = '', id = ''] = params.slug || [];
+    const [category = '', rawId = ''] = params?.slug || [];
 
+    // Loại bỏ .html nếu có
+    const cleanSlug = category.replace(/\.html$/, '');
+  
+    // Tìm số ở cuối slug
+    const match = cleanSlug.match(/-(\d+)$/); // Ví dụ: ao-thun-123
+  
+    const id = match ? Number(match[1]) : null; // nếu có thì dùng số, không thì null
+    const alias = match ? null : cleanSlug;     // nếu không có số thì dùng alias
+    let res;
+    if (id !== null) {
+      res = await fetchContentId(id);
+    } else {
+      res = await fetchContentAlias(alias as string);
+    }
     // Gọi API lấy chi tiết nội dung
-    const res = await fetchContentAlias(category);
+     res = await fetchContentAlias(category);
     const post: Post = res?.Data;
     // Nếu không có dữ liệu
     if (!post) {
@@ -31,9 +45,9 @@ export async function generateMetadata(
     }
 
     return {
-      title: post.title || `Sản phẩm ${id}`,
-      description: post.metadesc || `Chi tiết sản phẩm mã ${id}`,
-      keywords: post.metakey || '',
+      title: post?.title || `Sản phẩm ${id}`,
+      description: post?.metadesc || `Chi tiết sản phẩm mã ${id}`,
+      keywords: post?.metakey || '',
       openGraph: {
         title: post.title,
         description: post.metadesc || '',
@@ -51,20 +65,37 @@ export async function generateMetadata(
 
 export default async function Page({ params }: Props) {
   const [category = '', rawId = ''] = params?.slug || [];
-  const id = rawId.replace(/\.html$/, ''); // 🔥 loại bỏ .html
-  console.log('id',id)
+
+  // Loại bỏ .html nếu có
+  const cleanSlug = category.replace(/\.html$/, '');
+
+  // Tìm số ở cuối slug
+  const match = cleanSlug.match(/-(\d+)$/); // Ví dụ: ao-thun-123
+
+  const id = match ? Number(match[1]) : null; // nếu có thì dùng số, không thì null
+  const alias = match ? null : cleanSlug;     // nếu không có số thì dùng alias
 
   const decodedCategory = decodeURIComponent(category).replace(/-/g, ' ');
+
   let post: Post;
   try {
-    const res = await fetchContentAlias(id);
+    let res;
+    if (id !== null) {
+      res = await fetchContentId(id);
+    } else {
+      res = await fetchContentAlias(alias as string);
+    }
+
     post = res.Data;
+    if (!post) {
+      redirect('/not-found');
+    }
   } catch (error) {
-    redirect("/not-found")
+    redirect('/not-found')
   }
 
   return (
-    <main className="m-auto grid place-items-center">
+    <main className="m-auto grid place-items-center" key={post?.id}>
       <div className="container mb-15">
         {/* Tiêu đề */}
         <TitlePage text={post?.title} />
@@ -79,8 +110,8 @@ export default async function Page({ params }: Props) {
                 className="prose max-w-none"
                 dangerouslySetInnerHTML={{ 
                   __html: post.introtext
-                    .replace(/<img/g, '<img loading="lazy" alt="' + decodedCategory + '"')
-                    .replace(/<a/g, '<a rel="nofollow"')
+                    // .replace(/<img/g, '<img loading="lazy" alt="' + decodedCategory + '"')
+                    // .replace(/<a/g, '<a rel="nofollow"')
                 }} 
               />
             ) : (
@@ -95,5 +126,6 @@ export default async function Page({ params }: Props) {
         </div>
       </div>
     </main>
+    
   );
 }

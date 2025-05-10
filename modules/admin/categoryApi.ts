@@ -1,5 +1,5 @@
 import { ApiResponse } from "@/types/apiResponse";
-import { Category } from "@/types/categoryItem";
+import { Categories, Category } from "@/types/categoryItem";
 import { env } from "@/config/env";
 // import { Post } from "@/types/contentItem";
 
@@ -8,8 +8,18 @@ import { env } from "@/config/env";
 const API_URL = `${env.apiUrl}/categories`;
 
 export const categoryApi = {
+  async getAllSection(): Promise<ApiResponse<Categories[]>> {
+    const res = await fetch(`${env.apiUrl}/categories/menu`);
+    if (!res.ok) throw new Error("Failed to fetch categories");
+    return await res.json();
+  },
+  async getParent(): Promise<ApiResponse<Category[]>> {
+    const res = await fetch(`${env.apiUrl}/categories/parent`);
+    if (!res.ok) throw new Error("Failed to fetch categories");
+    return await res.json();
+  },
   async getAll(): Promise<ApiResponse<Category[]>> {
-    const res = await fetch(API_URL);
+    const res = await fetch(`${env.apiUrl}/categories`);
     if (!res.ok) throw new Error("Failed to fetch categories");
     return await res.json();
   },

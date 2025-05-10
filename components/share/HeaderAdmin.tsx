@@ -1,12 +1,12 @@
 'use client';
 import { useRouter } from 'next/navigation';
-
+import Cookies from 'js-cookie';
 export default function HeaderAdmin() {
   const router = useRouter();
 
   const handleLogout = () => {
-    document.cookie = 'auth_token=; Max-Age=0; path=/';
-    router.push('/login');
+    Cookies.remove("access_token"); // Xóa token
+    router.push("/login");   
   };
 
   return (
@@ -16,7 +16,7 @@ export default function HeaderAdmin() {
         <span className="text-sm text-gray-600">Chào, Admin</span>
         <button
           onClick={handleLogout}
-          className="px-3 py-1 bg-red-500 text-white text-sm rounded hover:bg-red-600"
+          className="px-3 py-1 bg-red-500 !text-white text-sm rounded hover:bg-red-600"
         >
           Đăng xuất
         </button>

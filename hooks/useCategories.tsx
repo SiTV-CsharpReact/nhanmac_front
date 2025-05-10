@@ -11,7 +11,7 @@ export const useCategories = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const result = await categoryApi.getAll();
+        const result = await categoryApi.getParent();
         setCategories(result.Data);
       } catch (err: any) {
         setError(err);
@@ -23,14 +23,15 @@ export const useCategories = () => {
   }, []);
 
   // useMemo để chuẩn hóa cho Select AntD
-  const selectOptions = useMemo(
-    () =>
-      categories.map(cat => ({
+  const selectOptions = useMemo(() => {
+    return [
+      { label: '-- Không có --', value: 0 }, 
+      ...categories.map(cat => ({
         label: cat.title,
         value: cat.id,
       })),
-    [categories]
-  );
+    ];
+  }, [categories]);
 
   return { categories, selectOptions, loading, error };
 };

@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Table, Button, Tag, Tooltip, Form, Modal, notification, Space } from "antd";
+import { Table, Button, Tag, Tooltip, Form, Modal, notification, Space, Popconfirm } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { dateFormat, statusXB } from "@/config/config";
 import { formatMoney, getConstantLabel, getTagColor } from "@/utils/util";
@@ -15,7 +15,7 @@ import ContentArticle from "./components/ContentArticle";
 import ViewArticle from "./components/ViewArticle";
 import TitlePageAdmin from "@/components/share/TitlePageAdmin";
 import type { TablePaginationConfig } from "antd/es/table";
-
+import '@ant-design/v5-patch-for-react-19';
 interface TableParams {
   pagination?: TablePaginationConfig;
   sortField?: string;
@@ -31,7 +31,7 @@ const initialParams = {
   created: [dayjs().subtract(1, "days"), dayjs()], // ví dụ 'YYYY-MM-DD'
   pageNumber: 1,
   pageSize: 10,
-  state: undefined,
+  sectionid: undefined,
   keySearch: undefined,
 };
 interface StatusModal {
@@ -74,42 +74,46 @@ const Page: React.FC = () => {
   }, [isSttModal?.openModal]);
 
   // Hàm fetch dữ liệu bằng fetch API
-  const fetchData = async () => {
-
+  const fetchData = async (page = 1, pageSize = 10) => {
     setLoading(true);
     const values = await form.validateFields();
-    const { created, state, alias, keyword } = values;
-
+    const { created, state, sectionid, keyword } = values;
+  
     try {
       const response = await fetchContent({
         startTime: created[0].format(dateFormat),
         endTime: created[1].format(dateFormat),
-        page: tableParams.pagination?.current ? tableParams.pagination.current - 1 : 0,
-        pageSize: tableParams.pagination?.pageSize,
-        state: state,
-        alias: alias,
-        keyword: keyword
+        page: page,             // ✅ KHÔNG -1
+        pageSize: pageSize,
+        state,
+        sectionid,
+        keyword,
       });
-
+  
       if (response.Code === 200 && response.Data) {
         const rawData = Array.isArray(response.Data.list) ? response.Data.list : [];
-        const formattedData = rawData.map((item) => ({
-          ...item,
-          key: item.id,
-        }));
-        setData(formattedData);
-        setTotalPage(response.Data?.total)
-
+  
+        setData(
+          rawData.map((item) => ({ ...item, key: item.id }))
+        );
+        setTotalPage(response.Data?.total);
+        // ✅ cập nhật lại phân trang
+        setPagination({
+          current: page,
+          pageSize: pageSize,
+          total: response.Data?.total, // <-- cập nhật lại total cho Table
+        });
       } else {
         setData([]);
-
       }
     } catch (error) {
       console.error("Error fetching data:", error);
       setData([]);
     }
+  
     setLoading(false);
   };
+  
 
   // Hàm lấy chi tiết bài viết
   const fetchDetail = async (id: number) => {
@@ -126,7 +130,6 @@ const Page: React.FC = () => {
 
   // Hàm xóa bài viết
   const handleDeleteContent = async (id: number) => {
-    if (!window.confirm("Bạn có chắc chắn muốn xóa bài viết này?")) return;
     try {
       const result = await deleteContent(id);
       if (result.Code === 200) {
@@ -134,7 +137,7 @@ const Page: React.FC = () => {
           message: "Thành công",
           description: "Đã xóa bài viết thành công!",
         });
-        fetchData(); // Refresh lại danh sách sau khi xóa
+        setOnReload(true); // Refresh lại danh sách sau khi xóa
       }
     } catch (error) {
       // Error đã được xử lý trong API
@@ -160,7 +163,7 @@ const Page: React.FC = () => {
     {
       title: "#",
       dataIndex: "id",
-      width: 70
+      width: 60
     },
     {
 
@@ -199,7 +202,8 @@ const Page: React.FC = () => {
     },
     {
       title: "Thao tác",
-      width: 90,
+      width: 120,
+      fixed:'right',
       render: (_, record) => (
         <div className="flex gap-5 cursor-pointer">
           <Tooltip title="Xem">
@@ -214,7 +218,9 @@ const Page: React.FC = () => {
               }
             />
           </Tooltip>
-          <div onClick={() =>
+          <div
+          className="pt-1.5"
+          onClick={() =>
             setIsSttModal({
               idContent: record?.id,
               typeModal: 2,
@@ -225,18 +231,38 @@ const Page: React.FC = () => {
             />
           </div>
           <Tooltip title="Xóa">
-            <DeleteIcon onClick={() => handleDeleteContent(record.id)} />
+        <Popconfirm
+            title={`Bạn có chắc muốn xóa "${record.title}"?`}
+            onConfirm={() => {
+              handleDeleteContent(record.id);
+            }}
+
+            okText="Xóa"
+            cancelText="Hủy"
+          >
+            <Button
+            className="!pt-1"
+              type="text"
+              icon={<DeleteIcon className="text-red-500" />}
+              title="Xóa menu"
+              onClick={(e) => e.stopPropagation()} // Ngăn sự kiện lan ra ngoài khi bấm nút
+            />
+          </Popconfirm>
           </Tooltip>
+     
         </div>
       ),
     },
   ];
 
-  const handleTableChange = (newPagination: TablePaginationConfig) => {
-    setTableParams({
-      ...tableParams,
-      pagination: newPagination,
-    });
+  const handleTableChange = (pagination: TablePaginationConfig) => {
+    const current = pagination.current || 1;
+    const pageSize = pagination.pageSize || 10;
+  
+    setTableParams({ pagination });        // cập nhật local
+    setPagination({ current, pageSize, total: pagination.total || 0 }); // cập nhật pagination nếu cần
+  
+    fetchData(current, pageSize);          // ✅ gọi API lại với pageSize mới
   };
 
   return (
@@ -280,6 +306,7 @@ const Page: React.FC = () => {
             },
             showSizeChanger: true,
           }}
+          scroll={{ y: 500 }}
           loading={loading}
           onChange={handleTableChange}
           rowKey="id"

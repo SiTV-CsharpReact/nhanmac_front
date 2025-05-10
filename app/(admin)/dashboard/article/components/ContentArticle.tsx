@@ -210,9 +210,6 @@ const ContentArticle: React.FC<typeContentArticle> = ({
 
   useEffect(() => {
     if (data) {
-     
-      // const formattedDate = moment(data?.publish_up).format("DD/MM/YYYY HH:mm:ss");
-      console.log('dayjs:', dayjs(publish_up).isValid());
       form.setFieldsValue({
         title: data.title,
         // description: data.description,
@@ -220,6 +217,9 @@ const ContentArticle: React.FC<typeContentArticle> = ({
         content: data.introtext,
         catid:data.catid,
         publish_up: data.publish_up ? dayjs(data.publish_up) : null,
+        metakey:data.metakey,
+        metadesc:data.metadesc,
+        sectionid:data.sectionid
         // picture:'test'
         // Thêm các trường khác nếu cần
       });
@@ -357,9 +357,12 @@ const ContentArticle: React.FC<typeContentArticle> = ({
               />
             </Form.Item>
             
-              <Form.Item>
+              <Form.Item >
                 <Button type="primary" htmlType="submit">
                   {typeModal === 1 ? "Lưu bài viết" : "Cập nhật bài viết"}
+                </Button>
+                <Button type="default" htmlType="submit" className="!ml-3">
+               Lưu tạm thời
                 </Button>
               </Form.Item>
        
@@ -367,8 +370,8 @@ const ContentArticle: React.FC<typeContentArticle> = ({
           {/* Metadata bên phải */}
           {typeModal !== 0 && (
             <div style={{ flex: 1, minWidth: 300, maxWidth: 400 }}>
-              <PublishInfoForm initialValues={initialMetadata} />
-              <MetadataForm  initialValues={initialMetadata} />
+              <PublishInfoForm form={form} />
+              <MetadataForm   />
             </div>
           )}
         </div>

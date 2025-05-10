@@ -17,3 +17,12 @@ export interface Category {
     count?: number;
     params?: string;
   }
+  export interface Categories {
+    section_id: number;
+    section_title: string;
+    category_id: number;
+    category_title: string;
+    alias: string;
+    alias_parent: string;
+    parent_id: number;
+  }

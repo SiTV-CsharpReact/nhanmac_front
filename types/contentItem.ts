@@ -30,6 +30,7 @@ export interface Post {
   hits: number;
   metadata?: string | null;    // Có thể null
   image_desc?: string | null;  // Có thể null
+  content_title?:string
     // ... các trường khác nếu có
   }
 export interface ListPost{

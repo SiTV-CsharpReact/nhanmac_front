@@ -1,53 +1,76 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Table, Button, Modal, Input, Select, Dropdown, Menu, message, Form, Tooltip } from "antd";
+import { Table, Button, Modal, Input, Select, Dropdown, Menu, message, Form, Tooltip, Popconfirm } from "antd";
 import { MoreOutlined, PlusOutlined } from "@ant-design/icons";
 import { categoryApi } from '@/modules/admin/categoryApi';
-import { Category } from "@/types/categoryItem";
+import { Categories, Category } from "@/types/categoryItem";
 import { debounce } from 'lodash';
 import TitlePageAdmin from "@/components/share/TitlePageAdmin";
 import { DeleteIcon, EditIcon } from "@/components/icons/Icons";
+import { useCategories } from "@/hooks/useCategories";
 const { Option } = Select;
+import '@ant-design/v5-patch-for-react-19';
 // console.log(React.version);
 // Hàm chuyển mảng phẳng thành tree
-function buildTree(data: Category[], parentId = 0): any[] {
-  return data
-    .filter(item => item.parent_id === parentId)
-    .sort((a, b) => a.id - b.id)
-    .map(item => {
-      const children = buildTree(data, item.id);
-      return {
-        ...item,
-        key: item.id,
-        children: children.length > 0 ? children : undefined, // chỉ set children nếu có con
-      };
-    })
-  // .sort((a, b) => (a.ordering || 0) - (b.ordering || 0));
+
+function buildTree(data: Categories[]): any[] {
+  const sectionMap = new Map<number, any>();
+
+  data.forEach(item => {
+    // Nếu là mục Section (cha)
+    if (!sectionMap.has(item.section_id)) {
+      sectionMap.set(item.section_id, {
+        key: `section-${item.section_id}`,
+        id: `${item.section_id}`,
+        title: item.section_title,
+        alias: item.alias_parent,
+        published: 1,
+        parent_id: 0,
+        children: [],
+      });
+    }
+
+    // Nếu là category, push vào đúng section
+    if (item.category_id) {
+      sectionMap.get(item.section_id).children.push({
+        key: `category-${item.category_id}`,
+        id: item.category_id,
+        title: item.category_title,
+        alias: item.alias,
+        published: 1,
+        parent_id: item.parent_id,
+      });
+    }
+  });
+
+  return Array.from(sectionMap.values());
 }
 
 
 
-const rowClassName = (record: Category) => {
-  if (record.parent_id === 0) {
-    return ""; // menu cha mặc định
-  }
-  // menu con cấp 1 (parent != 0)
-  return "bg-gray-50"; // ví dụ màu nền sáng hơn
-};
-export default function CategoryTable() {
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
-  const [form] = Form.useForm();
 
+// const rowClassName = (record: Categories) => {
+//   // console.log(first)
+//   if (record?.alias) {
+//     return "bg-gray-50"; // menu cha mặc định
+//   }
+//   // menu con cấp 1 (parent != 0)
+//   // return "bg-gray-50"; // ví dụ màu nền sáng hơn
+// };
+export default function CategoryTable() {
+  const [categories, setCategories] = useState<Categories[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingCategory, setEditingCategory] = useState<Categories | null>(null);
+  const [form] = Form.useForm();
+  const { selectOptions, loading } = useCategories();
   useEffect(() => {
     fetchCategories();
   }, []);
 
   const fetchCategories = async () => {
     try {
-      const data = await categoryApi.getAll();
-      setCategories(data.Data);
+      const data = await categoryApi.getAllSection();
+      setCategories(data?.Data);
     } catch (error: any) {
       message.error(error.message);
     }
@@ -94,7 +117,7 @@ export default function CategoryTable() {
         name: values.name,
         title: values.title,
         alias: values.alias || removeVietnameseTones(values.title),
-        parent_id: values.parent_id || 0,
+        section: values.parent_id || 0,
         published: values.published,
       };
 
@@ -124,7 +147,7 @@ export default function CategoryTable() {
   };
 
   const columns = [
-    { title: "ID", dataIndex: "id", key: "id",align: 'center',  width: 100, },
+    { title: "ID", dataIndex: "id", key: "id", align: 'center', width: 100, },
     { title: "Tiêu đề", dataIndex: "title", key: "title" },
     { title: "Alias", dataIndex: "alias", key: "alias" },
     {
@@ -138,15 +161,35 @@ export default function CategoryTable() {
       key: "action",
       width: 80,
       render: (_: any, record: Category) => (
-       <div className="flex gap-5">
-          <div onClick={() => showModal(record)}>
+        <div className="flex gap-5">
+          <div onClick={(e) => {
+             e?.stopPropagation();
+            showModal(record)}}>
             <EditIcon
             />
           </div>
           <Tooltip title="Xóa">
-            <DeleteIcon  onClick={() => handleDelete(record.id)} />
+        <Popconfirm
+            title={`Bạn có chắc muốn xóa "${record.title}"?`}
+            onConfirm={(e) => {
+              e?.stopPropagation(); // Ngăn sự kiện lan ra ngoài
+              handleDelete(record.id);
+            }}
+            onCancel={(e) => {
+              e?.stopPropagation(); // Ngăn sự kiện lan ra ngoài
+            }}
+            okText="Xóa"
+            cancelText="Hủy"
+          >
+            <Button
+              type="text"
+              icon={<DeleteIcon className="text-red-500" />}
+              title="Xóa menu"
+              onClick={(e) => e.stopPropagation()} // Ngăn sự kiện lan ra ngoài khi bấm nút
+            />
+          </Popconfirm>
           </Tooltip>
-       </div>
+        </div>
       ),
     },
   ];
@@ -166,8 +209,8 @@ export default function CategoryTable() {
 
   return (
     <div className="pl-4">
-      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 16,background:'white',padding:6,borderRadius:5 }}>
-      <TitlePageAdmin text={'Quản lý chuyên mục'} />
+      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 16, background: 'white', padding: 6, borderRadius: 5 }}>
+        <TitlePageAdmin text={'Quản lý chuyên mục'} />
 
         <Button
           // type="primary"
@@ -182,16 +225,16 @@ export default function CategoryTable() {
 
       <Table
         style={{
-          width:900,
-          marginTop:20
+          width: 900,
+          marginTop: 20
         }}
         columns={columns}
         dataSource={buildTree(categories)}
         pagination={false}
         expandable={{ expandRowByClick: true, indentSize: 24 }}
         bordered
-        rowClassName={rowClassName}
-         className="[&_.ant-table-cell]:!p-2"
+        // rowClassName={rowClassName}
+        className="[&_.ant-table-cell]:!p-2"
       />
 
       <Modal
@@ -204,7 +247,7 @@ export default function CategoryTable() {
         footer={null}
         onCancel={() => setIsModalOpen(false)}
         centered
-        styles={{ body: { paddingBottom: 8,padding:16 } }}
+        styles={{ body: { paddingBottom: 8, padding: 16 } }}
       >
         <Form form={form} layout="vertical">
           <Form.Item
@@ -222,13 +265,13 @@ export default function CategoryTable() {
           </Form.Item>
 
           <Form.Item label="Danh mục cha" name="parent_id">
-            <Select allowClear>
-              <Option value={0}>-- Không có --</Option>
-              {categories.filter(c => c.parent_id === 0 && c.published !== 0).map(c => (
-                <Option key={c.id} value={c.id}>{c.title}</Option>
-              ))}
-            </Select>
+            <Select
+              allowClear
+              options={selectOptions}
+              placeholder="-- Chọn danh mục cha --"
+            />
           </Form.Item>
+
 
           <Form.Item label="Trạng thái xuất bản" name="published">
             <Select>

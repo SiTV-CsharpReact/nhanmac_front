@@ -36,4 +36,41 @@ export const formatMoney = (x:number, currency) => {
       reader.onload = () => resolve(reader.result);
       reader.onerror = (error) => reject(error);
     });
+    // utils/buildMenuTree.ts
+    interface RawRow {
+      section_id: number;
+      section_title: string;
+      category_id: number;
+      category_title: string;
+      parent_id: number;
+      alias: string;
+      alias_parent: string;
+    }
+    
+    export function buildMenuTree(rows: any[]) {
+      const sectionMap = new Map<number, any>();
+    
+      rows.forEach(row => {
+        if (!sectionMap.has(row.section_id)) {
+          sectionMap.set(row.section_id, {
+            key: `section-${row.section_id}`,
+            title: row.section_title,
+            children: [],
+          });
+        }
+    
+        if (row.category_id) {
+          const categoryNode = {
+            key: `category-${row.category_id}`,
+            title: row.category_title,
+            alias: row.alias,
+            parent_id: row.parent_id,
+          };
+          sectionMap.get(row.section_id).children.push(categoryNode);
+        }
+      });
+    
+      return Array.from(sectionMap.values());
+    }
+
   

@@ -11,7 +11,7 @@ interface FetchContentParams {
   state?: number;
   keySearch?: string;
   keyword?: string;
-  alias?: string;
+  sectionid?: string;
 }
 
 // Lấy danh sách bài viết
@@ -46,7 +46,11 @@ export const fetchContent = async (params: FetchContentParams = {}): Promise<Api
 // Lấy chi tiết bài viết theo ID
 export const fetchContentId = async (id: number): Promise<ApiResponse<Post>> => {
   try {
-    const response = await fetch(`${env.apiUrl}/contents/${id}`);
+    const response = await fetch(`${env.apiUrl}/contents/${id}`,{
+      next: {
+        revalidate: 60, // Cache trong 60 giây
+      },
+    });
     const data: ApiResponse<Post> = await response.json();
     
     if (data.Code !== 200) {
@@ -75,7 +79,7 @@ export const fetchContentAlias = async (alias: string): Promise<ApiResponse<Post
       },
   });
     const data: ApiResponse<Post> = await response.json();
-    
+    console.log(data)
     if (data.Code !== 200) {
       throw new Error(data.Message || 'Có lỗi xảy ra');
     }

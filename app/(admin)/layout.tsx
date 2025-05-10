@@ -5,6 +5,7 @@ import ScrollToTop from "@/components/share/ScrollToTop";
 import HeaderAdmin from "@/components/share/HeaderAdmin";
 import Navbar from "@/components/share/Navbar";
 import StyledComponentsRegistry from '@/lib/AntdRegistry';
+
 export const metadata: Metadata = {
   title: "Trang quản trị Admin",
   description: "",

@@ -4,31 +4,24 @@ import Image from "next/image";
 import React from "react";
 import { Form, Input, Button, message } from "antd";
 import "../globals.css";
-import { useRouter } from 'next/navigation';
+import {  useRouter } from 'next/navigation';
+import { login } from "@/modules/admin/loginApi";
+import Cookies from 'js-cookie';
+import '@ant-design/v5-patch-for-react-19';
+// import { login } from "@/api/authApi"; // ✅ Gọi API login từ file riêng
+
 const Page = () => {
   const router = useRouter();
+
   const onFinish = async (values: any) => {
     try {
-      const response = await fetch("http://localhost:3600/api/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(values),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        message.success("Đăng nhập thành công!");
-        localStorage.setItem("access_token", data.user.usertype);
-        router.push('/dashboard');
-        // Chuyển hướng sau đăng nhập nếu cần
-      } else {
-        message.error(data.message || "Đăng nhập thất bại");
-      }
-    } catch (error) {
-      message.error("Lỗi kết nối máy chủ");
+      const data = await login(values); // ✅ Dùng hàm login
+      message.success("Đăng nhập thành công!");
+      Cookies.set('access_token', data.Data.usertype); 
+      // cookies.setItem("access_token", data.Data.usertype);
+      router.push('/dashboard/menu');
+    } catch (error: any) {
+      message.error(error.message || "Lỗi đăng nhập");
     }
   };
 

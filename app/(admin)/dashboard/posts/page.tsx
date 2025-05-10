@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Table, Button, Modal, Form, Input, Upload, message } from "antd";
+import { Table, Button, Modal, Form, Input, Upload, message, Tooltip } from "antd";
 import Image from "next/image";
 import TitlePageAdmin from "@/components/share/TitlePageAdmin";
 import { Post } from "@/types/contentItem";
@@ -27,6 +27,7 @@ import { UploadOutlined, EyeOutlined } from "@ant-design/icons";
 import type { UploadFile } from "antd/es/upload/interface";
 import { getBase64 } from "@/utils/util";
 import { env } from "@/config/env";
+import '@ant-design/v5-patch-for-react-19';
 
 interface SortableRowProps {
   id: string;
@@ -55,8 +56,8 @@ function SortableRow({ id, children }: SortableRowProps) {
       ref={setNodeRef}
       style={style}
       {...attributes}
-      // Không gán listeners cho toàn bộ <tr> để tránh chặn click các nút
-      // listeners sẽ được gán riêng cho cột handle bên dưới
+    // Không gán listeners cho toàn bộ <tr> để tránh chặn click các nút
+    // listeners sẽ được gán riêng cho cột handle bên dưới
     >
       {React.Children.map(children, (child, index) => {
         if (index === 0) {
@@ -198,6 +199,41 @@ const AdminPostManagement: React.FC = () => {
     maxCount: 1,
   };
 
+  const RowDragHandleCell = ({ rowId }: { rowId: string }) => {
+    const {
+      attributes,
+      listeners,
+      setNodeRef,
+      transform,
+      transition,
+      isDragging,
+    } = useSortable({ id: rowId });
+
+    const style: React.CSSProperties = {
+      transform: CSS.Transform.toString(transform),
+      transition,
+      cursor: "grab",
+      padding: "0 8px",
+      fontSize: 18,
+      lineHeight: 1,
+      backgroundColor: isDragging ? "#f5f5f5" : undefined,
+    };
+
+    return (
+      <Tooltip title="Giữ chuột kéo thả">
+        <span
+          ref={setNodeRef}
+          {...attributes}
+          {...listeners}
+          style={style}
+          title="Kéo thả để sắp xếp"
+        >
+          &#8942;&#8942;
+        </span>
+      </Tooltip>
+
+    );
+  }
   const handleOk = async () => {
     try {
       const values = await form.validateFields();
@@ -207,7 +243,7 @@ const AdminPostManagement: React.FC = () => {
         ...values,
         urls: fileList[0]?.response?.Data?.imageUrl || fileList[0]?.url,
         images: fileList[0]?.name,
-        image:''
+        image: ''
       };
 
       const response = await updateContent(editingRecord.id, formData);
@@ -230,22 +266,9 @@ const AdminPostManagement: React.FC = () => {
       dataIndex: "sort",
       width: 80,
       align: "center",
-      render: () => (
-        <span
-          aria-label="Kéo thả"
-          title="Kéo thả"
-          style={{
-            cursor: "grab",
-            fontSize: 18,
-            userSelect: "none",
-            lineHeight: 1,
-            display: "inline-block",
-            padding: "0 4px",
-          }}
-        >
-          &#8942;&#8942;
-        </span>
-      ),
+      render: (_: any, record: Post) => (
+        <RowDragHandleCell rowId={record.id.toString()} />
+      )
     },
     { title: "ID", dataIndex: "id", key: "id", width: 60 },
     { title: "Tiêu đề", dataIndex: "title", key: "title", ellipsis: true },
@@ -258,8 +281,8 @@ const AdminPostManagement: React.FC = () => {
           <div className="relative group">
             <Image src={urls} width={100} height={50} alt="Ảnh" />
             <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-2">
-              <Button 
-                type="primary" 
+              <Button
+                type="primary"
                 size="small"
                 icon={<EyeOutlined />}
                 onClick={() => {
@@ -336,7 +359,7 @@ const AdminPostManagement: React.FC = () => {
     <div className="px-3">
       <div className="p-2 bg-white rounded flex justify-between items-center">
         <TitlePageAdmin text={"Quản lý slide"} />
-        <Button type="primary" onClick={handleSaveOrder} loading={loading}>
+        <Button type="primary" onClick={handleSaveOrder} loading={loading} className="!bg-[#2f80ed]">
           Lưu thứ tự
         </Button>
       </div>
@@ -347,13 +370,14 @@ const AdminPostManagement: React.FC = () => {
         onDragEnd={handleDragEnd}
       >
         <Table
-          className="mt-3"
+          // className="mt-3"
           rowKey="id"
           columns={columns}
           dataSource={posts}
           loading={loading}
           pagination={false}
           scroll={{ x: true }}
+          className="mt-3 [&_.ant-table-cell]:!p-2"
           components={{
             body: {
               wrapper: DraggableContainer,
@@ -369,7 +393,8 @@ const AdminPostManagement: React.FC = () => {
         onOk={handleOk}
         onCancel={handleCancel}
         width={800}
-        styles={{ body: { paddingBottom: 8,padding:16 } }}
+        styles={{ body: { paddingBottom: 8, padding: 16 }, footer: { padding: 16 } }}
+
       >
         <Form
           form={form}
@@ -410,7 +435,7 @@ const AdminPostManagement: React.FC = () => {
         title={previewTitle}
         footer={null}
         onCancel={() => setPreviewOpen(false)}
-        styles={{ body: { paddingBottom: 8,padding:16 } }}
+        styles={{ body: { paddingBottom: 8, padding: 16 } }}
       >
         <img alt="preview" style={{ width: '100%' }} src={previewImage} />
       </Modal>

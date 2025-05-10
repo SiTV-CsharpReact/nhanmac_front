@@ -28,7 +28,7 @@ const TextEditor = ({ editorData, setEditorData, disabled = false, toolbar = 'fu
       height: 300,
      width: '100%',
       menubar: toolbar === 'full' ? true : false,
-      images_upload_base_path: '/file/straight-upload',
+      // images_upload_base_path: '/file/straight-upload',
       images_upload_credentials: true,
       plugins: [
         'advlist',
@@ -71,37 +71,12 @@ const TextEditor = ({ editorData, setEditorData, disabled = false, toolbar = 'fu
           xhr.onload = function () {
             if (xhr.status === 200) {
               const response = JSON.parse(xhr.responseText);
-              const imageUrl = response?.url || response?.data?.url; // tùy vào backend bạn trả
+              const imageUrl = response?.url || response?.Data?.url; // tùy vào backend bạn trả
               cb(imageUrl); // Phải là đường dẫn URL ảnh hợp lệ
             } else {
               console.log("Upload thất bại");
             }
           };
-          // xhr.onload = function () {
-          //   if (xhr.readyState === 4 && xhr.status === 200) {
-          //     var url = xhr.responseText;
-          //     cb(url);
-          //   } else {
-          //   //   if (xhr.status === 401) {
-          //   //     const element = document.getElementsByClassName('tox-dialog-wrap')?.[0];
-          //   //     element.remove();
-
-          //   //     // buttonClose.remove()
-          //   //     Modal.error({
-          //   //       title: 'Hết phiên đăng nhập, vui lòng đăng nhập lại',
-          //   //       onOk() {
-          //   //         localStorage.clear();
-          //   //         removeCookie('userData');
-          //   //         removeCookie('access_token');
-          //   //         removeCookie('refresh_token');
-          //   //         // window.location.reload();
-          //   //         window.location.replace('/login');
-          //   //       },
-          //   //     });
-          //   //   }
-          //   }
-          // };
-
           reader.onload = function () {
             var id = 'blobid' + new Date().getTime();
             var blobCache = window.tinymce.activeEditor.editorUpload.blobCache;
@@ -120,7 +95,7 @@ const TextEditor = ({ editorData, setEditorData, disabled = false, toolbar = 'fu
       images_upload_handler: (blobInfo, success, failure) => {
         let data = new FormData();
         data.append('file', blobInfo.blob(), blobInfo.filename());
-      
+        var reader = new FileReader();
         // Cần gửi FormData này bằng fetch hoặc axios
         fetch(env.uploadUrl, {
           method: 'POST',
@@ -134,23 +109,8 @@ const TextEditor = ({ editorData, setEditorData, disabled = false, toolbar = 'fu
           .catch(() => {
             failure('Upload thất bại');
           });
+          reader.readAsDataURL(blobInfo.blob());
       },
-      // images_upload_handler: (blobInfo, success, failure) => {
-      //   let data = new FormData();
-      //   var reader = new FileReader();
-      //   var url = 'env.setting_uploadFile + listAPI.uploadStraigh't;
-      //   data.append('file', blobInfo.blob(), blobInfo.filename());
-      //   axios
-      //     .post(url, data, {
-      //       headers: {
-      //         Authorization: 'Bearer' + ' ' + getLocalStorage('access_token'),
-      //       },
-      //     })
-      //     .then(function (res) {
-      //       success(res.data);
-      //     });
-      //   reader.readAsDataURL(blobInfo.blob());
-      // },
       paste_as_text: true,
       paste_text_sticky: true,
       paste_auto_cleanup_on_paste: true,

@@ -1,14 +1,16 @@
-import React from "react";
-import { Form, DatePicker, TimePicker, Select, Collapse, Tooltip } from "antd";
-import { CalendarOutlined, InfoCircleOutlined } from "@ant-design/icons";
-import { useCategories } from "@/hooks/useCategories";
+"use client";
+import React, { useEffect } from "react";
+import { Form, DatePicker, Select, Collapse } from "antd";
+import { CalendarOutlined } from "@ant-design/icons";
+import { useSectionWithCategories } from "@/hooks/useParentCate";
 import dayjs from "dayjs";
 
-const { Option } = Select;
 const { Panel } = Collapse;
 
-export default function PublishInfoForm() {
-  const { selectOptions, loading } = useCategories();
+export default function PublishInfoForm({ form }: { form: any }) {
+  const { sections, getCategoriesBySection, loading } = useSectionWithCategories();
+  const selectedSection = Form.useWatch("sectionid", form); // Theo dõi section_id
+ 
   return (
     <Collapse defaultActiveKey={['1']} style={{ marginBottom: 14 }}>
       <Panel
@@ -20,48 +22,38 @@ export default function PublishInfoForm() {
         }
         key="1"
       >
-        {/* KHÔNG dùng <Form> ở đây, chỉ dùng Form.Item */}
-        <Form.Item
-          label="Ngày giờ xuất bản"
-          name="publish_up"
-        // rules={[{ required: true, message: "Chọn ngày xuất bản!" }]}
-        >
+        <Form.Item label="Ngày giờ xuất bản" name="publish_up">
           <DatePicker
-            showTime={{ format: 'HH:mm:ss' }} // Thêm dòng này để chọn giờ:phút
-            format="DD/MM/YYYY HH:mm:ss"      // Định dạng hiển thị cả ngày và giờ
+            showTime={{ format: 'HH:mm:ss' }}
+            format="DD/MM/YYYY HH:mm:ss"
             style={{ width: "100%" }}
             placeholder="Chọn ngày giờ xuất bản"
             defaultValue={dayjs()}
           />
         </Form.Item>
 
-        <Form.Item name="catid" label="Chuyên mục:">
+        <Form.Item name="sectionid" label="Chuyên mục cha">
           <Select
             showSearch
             loading={loading}
-            placeholder="Chọn chuyên mục"
-            options={selectOptions}
-            filterOption={(input, option) =>
-              (option?.label as string).toLowerCase().includes(input.toLowerCase())
-            }
-            style={{ width: '100%' }}
+            placeholder="Chọn chuyên mục cha"
+            options={sections}
             allowClear
           />
         </Form.Item>
 
-        <Form.Item
-          label="Chuyên mục phụ"
-          name="subCategories"
-        >
+        <Form.Item name="catid" label="Chuyên mục con">
           <Select
-            mode="multiple"
-            placeholder="Chọn chuyên mục phụ"
+            showSearch
+            placeholder="Chọn chuyên mục con"
+            disabled={!selectedSection}
+            options={selectedSection ? getCategoriesBySection(selectedSection) : []}
+            filterOption={(input, option) =>
+              (option?.label as string).toLowerCase().includes(input.toLowerCase())
+            }
+            style={{ width: "100%" }}
             allowClear
-          >
-            <Option value="tour-hot">Tour &gt;&gt; Hot</Option>
-            <Option value="tour-sale">Tour &gt;&gt; Sale</Option>
-            <Option value="tour-vip">Tour &gt;&gt; VIP</Option>
-          </Select>
+          />
         </Form.Item>
       </Panel>
     </Collapse>

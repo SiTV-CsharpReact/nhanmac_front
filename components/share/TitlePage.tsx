@@ -1,16 +1,16 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-
+import Cookies from 'js-cookie';
 interface TitlePageProps {
   text: string;
 }
 
-const TitlePage: React.FC<TitlePageProps> = ({ text }) => {
+const TitlePage: React.FC = () => {
   const [activeParent, setActiveParent] = useState<string | null>(null);
 
   useEffect(() => {
-    const storedValue = localStorage.getItem('activeParent');
+    const storedValue = Cookies.get('activeParent');
     if (storedValue) {
       setActiveParent(storedValue);
     }
@@ -22,12 +22,6 @@ const TitlePage: React.FC<TitlePageProps> = ({ text }) => {
         {activeParent}
       </h2>
 
-      {/* Hiển thị nếu cần */}
-      {/* {activeParent && (
-        <p className="text-gray-500 text-sm">
-          Mục cha đang active: <strong>{activeParent}</strong>
-        </p>
-      )} */}
     </div>
   );
 };

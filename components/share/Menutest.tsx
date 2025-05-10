@@ -6,7 +6,8 @@ import { useRouter } from 'next/navigation';
 import { fetchMenus } from "@/modules/client/menuApi";
 import { notification } from 'antd';
 import { MenuItem } from '@/types/MenuItem';
-
+import Link from 'next/link';
+import Cookies from 'js-cookie';
 export default function MenuTest() {
     const [menus, setMenus] = useState<MenuItem[]>([]);
     const [open, setOpen] = useState(false);
@@ -15,6 +16,8 @@ export default function MenuTest() {
     const [openSubMenuId, setOpenSubMenuId] = useState<number | null>(null);  // mở cấp 3
     const [mobileOpenMenuId, setMobileOpenMenuId] = useState<number | null>(null);     // menu cấp 1
     const [mobileOpenSubMenuId, setMobileOpenSubMenuId] = useState<number | null>(null); // menu cấp 2
+    const [activeMenuId, setActiveMenuId] = useState<number | null>(null);
+    const [activeSubMenuId, setActiveSubMenuId] = useState<number | null>(null); // menu cấp 2
     const toggleMobileMenu = (id: number) => {
         setMobileOpenMenuId(prev => prev === id ? null : id);
         setMobileOpenSubMenuId(null); // reset submenu khi đổi menu
@@ -63,21 +66,28 @@ export default function MenuTest() {
         return roots;
     };
 
-    const handleClick = (link: string) => {
+    const handleClick = (link: string, id?: number, parentId?: number,nameParent?:string) => {
+        console.log(nameParent)
+        if (id) setActiveSubMenuId(id);         // đánh dấu menu con
+        if (parentId) setActiveMenuId(parentId); // đánh dấu menu cha
+        nameParent&& Cookies.set('activeParent', nameParent); 
         const url = '/' + link.replace(/^index\.php\?/, '').replace(/&/g, '/').replace(/=/g, '-');
         router.push(url);
-    };
+      };
 
     const renderMenuHorizontal = (items: MenuItem[]) => {
         return (
             <ul className="flex flex-wrap text-[#1f2b46] items-center justify-start py-1 gap-4">
+                <Link href={'/'} className=' !mr-[7%]'>
                 <Image
                     src="/images/logo.png"
                     width={56}
                     height={20}
                     alt="Logo"
-                    className="mx-auto md:mx-0 !mr-[5%]"
+                    className="mx-auto md:mx-0"
                 />
+                </Link>
+               
                 {items.map(item => {
                     // if (item?.parent !== 0 || item?.published !== 1) return null;
                     return (
@@ -88,8 +98,10 @@ export default function MenuTest() {
                             className="relative"
                         >
                             <button
-                                onClick={() => handleClick(item.link)}
-                                className="uppercase font-bold text-sm py-1 transition flex items-center gap-0.5 hover:text-[#589fff]"
+                         onClick={() => handleClick(item.link, item.id,100,item.name)}
+                         className={`uppercase font-bold text-sm py-1 transition flex items-center gap-0.5 hover:text-[#589fff] ${
+                            activeMenuId === item.id ? 'text-[#589fff]' : ''
+                          }`}
                             >
                                 {item.name}
                                 {item.children && item.children.length > 0 && (
@@ -107,8 +119,10 @@ export default function MenuTest() {
                                             className="relative"
                                         >
                                             <button
-                                                onClick={() => handleClick(sub.link)}
-                                                className="block w-full text-left px-4 py-2 hover:bg-[#589fff] hover:text-white hover:shadow-lg cursor-pointer"
+                                                  onClick={() => handleClick(sub.link, sub.id, item.id,item.name)}
+                                                  className={`block w-full text-left px-4 py-2 hover:bg-[#589fff] hover:text-white hover:shadow-lg cursor-pointer ${
+                                                    activeSubMenuId === sub.id ? 'bg-[#589fff] text-white' : ''
+                                                  }`}
                                             >
                                                 {sub.name}
                                             </button>
@@ -131,7 +145,7 @@ export default function MenuTest() {
                 <li key={item.id} onClick={() => toggleMobileMenu(item.id)}>
                     <div className="flex justify-between items-center">
                         <button
-                            // onClick={() => handleClick(item.link)}
+                             onClick={() => handleClick(item.link)}
                             className="text-left font-semibold text-[#1f2b46] uppercase w-full py-2"
                         >
                             {item.name}

@@ -34,7 +34,7 @@ const SearchComponent: React.FC<SearchComponentProps> = ({
   const initialValues = {
     created: [dayjs(), dayjs()], // RangePicker expects array of moments
     state: 1,
-    alias: undefined,
+    sectionid: undefined,
     keyword: "",
   };
 
@@ -45,14 +45,15 @@ const SearchComponent: React.FC<SearchComponentProps> = ({
       createdFrom: initialValues.created[0].format(dateFormat),
       createdTo: initialValues.created[1].format(dateFormat),
       state: 1,
-      alias: undefined,
+      sectionid: undefined,
       keyword: "",
     });
   }, []);
 
   const search = async () => {
     const values = await form.validateFields();
-    const { created, state, alias, keyword } = values;
+    console.log(values)
+    const { created, state, sectionid, keyword } = values;
 
     if (
       Array.isArray(created) &&
@@ -64,7 +65,7 @@ const SearchComponent: React.FC<SearchComponentProps> = ({
         createdFrom: created[0].format(dateFormat),
         createdTo: created[1].format(dateFormat),
         state,
-        alias,
+        sectionid,
         keyword,
       });
       setOnReload && setOnReload(true);
@@ -107,7 +108,7 @@ const SearchComponent: React.FC<SearchComponentProps> = ({
         </div>
 
         <div style={{ width: "100%", maxWidth: "300px" }}>
-          <Form.Item name="alias" label="Chuyên mục:">
+          <Form.Item name="sectionid" label="Chuyên mục:">
             <Select
               showSearch
               loading={loading}

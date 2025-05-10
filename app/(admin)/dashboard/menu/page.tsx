@@ -11,8 +11,6 @@ import {
 } from "antd";
 import {
   PlusOutlined,
-  DeleteOutlined,
-  EditOutlined,
   PlusCircleOutlined,
 } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
@@ -26,6 +24,7 @@ import {
 import "antd/dist/reset.css";
 import TitlePageAdmin from "@/components/share/TitlePageAdmin";
 import { DeleteIcon, EditIcon } from "@/components/icons/Icons";
+import '@ant-design/v5-patch-for-react-19';
 // Hàm chuyển flat array sang tree
 function buildMenuTree(data: MenuItem[], parent = 0): MenuItem[] {
   return data
