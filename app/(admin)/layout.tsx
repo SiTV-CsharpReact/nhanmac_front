@@ -26,8 +26,9 @@ export default function RootLayout({
       <body>
         <div className="bg-[#d7d7d780] h-full container-admin">
           <HeaderAdmin />
+          
           <div className="flex">
-            <Navbar />
+          <Navbar />
             <StyledComponentsRegistry>{children}</StyledComponentsRegistry>
           </div>
           <ScrollToTop />

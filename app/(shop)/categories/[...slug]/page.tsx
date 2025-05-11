@@ -1,11 +1,10 @@
 import PostNews from "@/components/share/PostNews";
 import TitlePage from "@/components/share/TitlePage";
 import { Post } from "@/types/contentItem";
-import { fetchContentAlias, fetchContentId } from "@/modules/admin/contentApi";
 import { Metadata, ResolvingMetadata } from "next";
 import { fetchCateAlias } from "@/modules/client/menuApi";
 import Link from "next/link";
-// import { redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 
 type Props = {
   params: {
@@ -53,48 +52,33 @@ type Props = {
 
 export default async function Page({ params }: Props) {
   const [category = '', rawId = ''] = params?.slug || [];
-  const id = category.replace(/\.html$/, ''); // 🔥 loại bỏ .html
+  // const id = category.replace(/\.html$/, ''); // 🔥 loại bỏ .html
   // console.log('id',id)
+ // Loại bỏ .html nếu có
+ const cleanSlug = category.replace(/\.html$/, '');
 
-  const decodedCategory = decodeURIComponent(category).replace(/-/g, ' ');
+ // Tìm số ở cuối slug
+//  const match = cleanSlug.match(/-(\d+)$/); // Ví dụ: ao-thun-123
+
+ const alias = cleanSlug || null; // nếu có thì dùng số, không thì null
+//  const alias = match ? null : cleanSlug;     // nếu không có số thì dùng alias
+
   let post: Post[];
   try {
-    const res = await fetchCateAlias(id);
+    let res;
+   if(alias != null) {
+    res = await fetchCateAlias(alias);
     post = res.Data;
+    if (!post) {
+      redirect('/not-found');
+    }
+   }
+  
   } catch (error) {
     console.log(error)
   }
 
   return (
-    // <main className="m-auto px-4 py-6">
-    //   <div className="container mx-auto max-w-7xl">
-    //     <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
-
-    //       {/* Phần bài viết - chiếm 7/12 */}
-    //       <div className="md:col-span-3">
-    //         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-    //           {post?.map((item) => (
-    //             <div key={item.id} className="bg-white shadow rounded p-4 hover:shadow-md transition">
-    //               <img
-    //                 src={item.urls || "/images/default.jpg"}
-    //                 alt={item.content_title}
-    //                 className="w-full h-48 object-cover mb-3 rounded"
-    //               />
-    //               <h3 className="text-base font-semibold mb-1">{item.content_title}</h3>
-    //               <p className="text-sm text-gray-600 line-clamp-3">{item.introtext}</p>
-    //             </div>
-    //           ))}
-    //         </div>
-    //       </div>
-
-    //       {/* Sidebar - chiếm 5/12 */}
-    //       <aside className="md:col-span-2">
-    //         <PostNews />
-    //       </aside>
-
-    //     </div>
-    //   </div>
-    // </main>
     <main className="m-auto grid place-items-center">
       <div className="container mb-15">
         {/* Tiêu đề */}

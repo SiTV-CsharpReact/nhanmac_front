@@ -359,7 +359,7 @@ export default function MenuManager() {
             label="Đường dẫn"
             rules={[{ required: true, message: "Nhập đường dẫn!" }]}
           >
-            <Input addonBefore="products/" />
+            <Input />
           </Form.Item>
           <Form.Item
             name="ordering"

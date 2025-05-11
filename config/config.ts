@@ -7,7 +7,7 @@ export const statusXB = [
     },
     {
       label: "Chưa xuất bản",
-      value: -2,
+      value: 0,
       color: "orange",
     },
   ];

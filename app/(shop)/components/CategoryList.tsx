@@ -1,0 +1,69 @@
+import { fetchCateAlias } from '@/modules/client/menuApi';
+import { Post } from '@/types/contentItem';
+import Image from 'next/image';
+import Link from 'next/link';
+import Cookies from 'js-cookie';
+// Giả sử API trả về mảng object dạng { id, title, image, imageAlt }
+type Category = {
+    id: number | string;
+    title: string;
+    image: string;
+    imageAlt?: string;
+};
+
+export default async function CategoryList() {
+    let postList: Post[] = [];
+    // Fetch dữ liệu từ API (thay URL thành API thật của bạn)
+    const res = await fetchCateAlias('nhan-kim-loai' as string, 1, 5);
+    postList = res.Data?.list || [];
+    console.log(postList)    //   const categories: Category[] = await res.json();
+
+    return (
+        <div className="p-1 py-2 md:p-6 space-y-12 bg-[#EAF2FE] grid place-items-center">
+            <div className="container">
+
+                <div className="text-center">
+                    <h2 className="text-2xl md:text-[32px] font-semibold text-center inline-block ">
+                        TEM KIM LOẠI
+                    </h2>
+                    <div className="h-1 bg-[#2F80ED] mx-auto w-1/2 max-w-[255px] mb-5 sm:w-[255px]"></div>
+                    <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                        {postList.map((label, i) => {
+                            console.log(label);
+                            // Tạo url từ label.link hoặc label.link (bạn cần chắc chắn biến đúng tên)
+                            // const url = '/' + label?.link.replace(/^index\.php\?/, '').replace(/&/g, '/').replace(/=/g, '-');
+
+                            return (
+                                <Link href={`${label.alias +label.id}.html`} key={`${label.id}-${i}`} 
+                                // onClick={
+                                //     ()=>Cookies.set('activeParent', 'Tem kim loại')}
+                                    >
+                                    <div className="bg-white shadow-custom p-0 flex flex-col items-center cursor-pointer">
+                                        <div className="w-full bg-gray-100 mb-2 flex items-center justify-center">
+                                            {label.urls ? (
+                                                <Image
+                                                    src={label.urls}
+                                                    alt={label.image_desc || "Ảnh sản phẩm"}
+                                                    height={173}
+                                                    width={245}
+                                                />
+                                            ) : (
+                                                <div className="w-[245px] h-[173px] bg-gray-200 flex items-center justify-center text-gray-400">
+                                                    Ảnh không có sẵn
+                                                </div>
+                                            )}
+                                        </div>
+                                        <p className="text-[15px] font-normal text-[#2F80ED] text-left p-2.5">
+                                            {label.content_title}
+                                        </p>
+                                    </div>
+                                </Link>
+                            );
+                        })}
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    );
+}

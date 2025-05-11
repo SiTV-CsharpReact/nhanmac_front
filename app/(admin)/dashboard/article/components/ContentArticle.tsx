@@ -6,7 +6,6 @@ import MetadataForm from "./MetadataForm";
 import {
   Form,
   Input,
-  Select,
   Button,
   Upload,
   message,
@@ -14,24 +13,19 @@ import {
   Typography,
   Image,
   Tag,
+  Col,
+  Row,
+  Spin,
 } from "antd";
-import type { UploadFile, UploadProps } from "antd/es/upload/interface";
-import { UploadOutlined, DeleteOutlined } from "@ant-design/icons";
+import type { UploadFile } from "antd/es/upload/interface";
+import { UploadOutlined } from "@ant-design/icons";
 import PublishInfoForm from "./PublishInfoForm";
 import { Post } from "@/types/contentItem";
-// import TextEditor from "@/components/plugin/TextEditor";
-import { getBase64 } from "@/utils/util";
+import { getBase64, removeVietnameseTones } from "@/utils/util";
 import { env } from "@/config/env";
-import { uploadImage, createContent, updateContent } from "@/modules/admin/contentApi";
+import { createContent, updateContent } from "@/modules/admin/contentApi";
 import dayjs from "dayjs";
-import moment from "moment";
 
-const initialMetadata = {
-  description: "",
-  keywords: "",
-  robots: "",
-  author: "",
-};
 const { TextArea } = Input;
 interface StatusModal {
   idContent?: number | undefined;
@@ -45,7 +39,7 @@ interface typeContentArticle {
   data: Post;
   reset?: boolean;
   setTypeModal: (modal: StatusModal) => void;
-  setOnReload:()=>void;
+  setOnReload: () => void;
 }
 
 const ContentArticle: React.FC<typeContentArticle> = ({
@@ -65,6 +59,10 @@ const ContentArticle: React.FC<typeContentArticle> = ({
   const [previewImage, setPreviewImage] = useState<string>("");
   const [isUpload, setIsUpload] = useState(false);
   const [urlFile, setUrlFile] = useState({});
+  const [typeSub, setTypeSub] = useState(0);
+  const [alias, setAlias] = useState("");
+  const [title, setTitle] = useState("");
+  const [loadingAlias, setLoadingAlias] = useState(false);
 
   // Reset form khi modal mở
   useEffect(() => {
@@ -126,6 +124,7 @@ const ContentArticle: React.FC<typeContentArticle> = ({
         );
         setUrlFile({});
         setIsUpload(false);
+        setImageUrl(null);
         return true;
       } else {
         return false;
@@ -155,7 +154,7 @@ const ContentArticle: React.FC<typeContentArticle> = ({
   };
 
 
-  const reloadPage=()=>{
+  const reloadPage = () => {
     setTypeModal({
       // idContent: record?.id,
       typeModal: 4,
@@ -173,14 +172,13 @@ const ContentArticle: React.FC<typeContentArticle> = ({
     try {
       const formData = {
         ...values,
-        state: 1,
-         picture:'',
+        state: typeSub,
+        picture: '',
         introtext: editorData,
         created: dayjs().format("YYYY-MM-DD HH:mm:ss"),
         title_alias: "test",
-        alias: "test-thu",
-        urls:urlFile?.pictureUrl,
-        image:urlFile?.pictureName
+        urls: urlFile?.pictureUrl,
+        images: urlFile?.pictureName
       };
 
       if (typeModal === 1) {
@@ -194,7 +192,7 @@ const ContentArticle: React.FC<typeContentArticle> = ({
       } else {
         console.log(data?.id)
         // Cập nhật
-        const response = await updateContent(data?.id,formData);
+        const response = await updateContent(data?.id, formData);
         if (response.Code === 200) {
           message.success("Cập nhật bài viết thành công!");
           reloadPage();
@@ -215,20 +213,20 @@ const ContentArticle: React.FC<typeContentArticle> = ({
         // description: data.description,
         image_desc: data.image_desc,
         content: data.introtext,
-        catid:data.catid,
+        catid: data.catid,
         publish_up: data.publish_up ? dayjs(data.publish_up) : null,
-        metakey:data.metakey,
-        metadesc:data.metadesc,
-        sectionid:data.sectionid
-        // picture:'test'
-        // Thêm các trường khác nếu cần
+        metakey: data.metakey,
+        metadesc: data.metadesc,
+        sectionid: data.sectionid,
+        alias: data.alias
       });
+      setAlias(data.alias);
       setEditorData(data.introtext || "");
       setContent(data.introtext || "");
       setImageUrl(data?.urls);
       setIsUpload(false);
       setUrlFile({});
-      data?.urls &&  setFileList([
+      data?.urls && setFileList([
         {
           uid: '-1', // Thêm một uid tạm thời
           name: data?.images, // Tên tạm thời của ảnh
@@ -244,6 +242,26 @@ const ContentArticle: React.FC<typeContentArticle> = ({
     }
   }, [data, form]);
 
+  useEffect(() => {
+    if (!title) {
+      setAlias("");
+      form.setFieldsValue({ alias: "" });
+      return;
+    }
+
+    setLoadingAlias(true);
+    const handler = setTimeout(() => {
+      const converted = removeVietnameseTones(title);
+      setAlias(converted);
+      form.setFieldsValue({ alias: converted });
+      setLoadingAlias(false);
+    }, 500);
+
+    return () => clearTimeout(handler);
+  }, [title, form]);
+  useEffect(()=>{
+    typeModal==1 && setAlias('')
+  },[typeModal])
   return (
     <div className="px-4 py-2 w-full">
       {/* Header */}
@@ -271,7 +289,7 @@ const ContentArticle: React.FC<typeContentArticle> = ({
               border: "1px solid #d9d9d9",
               borderRadius: 8,
               padding: 16,
-              paddingBottom:5,
+              paddingBottom: 5,
               boxShadow: "0 2px 8px #f0f1f2",
             }}
           >
@@ -287,13 +305,13 @@ const ContentArticle: React.FC<typeContentArticle> = ({
                 <Typography.Text strong>
                   Công ty Cổ phần Thương mại Du lịch Lan Phương
                 </Typography.Text>
-                {typeModal == 2&&
-                <Tag
-                  color={data?.state == 1 ? "green" : "orange"}
-                  className="pl-3"
-                >
-                  {data?.state == 1 ? `Đã xuất bản` : `Chưa xuất bản`}
-                </Tag>}
+                {typeModal == 2 &&
+                  <Tag
+                    color={data?.state == 1 ? "green" : "orange"}
+                    className="pl-3"
+                  >
+                    {data?.state == 1 ? `Đã xuất bản` : `Chưa xuất bản`}
+                  </Tag>}
               </Space>
             </div>
 
@@ -302,7 +320,8 @@ const ContentArticle: React.FC<typeContentArticle> = ({
               name="title"
               rules={[{ required: true, message: "Nhập tiêu đề!" }]}
             >
-              <TextArea rows={2} placeholder="Nhập tiêu đề bài viết" />
+              <TextArea rows={2} placeholder="Nhập tiêu đề bài viết" value={title}
+                onChange={(e) => setTitle(e.target.value)} />
             </Form.Item>
 
             <Form.Item
@@ -334,11 +353,20 @@ const ContentArticle: React.FC<typeContentArticle> = ({
                 src={previewImage}
               />
             )}
-
-            <Form.Item label="Mô tả ảnh" name="image_desc">
-              <Input placeholder="Mô tả ảnh minh họa" />
-            </Form.Item>
-
+            <Row gutter={16}>
+              <Col span={12}>
+                <Form.Item label="Mô tả ảnh" name="image_desc">
+                  <Input placeholder="Mô tả ảnh minh họa" />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item label="Alias" name="alias">
+                  <Spin spinning={loadingAlias} size="small">
+                    <Input placeholder="alias" value={alias} readOnly />
+                  </Spin>
+                </Form.Item>
+              </Col>
+            </Row>
             <Form.Item
               label="Nội dung"
               name="content"
@@ -356,26 +384,26 @@ const ContentArticle: React.FC<typeContentArticle> = ({
                 setEditorData={setEditorData}
               />
             </Form.Item>
-            
-              <Form.Item >
-                <Button type="primary" htmlType="submit">
-                  {typeModal === 1 ? "Lưu bài viết" : "Cập nhật bài viết"}
-                </Button>
-                <Button type="default" htmlType="submit" className="!ml-3">
-               Lưu tạm thời
-                </Button>
-              </Form.Item>
-       
+
+            <Form.Item >
+              <Button type="primary" htmlType="submit" onClick={() => setTypeSub(1)}>
+                {typeModal === 1 ? "Lưu bài viết" : "Cập nhật bài viết"}
+              </Button>
+              <Button type="default" htmlType="submit" className="!ml-3" onClick={() => setTypeSub(0)}>
+                Lưu tạm thời
+              </Button>
+            </Form.Item>
+
           </div>
           {/* Metadata bên phải */}
           {typeModal !== 0 && (
-            <div style={{ flex: 1, minWidth: 300, maxWidth: 400 }}>
+            <div style={{ flex: 1, minWidth: 300, maxWidth: 350 }}>
               <PublishInfoForm form={form} />
-              <MetadataForm   />
+              <MetadataForm />
             </div>
           )}
         </div>
-      
+
       </Form>
     </div>
   );
@@ -383,67 +411,3 @@ const ContentArticle: React.FC<typeContentArticle> = ({
 
 export default memo(ContentArticle);
 
-// const uploadProps: UploadProps = {
-//   accept: "image/*",
-//   listType: "picture",
-//   fileList,
-//   action: env.uploadUrl,
-//   name: "image",
-//   headers: {
-//     // Thêm headers nếu cần
-//   },
-//   beforeUpload: (file: File) => {
-//     console.log("beforeUpload called", file);
-//     const isImage = file.type.startsWith("image/");
-//     if (!isImage) {
-//       message.error("Chỉ được upload file ảnh!");
-//     }
-//     const isLt2M = file.size / 1024 / 1024 < 2;
-//     if (!isLt2M) {
-//       message.error("Ảnh phải nhỏ hơn 2MB!");
-//     }
-//     return isImage && isLt2M;
-//   },
-//   maxCount: 1,
-//   showUploadList: true,
-//   onPreview: handlePreview,
-//   onChange: handleImageChange,
-//   onRemove: handleRemoveImage,
-// };
-// const handleImageChange: UploadProps["onChange"] = async (info) => {
-//   console.log("handleImageChange called", info);
-//   if (info.file.status === "uploading") {
-//     console.log("Uploading...");
-//     return;
-//   }
-
-//   if (info.file.status === "done") {
-//     console.log("Upload done", info.file.response);
-//     const imageUrl = `${env.apiUrl}${info.file.response?.Data?.imageUrl}`;
-//     console.log("Full image URL:", imageUrl);
-//     setFileList(info.fileList);
-//     setImageUrl(imageUrl);
-//     setUrlFile({
-//       pictureName: info.file.name,
-//       pictureUrl: imageUrl,
-//     });
-//     setIsUpload(true);
-//   }
-
-//   if (info.file.status === "error") {
-//     console.log("Upload error", info.file);
-//     message.error(
-//       `${info.file.name} upload không thành công bạn hãy thử lại`
-//     );
-//     setFileList((fileList) =>
-//       fileList.filter((item) => item.uid !== info.file.uid)
-//     );
-//     setIsUpload(false);
-//   }
-// };
-
-// // Hàm xóa ảnh
-// const handleRemoveImage = () => {
-//   setImageUrl(null);
-//   setFileList([]);
-// };

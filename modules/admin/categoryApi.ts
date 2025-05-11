@@ -23,7 +23,21 @@ export const categoryApi = {
     if (!res.ok) throw new Error("Failed to fetch categories");
     return await res.json();
   },
-
+  async getDetail(id: number, type: number): Promise<ApiResponse<Category>> {
+    try {
+      const res = await fetch(`${API_URL}/detail/${id}?type=${type}`);
+  
+      if (!res.ok) {
+        throw new Error(`Failed to fetch category details: ${res.status} ${res.statusText}`);
+      }
+  
+      const data: ApiResponse<Category> = await res.json();
+      return data;
+    } catch (error) {
+      // Bạn có thể xử lý thêm hoặc log lỗi ở đây
+      throw error;
+    }
+  },
   async create(category: Omit<Category, "id">): Promise<ApiResponse<Category>> {
     const res = await fetch(API_URL, {
       method: "POST",
@@ -34,8 +48,8 @@ export const categoryApi = {
     return await res.json();
   },
 
-  async update(id: number, category: Partial<Category>): Promise<ApiResponse<Category>> {
-    const res = await fetch(`${API_URL}/${id}`, {
+  async update(id: number, type: number, category: Partial<Category>): Promise<ApiResponse<Category>> {
+    const res = await fetch(`${API_URL}/${id}?type=${type}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(category),
@@ -44,9 +58,18 @@ export const categoryApi = {
     return await res.json();
   },
 
-  async delete(id: number): Promise<ApiResponse<void>> {
-    const res = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+  async delete(id: number, type: number): Promise<ApiResponse<void>> {
+    const res = await fetch(`${API_URL}/${id}?type=${type}`, { method: "DELETE" });
     if (!res.ok) throw new Error("Failed to delete category");
+    return await res.json();
+  },
+  async createParent(category: Omit<Category, "id">): Promise<ApiResponse<Category>> {
+    const res = await fetch(`${API_URL}/section`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(category),
+    });
+    if (!res.ok) throw new Error("Failed to create category");
     return await res.json();
   },
 };

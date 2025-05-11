@@ -121,7 +121,7 @@ export default async function PostNews() {
                 ) : (
                     <ul>
                         {posts.map((post) => (
-                             <Link href={`/products/${post.alias}`} title={post.title}>
+                             <Link href={`/products/${post.alias}`} title={post.title} key={post.id}>
                             <li key={post.id} className="flex bg-white gap-2 mb-3 hover:bg-gray-100 rounded p-2">
                                 <Image
                                     src={post?.urls ?? "/images/Carousel.png"}

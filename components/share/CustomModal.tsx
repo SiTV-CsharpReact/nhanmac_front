@@ -24,6 +24,7 @@ const CustomModal: React.FC<CustomModalProps> = ({
       className={`custom-modal ${className}`}
       footer={footer}
        title={header}
+       width={1400}
       // onCancel={() => onCancel(false)} // Xử lý đóng modal
     >
       <div className="modal-content">

@@ -10,7 +10,7 @@ const { Panel } = Collapse;
 export default function PublishInfoForm({ form }: { form: any }) {
   const { sections, getCategoriesBySection, loading } = useSectionWithCategories();
   const selectedSection = Form.useWatch("sectionid", form); // Theo dõi section_id
- 
+
   return (
     <Collapse defaultActiveKey={['1']} style={{ marginBottom: 14 }}>
       <Panel
@@ -32,7 +32,12 @@ export default function PublishInfoForm({ form }: { form: any }) {
           />
         </Form.Item>
 
-        <Form.Item name="sectionid" label="Chuyên mục cha">
+        <Form.Item name="sectionid" label="Chuyên mục cha" rules={[
+          {
+            required: true,
+            message: "Vui lòng chọn chuyên mục cha!",
+          },
+        ]}>
           <Select
             showSearch
             loading={loading}
@@ -42,7 +47,12 @@ export default function PublishInfoForm({ form }: { form: any }) {
           />
         </Form.Item>
 
-        <Form.Item name="catid" label="Chuyên mục con">
+        <Form.Item name="catid" label="Chuyên mục con" rules={[
+          {
+            required: true,
+            message: "Vui lòng chọn chuyên mục con!",
+          },
+        ]}>
           <Select
             showSearch
             placeholder="Chọn chuyên mục con"

@@ -17,20 +17,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-       <head>
-        <link rel="icon" href="/logo.svg" type="image/png" sizes="32x32" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta charSet="UTF-8" />
-      </head>
-      <body >
+   
+      <main >
         <Header />
         <RightMenu/>
        {children}
         <ScrollToTop />
         <Footer/>
         {/* {children} */}
-      </body>
-    </html>
+      </main>
+  
   );
 }

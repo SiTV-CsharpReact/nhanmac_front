@@ -49,7 +49,7 @@ const Navbar: React.FC = () => {
   return (
     <Menu
       onClick={onClick}
-      style={{ width: 256,cursor:'pointer' }}
+      style={{ width: 256,cursor:'pointer',height: 'calc(100vh - 70px)'}}
       selectedKeys={[pathname]} // LUÔN active đúng route hiện tại
       mode="inline"
       items={items}

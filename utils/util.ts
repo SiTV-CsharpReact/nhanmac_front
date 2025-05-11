@@ -73,4 +73,25 @@ export const formatMoney = (x:number, currency) => {
       return Array.from(sectionMap.values());
     }
 
-  
+  // utils/slugUtils.ts
+export function parseSlug(slug: string) {
+  const cleanSlug = slug.replace(/\.html$/, "");
+  const match = cleanSlug.match(/-(\d+)$/); // ao-thun-123
+  return {
+    id: match ? Number(match[1]) : null,
+    alias: match ? null : cleanSlug,
+  };
+}
+
+export const removeVietnameseTones = (str: string) => {
+  return str
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/đ/g, "d")
+    .replace(/Đ/g, "D")
+    .replace(/\s+/g, "-")
+    .replace(/[^\w\-]+/g, "")
+    .replace(/\-\-+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .toLowerCase();
+};

@@ -1,8 +1,29 @@
+// app/page.tsx
+
 import Image from "next/image";
 import { Carousel } from "antd";
 import CountUpNumber from "@/components/share/CountUpNumber";
-import styles from "./Carousel.module.css"; //
 import SlideImage from "./slide/SlideImage";
+import { Metadata } from "next";
+import CategoryList from "./components/CategoryList";
+import TemNhuaList from "./components/TemNhuaList";
+import TemQRCode from "./components/TemQRCode";
+import NhanVai from "./components/NhanVai";
+import NhanDecal from "./components/NhanDecal";
+import TemNganhNghe from "./components/TemNganhNghe";
+import TinTuc from "./components/TinTuc";
+
+// 1. Metadata cho SEO
+export const metadata: Metadata = {
+  title: "Công ty sản xuất tem nhãn uy tín | Tem nhãn 3A",
+  description: "Chuyên sản xuất tem nhãn, nhãn mác, logo nhựa, kim loại, decal, QR code, nhãn vải... Đảm bảo chất lượng, giá tốt, giao hàng nhanh.",
+  keywords: "tem nhãn, sản xuất tem, tem nhựa, tem kim loại, tem decal, tem QR code, nhãn vải, nhãn mác",
+  openGraph: {
+    title: "Công ty sản xuất tem nhãn uy tín | Tem nhãn 3A",
+    description: "Chuyên sản xuất tem nhãn, nhãn mác, logo nhựa, kim loại, decal, QR code, nhãn vải...",
+    images: ["/images/og-image.jpg"],
+  },
+};
 
 const testimonials = [
   {
@@ -26,36 +47,11 @@ const testimonials = [
 ];
 
 const sections = [{ title: "TEM KIM LOẠI" }];
-
 const sections2 = [{ title: "TEM NHỰA DA-MICA" }, { title: "TEM QR CODE" }];
 const sections3 = [{ title: "TEM NGÀNH NGHỀ" }];
 
 const labels = [
-  {
-    image: "/images/tem-kim-loai.png",
-    imageAlt: "Ảnh tem kim loại",
-    label: "Tem nhựa da làm logo nhãn mác tag name plate máy móc",
-  },
-  {
-    image: "/images/tem-kim-loai.png",
-    imageAlt: "Ảnh tem nhựa da-mica",
-    label: "Tem nhựa da làm logo nhãn mác tag name plate máy móc",
-  },
-  {
-    image: "/images/tem-kim-loai.png",
-    imageAlt: "Ảnh tem QR code",
-    label: "Tem nhựa da làm logo nhãn mác tag name plate máy móc",
-  },
-  {
-    image: "/images/tem-kim-loai.png",
-    imageAlt: "Ảnh nhãn vải",
-    label: "Tem nhựa da làm logo nhãn mác tag name plate máy móc",
-  },
-  {
-    image: "/images/tem-kim-loai.png",
-    imageAlt: "Ảnh nhãn decal",
-    label: "Tem nhựa da làm logo nhãn mác tag name plate máy móc",
-  },
+  // ... như cũ
 ];
 
 export default function Home() {
@@ -66,20 +62,22 @@ export default function Home() {
     slidesToShow: 1,
     slidesToScroll: 1,
     autoplay: true,
-    autoplaySpeed: 5000, // Thời gian chuyển slide (milliseconds)
-    arrows: false, // Ẩn mũi tên
-    className: styles.carouselContainer, // Thêm class vào carousel
-    dotsClass: `${styles.dots} slick-dots`,
+    autoplaySpeed: 5000,
+    arrows: false,
+    dotsClass: "slick-dots",
   };
+
   return (
-    <main className="m-auto grid place-items-center">
-      {/* 12 cột, gap tuỳ ý */}
+    <main className="m-auto grid place-items-center mb-12">
+      {/* 1. Slide banner */}
       <div className="container my-4">
-        <SlideImage/>
-        <div className="text-center text-[28px] mt-8 font-semibold md:text-[32px]">
-          <span>Bạn đang tìm đơn vị sản xuất tem nhãn uy tín?</span>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-12 mt-6 px-1 md:px-20 gap-1 md:gap-0 ">
+        <SlideImage />
+        <h1 className="text-center text-[28px] mt-8 font-semibold md:text-[32px]">
+          Bạn đang tìm đơn vị sản xuất tem nhãn uy tín?
+        </h1>
+
+        {/* 2. Thông tin công ty & số liệu */}
+        <section className="grid grid-cols-1 md:grid-cols-12 mt-6 px-1 md:px-20 gap-1 md:gap-0">
           <div className="flex flex-col gap-1 text-[#2F80ED] col-span-1 md:col-span-4 md:gap-6">
             {/* Kinh nghiệm */}
             <div className="flex items-center gap-4">
@@ -88,41 +86,36 @@ export default function Home() {
                   <div className="relative mt-1 text-[46px] font-semibold text-white">
                     <span className="absolute left-3 tracking-[-4px]">10</span>
                     <span className="absolute text-2xl font-bold left-13 top-3.5">
-                      <Image src="/icons/+.svg" width={12} height={12} alt="" />
+                      <Image src="/icons/+.svg" width={12} height={12} alt="Thêm 10 năm kinh nghiệm" />
                     </span>
                   </div>
                 </div>
               </div>
               <span className="text-base font-medium animate-subtitle">
-                Hơn 10 năm năm kinh nghiệm
+                Hơn 10 năm kinh nghiệm
               </span>
             </div>
-
             {/* Số lượng khách hàng */}
             <div className="flex items-center gap-4 mt-2 md:mt-0">
               <div className="w-21.5 h-21.5 rounded-full bg-[#62A3FC] border-2 border-[#2F80ED] flex items-center justify-center">
                 <div className="w-20 h-20 rounded-full border-3 border-[#fff]">
                   <div className="relative text-[19px] font-semibold text-white">
-                    <span className="absolute left-0.5 top-5 tracking-[-1px]">
-                      <CountUpNumber
-                        end={20000}
-                        suffix={
-                          <Image
+                    <span className="absolute text-[22px] left-0.5 top-5 tracking-[-1px]">
+                      20.000
+                      <Image
                             src="/icons/+.svg"
                             width={11}
                             height={11}
-                            alt=""
-                            className="absolute left-14.5 top-0.5"
+                            alt="Thêm 20000 khách hàng"
+                            className="absolute left-14 top-0.5"
                           />
-                        }
-                        duration={2}
-                      />
                     </span>
+                    
                   </div>
                 </div>
               </div>
               <span className="text-base font-medium animate-subtitle">
-                Với khoảng hơn 20.000 khách hàng đã tin tưởng và sử dụng
+                Khoảng 20.000 khách hàng đã tin tưởng và sử dụng
               </span>
             </div>
           </div>
@@ -133,247 +126,107 @@ export default function Home() {
               </span>
               <br />
               <span className="block max-w-3xl mx-auto text-base font-medium mt-4.5">
-                Với phương châm &quot;Nỗ lực hết mình vì mục tiêu khách hàng đặt
-                ra&quot; vì thế chúng tôi không ngừng hoàn thiện mình, nâng cấp,
-                đổi mới trang thiết bị máy móc, tăng cường khả năng sáng tạo,
-                biết lắng nghe để rồi từ đó thấu hiểu được ý tưởng và đáp ứng
-                yêu cầu Quý khách. Tem nhãn mác của chúng tôi sẽ góp phần nâng
-                cao giá trị sản phẩm của bạn
+                Với phương châm <strong>&quot;Nỗ lực hết mình vì mục tiêu khách hàng đặt ra&quot;</strong>, chúng tôi không ngừng hoàn thiện, nâng cấp máy móc, tăng cường sáng tạo, biết lắng nghe để thấu hiểu ý tưởng và đáp ứng yêu cầu Quý khách. Tem nhãn mác của chúng tôi góp phần nâng cao giá trị sản phẩm của bạn.
               </span>
               <div className="mt-2">
-                <a className="flex float-right" href="go">
+                <a className="flex float-right" href="/about" title="Đọc thêm về Thiên Lương">
                   <span className="text-[#2F80ED] font-medium text-base mr-0.5">
                     Đọc thêm
-                  </span>{" "}
+                  </span>
                   <Image
                     className="transform transition-all duration-300 group-hover:translate-x-1 animate-arrow"
                     src={"/icons/arrow-big-right-lines.svg"}
                     width={24}
                     height={27}
-                    alt="go"
+                    alt="Đọc thêm"
                   />
                 </a>
               </div>
             </div>
           </div>
-        </div>
+        </section>
       </div>
-      <div className="w-full mb-13 mt-10">
-        <div className="p-1 py-2 md:p-6 space-y-12 bg-[#EAF2FE] grid place-items-center">
-          <div className="container">
-            {sections.map((section, idx) => (
-              <div key={idx} className="text-center">
-                <h2 className="text-2xl md:text-[32px] font-semibold text-center inline-block ">
-                  {section.title}
-                </h2>
-                <div className="h-1 bg-[#2F80ED] mx-auto w-1/2 max-w-[255px] mb-5 sm:w-[255px]"></div>
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                  {labels.map((label, i) => (
-                    <div
-                      key={i}
-                      className="bg-white shadow-custom p-0 flex flex-col items-center"
-                    >
-                      <div className="w-full  bg-gray-100 mb-2 flex items-center justify-center">
-                        {/* Chèn hình ảnh ở đây */}
-                        <Image
-                          src={label?.image}
-                          alt={label?.imageAlt || "Ảnh sản phẩm"} // Thêm alt mặc định
-                          height={173}
-                          width={245}
-                        />
-                      </div>
-                      <p className="text-[15px] font-normal text-[#2F80ED] text-left p-2.5">
-                        {label?.label}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
 
-        <div className="  p-1 py-2 md:pb-6 space-y-12 grid place-items-center">
-          <div className="container">
-            {sections2.map((section, idx) => (
-              <div key={idx} className="text-center py-2 md:my-10 ">
-                <h2 className="text-2xl md:text-[32px] font-semibold text-center inline-block ">
-                  {section.title}
-                </h2>
-                <div className="h-1 bg-[#2F80ED] mx-auto w-1/2 max-w-[255px] mb-5 sm:w-[255px]"></div>
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                  {labels.map((label, i) => (
-                    <div
-                      key={i}
-                      className="bg-white shadow-custom rounded p-2 flex flex-col items-center"
-                    >
-                      <div className="w-full h-24 bg-gray-100 mb-2 flex items-center justify-center">
-                        {/* Chèn hình ảnh ở đây */}
-                        <span className="text-gray-400">Ảnh</span>
-                      </div>
-                      <p className="text-xs text-center">{label?.label}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-        <div className="grid place-items-center">
+      {/* Danh mục sản phẩm */}
+      <section className="w-full mb-13 mt-10">
+ 
+        <CategoryList />
+  
+        <TemNhuaList />
+        <TemQRCode />
+        <div className="grid place-items-center mt-4">
           <div className="container">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="bg-[#EAF2FE] p-2 md:p-5">
-                <h2 className="text-2xl md:text-[32px] font-semibold text-center ">
-                  NHÃN VẢI
-                </h2>
-                <div className="h-1 bg-[#2F80ED] mx-auto w-1/2 max-w-[255px] mb-5 sm:w-[255px]"></div>
-                <div className="grid grid-cols-2 gap-4">
-                  {labels.slice(0, 4).map((label, i) => (
-                    <div
-                      key={i}
-                      className="bg-white shadow-custom rounded p-2 flex flex-col items-center"
-                    >
-                      <div className="w-full h-24 bg-gray-100 mb-2 flex items-center justify-center">
-                        <span className="text-gray-400">Ảnh</span>
-                      </div>
-                      <p className="text-xs text-center">{label?.label}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              <NhanVai />
 
-              <div className="bg-[#EAF2FE] p-2 md:p-5">
-                <h2 className="text-2xl md:text-[32px] font-semibold text-center ">
-                  NHÃN DECAL
-                </h2>
-                <div className="h-1 bg-[#2F80ED] mx-auto w-1/2 max-w-[255px] mb-5 sm:w-[255px]"></div>
-                <div className="grid grid-cols-2 gap-4">
-                  {labels.slice(0, 4).map((label, i) => (
-                    <div
-                      key={i}
-                      className="bg-white shadow-custom rounded p-2 flex flex-col items-center"
-                    >
-                      <div className="w-full h-24 bg-gray-100 mb-2 flex items-center justify-center">
-                        <span className="text-gray-400">Ảnh</span>
-                      </div>
-                      <p className="text-xs text-center">{label?.label}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              <NhanDecal />
             </div>
           </div>
         </div>
+        <TemNganhNghe />
 
-        <div className="  p-1 py-2 md:pb-6 space-y-12 grid place-items-center">
-          <div className="container">
-            {sections3.map((section, idx) => (
-              <div key={idx} className="text-center py-2 md:my-10 ">
-                <h2 className="text-2xl md:text-[32px] font-semibold text-center inline-block ">
-                  {section.title}
-                </h2>
-                <div className="h-1 bg-[#2F80ED] mx-auto w-1/2 max-w-[255px] mb-5 sm:w-[255px]"></div>
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                  {labels.map((label, i) => (
-                    <div
-                      key={i}
-                      className="bg-white shadow-custom rounded p-2 flex flex-col items-center"
-                    >
-                      <div className="w-full h-24 bg-gray-100 mb-2 flex items-center justify-center">
-                        {/* Chèn hình ảnh ở đây */}
-                        <span className="text-gray-400">Ảnh</span>
+      </section>
+
+      {/* Testimonial */}
+      <section className="grid place-items-center">
+        <div className="container">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="bg-[#EAF2FE] pb-1.5 px-2 md:px-5 pt-5">
+              <h2 className="text-2xl md:text-[32px] font-semibold text-center ">
+                CẢM NHẬN KHÁCH HÀNG
+              </h2>
+              <div className="h-1 bg-[#2F80ED] mx-auto w-[255px] mb-2.5"></div>
+              <Carousel {...settings} className="pb-9">
+                {testimonials.map((testimonial, index) => (
+                  <div key={testimonial.author + index} className="bg-white">
+                    <div className="grid grid-cols-12 gap-5 p-5">
+                      <div className="col-span-2 flex items-start gap-2">
+                        <Image
+                          src="/icons/Vector.svg"
+                          width={41}
+                          height={18}
+                          alt="Icon đánh giá"
+                          className="h-10 w-10 md:h-15 md:w-10"
+                        />
+                        <Image
+                          src="/icons/Vector.svg"
+                          width={41}
+                          height={18}
+                          alt="Icon đánh giá"
+                          className="h-10 w-10 md:h-15 md:w-10"
+                        />
                       </div>
-                      <p className="text-xs text-center">{label?.label}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-        <div className="grid place-items-center">
-          <div className="container">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-              <div className="bg-[#EAF2FE] pb-1.5 px-2 md:px-5 pt-5">
-                <h2 className="text-2xl md:text-[32px] font-semibold text-center ">
-                  CẢM NHẬN KHÁCH HÀNG
-                </h2>
-                <div className="h-1 bg-[#2F80ED] mx-auto w-[255px] mb-2.5"></div>
-                <Carousel {...settings} className="pb-9">
-                  {testimonials.map((testimonial, index) => (
-                    <div key={index} className="bg-white">
-                      <div className="grid grid-cols-12 gap-5 p-5">
-                        {/* Logo hoặc icon */}
-                        <div className="col-span-2 flex items-start gap-2">
-                          <Image
-                            src="/icons/Vector.svg"
-                            width={41}
-                            height={18}
-                            alt=""
-                            className="h-10 w-10 md:h-15 md:w-10"
-                          />
-                          <Image
-                            src="/icons/Vector.svg"
-                            width={41}
-                            height={18}
-                            alt=""
-                            className="h-10 w-10 md:h-15 md:w-10"
-                          />
+                      <div className="col-span-10 ml-4">
+                        <blockquote className="block text-base text-gray-700 leading-relaxed">
+                          {testimonial.comment}
+                        </blockquote>
+                        <div className="flex gap-1 pb-1.5 pt-0.5 mb-2 border-b-1 border-[#CFCFCF]">
+                          {[...Array(5)].map((_, idx) => (
+                            <Image
+                              key={idx}
+                              src="/icons/star.svg"
+                              width={24}
+                              height={24}
+                              alt="star"
+                            />
+                          ))}
                         </div>
-
-                        {/* Nội dung */}
-                        <div className="col-span-10  ml-4">
-                          <span className="block  text-base text-gray-700 leading-relaxed leading-[22px]">
-                            {testimonial.comment}
+                        <div className="mb-3">
+                          <span className="text-base font-bold">
+                            {testimonial.author} - {testimonial.company}
                           </span>
-
-                          {/* Rating */}
-                          <div className="flex gap-1 pb-1.5 pt-0.5 mb-2 border-b-1 border-[#CFCFCF]">
-                            {[...Array(5)].map((_, index) => (
-                              <Image
-                                key={index}
-                                src="/icons/star.svg"
-                                width={24}
-                                height={24}
-                                alt="star"
-                              />
-                            ))}
-                          </div>
-                          <div className="mb-3">
-                            <span className="text-base font-bold">
-                              {testimonial.author} - {testimonial.company}
-                            </span>
-                          </div>
                         </div>
                       </div>
                     </div>
-                  ))}
-                </Carousel>
-              </div>
-
-              <div className="bg-[#EAF2FE] p-2 md:p-5">
-                <h2 className="text-2xl md:text-[32px] font-semibold text-center ">
-                  TIN TỨC
-                </h2>
-                <div className="h-1 bg-[#2F80ED] mx-auto w-1/2 max-w-[255px] mb-5 sm:w-[255px]"></div>
-                <div className="grid grid-cols-2 gap-4">
-                  {labels.slice(0, 2).map((label, i) => (
-                    <div
-                      key={i}
-                      className="bg-white shadow-custom rounded p-2 flex flex-col items-center"
-                    >
-                      <div className="w-full h-24 bg-gray-100 mb-2 flex items-center justify-center">
-                        <span className="text-gray-400">Ảnh</span>
-                      </div>
-                      <p className="text-xs text-center">{label?.label}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
+                  </div>
+                ))}
+              </Carousel>
             </div>
+           <TinTuc/>
+            {/* ... Tin tức hoặc các section khác */}
           </div>
         </div>
-      </div>
+      </section>
     </main>
   );
 }

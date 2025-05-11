@@ -16,6 +16,7 @@ export interface Category {
     access?: number;
     count?: number;
     params?: string;
+    children?:Categories[];
   }
   export interface Categories {
     section_id: number;

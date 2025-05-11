@@ -6,7 +6,7 @@ const AdminPostManagement: React.FC = () => {
  
 
   return (
-    <div style={{ padding: 24 }}>
+    <div style={{ paddingLeft:12 }}>
      <Image
             src="/images/login.png"
             width={600}

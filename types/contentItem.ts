@@ -37,3 +37,23 @@ export interface ListPost{
   list:Post[];
   total:number
 }
+export interface CateContent {
+  id: number;
+  content_title: string;
+  alias: string;
+  urls: string;
+  images: string;
+  state: number;
+  catid: number;
+  category_title: string;
+  category_alias: string;
+}
+export interface ListCateContent {
+  list: CateContent[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
+}

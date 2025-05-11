@@ -1,15 +1,15 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Table, Button, Modal, Input, Select, Dropdown, Menu, message, Form, Tooltip, Popconfirm } from "antd";
-import { MoreOutlined, PlusOutlined } from "@ant-design/icons";
+import { Table, Button, Modal, Input, Select, Dropdown, Menu, message, Form, Tooltip, Popconfirm, Spin } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
 import { categoryApi } from '@/modules/admin/categoryApi';
 import { Categories, Category } from "@/types/categoryItem";
-import { debounce } from 'lodash';
 import TitlePageAdmin from "@/components/share/TitlePageAdmin";
 import { DeleteIcon, EditIcon } from "@/components/icons/Icons";
 import { useCategories } from "@/hooks/useCategories";
 const { Option } = Select;
 import '@ant-design/v5-patch-for-react-19';
+import { removeVietnameseTones } from "@/utils/util";
 // console.log(React.version);
 // Hàm chuyển mảng phẳng thành tree
 
@@ -46,23 +46,17 @@ function buildTree(data: Categories[]): any[] {
   return Array.from(sectionMap.values());
 }
 
-
-
-
-// const rowClassName = (record: Categories) => {
-//   // console.log(first)
-//   if (record?.alias) {
-//     return "bg-gray-50"; // menu cha mặc định
-//   }
-//   // menu con cấp 1 (parent != 0)
-//   // return "bg-gray-50"; // ví dụ màu nền sáng hơn
-// };
 export default function CategoryTable() {
   const [categories, setCategories] = useState<Categories[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingCategory, setEditingCategory] = useState<Categories | null>(null);
+  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [form] = Form.useForm();
   const { selectOptions, loading } = useCategories();
+  const [alias, setAlias] = useState("");
+  const [title, setTitle] = useState("");
+  const [loadingAlias, setLoadingAlias] = useState(false);
+  const [sttCategory, setSttCategory] = useState(0);
+
   useEffect(() => {
     fetchCategories();
   }, []);
@@ -76,38 +70,39 @@ export default function CategoryTable() {
     }
   };
 
-  const showModal = (category?: Category) => {
+  const showModal = async (category?: Category) => {
     if (category) {
       setEditingCategory(category);
-      form.setFieldsValue({
-        name: category.name,
-        title: category.title,
-        alias: category.alias,
-        parent_id: category.parent_id,
-        published: category.published,
-      });
+      const type = category?.children ? 0 : 1;
+      setSttCategory(category?.children ? 0 : 1)
+      const data = await categoryApi.getDetail(category?.id, type);
+
+      const res = data.Data
+      setAlias(res.alias)
+      setTimeout(() => form.setFieldsValue({
+        name: res.name,
+        title: res.title,
+        alias: res.alias,
+        section: Number(res.section),
+        published: res.published,
+      }))
+
     } else {
+      setSttCategory(1)
       setEditingCategory(null);
-      form.resetFields();
-      form.setFieldsValue({
-        parent_id: 0,
-        published: 1
-      });
+      setTimeout(() => {
+        setAlias("");
+        form.resetFields(),
+        form.setFieldsValue({
+          section: 0,
+          published: 1
+        })
+      }
+
+        , 200);
+
     }
     setIsModalOpen(true);
-  };
-
-  const removeVietnameseTones = (str: string) => {
-    return str
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/đ/g, "d")
-      .replace(/Đ/g, "D")
-      .replace(/\s+/g, "-")
-      .replace(/[^\w\-]+/g, "")
-      .replace(/\-\-+/g, "-")
-      .replace(/^-+|-+$/g, "")
-      .toLowerCase();
   };
 
   const handleSave = async () => {
@@ -117,16 +112,17 @@ export default function CategoryTable() {
         name: values.name,
         title: values.title,
         alias: values.alias || removeVietnameseTones(values.title),
-        section: values.parent_id || 0,
+        section: values.section|| 0,
         published: values.published,
       };
+      console.log(editingCategory?.id)
 
       if (editingCategory) {
-        await categoryApi.update(editingCategory.id, categoryData);
+        await categoryApi.update(editingCategory.id, values?.section ? 1 : 0, categoryData);
         message.success("Chuyên mục đã được cập nhật");
       } else {
-        await categoryApi.create(categoryData);
-        message.success("Chuyên mục đã được thêm mới");
+        const res = await categoryApi.create(categoryData);
+        message.success(res.Message);
       }
 
       fetchCategories();
@@ -136,15 +132,33 @@ export default function CategoryTable() {
     }
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: number, type: number) => {
     try {
-      await categoryApi.delete(id);
+      await categoryApi.delete(id, type);
       fetchCategories();
       message.success("Chuyên mục đã được xóa");
     } catch (error: any) {
       message.error(error.message);
     }
   };
+
+  useEffect(() => {
+    if (!title) {
+      setAlias("");
+      form.setFieldsValue({ alias: "" });
+      return;
+    }
+
+    setLoadingAlias(true);
+    const handler = setTimeout(() => {
+      const converted = removeVietnameseTones(title);
+      setAlias(converted);
+      form.setFieldsValue({ alias: converted });
+      setLoadingAlias(false);
+    }, 500);
+
+    return () => clearTimeout(handler);
+  }, [title, form]);
 
   const columns = [
     { title: "ID", dataIndex: "id", key: "id", align: 'center', width: 100, },
@@ -162,50 +176,38 @@ export default function CategoryTable() {
       width: 80,
       render: (_: any, record: Category) => (
         <div className="flex gap-5">
-          <div onClick={(e) => {
-             e?.stopPropagation();
-            showModal(record)}}>
+          <div className="pt-1" onClick={(e) => {
+            e?.stopPropagation();
+            showModal(record)
+          }}>
             <EditIcon
             />
           </div>
           <Tooltip title="Xóa">
-        <Popconfirm
-            title={`Bạn có chắc muốn xóa "${record.title}"?`}
-            onConfirm={(e) => {
-              e?.stopPropagation(); // Ngăn sự kiện lan ra ngoài
-              handleDelete(record.id);
-            }}
-            onCancel={(e) => {
-              e?.stopPropagation(); // Ngăn sự kiện lan ra ngoài
-            }}
-            okText="Xóa"
-            cancelText="Hủy"
-          >
-            <Button
-              type="text"
-              icon={<DeleteIcon className="text-red-500" />}
-              title="Xóa menu"
-              onClick={(e) => e.stopPropagation()} // Ngăn sự kiện lan ra ngoài khi bấm nút
-            />
-          </Popconfirm>
+            <Popconfirm
+              title={`Bạn có chắc muốn xóa "${record.title}"?`}
+              onConfirm={(e) => {
+                e?.stopPropagation(); // Ngăn sự kiện lan ra ngoài
+                handleDelete(record.id, record?.children ? 0 : 1);
+              }}
+              onCancel={(e) => {
+                e?.stopPropagation(); // Ngăn sự kiện lan ra ngoài
+              }}
+              okText="Xóa"
+              cancelText="Hủy"
+            >
+              <Button
+                type="text"
+                icon={<DeleteIcon className="text-red-500" />}
+                title="Xóa menu"
+                onClick={(e) => e.stopPropagation()} // Ngăn sự kiện lan ra ngoài khi bấm nút
+              />
+            </Popconfirm>
           </Tooltip>
         </div>
       ),
     },
   ];
-
-  // Tạo hàm debounce với useCallback để tránh recreate function mỗi lần render
-  const debouncedUpdateAlias = debounce((title: string) => {
-    const currentAlias = form.getFieldValue('alias');
-    if (!currentAlias?.trim()) {
-      form.setFieldsValue({ alias: removeVietnameseTones(title) });
-    }
-  }, 500);
-
-  // Cleanup vẫn cần thiết
-  useEffect(() => {
-    return () => debouncedUpdateAlias.cancel();
-  }, []);
 
   return (
     <div className="pl-4">
@@ -231,7 +233,7 @@ export default function CategoryTable() {
         columns={columns}
         dataSource={buildTree(categories)}
         pagination={false}
-        expandable={{ expandRowByClick: true, indentSize: 24 }}
+        expandable={{ expandRowByClick: true, indentSize: 24, }}
         bordered
         // rowClassName={rowClassName}
         className="[&_.ant-table-cell]:!p-2"
@@ -257,20 +259,23 @@ export default function CategoryTable() {
           >
             <Input
               placeholder="Tiêu đề"
-              onChange={(e) => debouncedUpdateAlias(e.target.value)}
+              onChange={(e) => setTitle(e.target.value)}
             />
           </Form.Item>
           <Form.Item label="Alias" name="alias">
-            <Input placeholder="Alias (để trống sẽ tự động tạo)" />
+            <Spin spinning={loadingAlias} size="small">
+              <Input placeholder="Alias (để trống sẽ tự động tạo)" value={alias} readOnly />
+            </Spin>
           </Form.Item>
-
-          <Form.Item label="Danh mục cha" name="parent_id">
-            <Select
-              allowClear
-              options={selectOptions}
-              placeholder="-- Chọn danh mục cha --"
-            />
-          </Form.Item>
+          {sttCategory == 1 &&
+            <Form.Item label="Danh mục cha" name="section">
+              <Select
+                allowClear
+                options={selectOptions}
+                placeholder="-- Chọn danh mục cha --"
+              />
+            </Form.Item>
+          }
 
 
           <Form.Item label="Trạng thái xuất bản" name="published">

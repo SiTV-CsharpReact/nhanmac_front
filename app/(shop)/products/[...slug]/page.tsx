@@ -98,7 +98,7 @@ export default async function Page({ params }: Props) {
     <main className="m-auto grid place-items-center" key={post?.id}>
       <div className="container mb-15">
         {/* Tiêu đề */}
-        <TitlePage text={post?.title} />
+        <TitlePage />
 
         <div className="flex flex-col md:flex-row max-w-7xl mx-auto gap-6">
           {/* Nội dung chính */}

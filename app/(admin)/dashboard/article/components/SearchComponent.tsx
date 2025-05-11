@@ -134,7 +134,7 @@ const SearchComponent: React.FC<SearchComponentProps> = ({
         <div
           style={{
             display: "flex",
-            justifyContent: "center",
+            // justifyContent: "center",
             gap: 16,
             marginTop: 30,
             width: "100%",

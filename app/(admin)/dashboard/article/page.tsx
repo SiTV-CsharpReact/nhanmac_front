@@ -203,7 +203,7 @@ const Page: React.FC = () => {
     {
       title: "Thao tác",
       width: 120,
-      fixed:'right',
+      // fixed:'right',
       render: (_, record) => (
         <div className="flex gap-5 cursor-pointer">
           <Tooltip title="Xem">
@@ -306,7 +306,7 @@ const Page: React.FC = () => {
             },
             showSizeChanger: true,
           }}
-          scroll={{ y: 500 }}
+          scroll={{ x: 'max-content', y: 500 }} 
           loading={loading}
           onChange={handleTableChange}
           rowKey="id"

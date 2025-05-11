@@ -11,7 +11,39 @@ export async function fetchMenus(): Promise<ApiResponse<MenuItem[]>> {
   return await res.json();
 }
 // Lấy bài viết theo alias
-export const fetchCateAlias = async (alias: string): Promise<ApiResponse<Post[]>> => {
+export const fetchCateAlias = async (
+  alias: string,
+  page: number = 1,
+  pageSize: number = 9
+): Promise<ApiResponse<Post[]>> => {
+  try {
+    // const offset = (page - 1) * pageSize;
+    const url = new URL(`${env.apiUrl}/categories/${alias}`);
+    url.searchParams.append("page", page.toString());
+    url.searchParams.append("pageSize", pageSize.toString());
+    console.log(url.toString())
+
+    const response = await fetch(url.toString(), { cache: "no-store" });
+
+    const data: ApiResponse<Post[]> = await response.json();
+    console.log(data);
+    if (data.Code !== 200) {
+      throw new Error(data.Message || "Có lỗi xảy ra");
+    }
+    return data;
+  } catch (error: any) {
+    if (typeof window !== "undefined") {
+      notification.error({
+        message: "Lỗi",
+        description: error.message || "Không thể lấy bài viết",
+      });
+    }
+    throw error;
+  }
+};
+
+
+export const fetchCate = async (alias: string): Promise<ApiResponse<Post[]>> => {
   try {
  
     const response = await fetch(`${env.apiUrl}/categories/${alias}`,{
