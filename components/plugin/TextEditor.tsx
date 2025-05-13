@@ -45,7 +45,6 @@ const TextEditor = ({ editorData, setEditorData, disabled = false, toolbar = 'fu
         'fullscreen',
         'insertdatetime',
         'media',
-        'table',
         'code',
         'help',
         'wordcount',

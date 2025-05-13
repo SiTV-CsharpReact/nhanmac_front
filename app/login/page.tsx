@@ -17,7 +17,7 @@ const Page = () => {
     try {
       const data = await login(values); // ✅ Dùng hàm login
       message.success("Đăng nhập thành công!");
-      Cookies.set('access_token', data.Data.usertype); 
+      Cookies.set('access_token', data.Data.usertype, { expires: 1 });
       // cookies.setItem("access_token", data.Data.usertype);
       router.push('/dashboard/menu');
     } catch (error: any) {

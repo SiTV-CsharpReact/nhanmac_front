@@ -319,6 +319,12 @@ const AdminPostManagement: React.FC = () => {
       ),
     },
     {
+      title: "Link",
+      dataIndex: "alias",
+      key: "image_desc",
+      width: 350,
+    },
+    {
       title: "Thao tác",
       key: "action",
       width: 88,
@@ -408,14 +414,6 @@ const AdminPostManagement: React.FC = () => {
           >
             <Input />
           </Form.Item>
-
-          <Form.Item
-            name="image_desc"
-            label="Chú thích ảnh"
-          >
-            <Input.TextArea rows={4} />
-          </Form.Item>
-
           <Form.Item
             label="Ảnh"
             name="image"
@@ -427,6 +425,20 @@ const AdminPostManagement: React.FC = () => {
               </div>}
             </Upload>
           </Form.Item>
+          <Form.Item
+            name="image_desc"
+            label="Chú thích ảnh"
+          >
+            <Input.TextArea rows={4} />
+          </Form.Item>
+          <Form.Item
+            name="alias"
+            label="Link"
+            rules={[{ required: true, message: 'Vui lòng nhập đường link bài viết!' }]}
+          >
+            <Input  />
+          </Form.Item>
+         
         </Form>
       </Modal>
 

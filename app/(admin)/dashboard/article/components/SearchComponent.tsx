@@ -32,7 +32,7 @@ const SearchComponent: React.FC<SearchComponentProps> = ({
 }) => {
   const { selectOptions, loading } = useCategories();
   const initialValues = {
-    created: [dayjs(), dayjs()], // RangePicker expects array of moments
+    created: [dayjs().subtract(1, "month"), dayjs()], // RangePicker expects array of moments
     state: 1,
     sectionid: undefined,
     keyword: "",
@@ -97,7 +97,7 @@ const SearchComponent: React.FC<SearchComponentProps> = ({
           </Form.Item>
         </div>
 
-        <div style={{ width: "100%", maxWidth: "300px" }}>
+        <div style={{ width: "100%", maxWidth: "250px" }}>
           <Form.Item name="state" label="Trạng thái:">
             <Select
               style={{ width: "100%" }}
@@ -107,7 +107,7 @@ const SearchComponent: React.FC<SearchComponentProps> = ({
           </Form.Item>
         </div>
 
-        <div style={{ width: "100%", maxWidth: "300px" }}>
+        <div style={{ width: "100%", maxWidth: "250px" }}>
           <Form.Item name="sectionid" label="Chuyên mục:">
             <Select
               showSearch

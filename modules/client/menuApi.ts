@@ -68,3 +68,40 @@ export const fetchCate = async (alias: string): Promise<ApiResponse<Post[]>> => 
     throw error;
   }
 };
+
+export const fetchContentBySlugId = async (
+  slug: string,
+  id: number
+): Promise<{ data?: ApiResponse<Post>; redirectUrl?: string }> => {
+  try {
+    const response = await fetch(`${env.apiUrl}/contents/${slug}-${id}.html`, {
+      next: {
+        revalidate: 60,
+      },
+    });
+
+    const data: ApiResponse<Post> = await response.json();
+
+    if (data.Code !== 200) {
+      throw new Error(data.Message || "Có lỗi xảy ra");
+    }
+
+    // Nếu slug trong data khác slug trên URL, trả về URL redirect
+    if (data.Data.alias !== slug) {
+      return {
+        redirectUrl: `/contents/${data.Data.alias}-${data.Data.id}.html`,
+      };
+    }
+
+    // Trả về dữ liệu bài viết bình thường
+    return { data };
+  } catch (error: any) {
+    if (typeof window !== "undefined") {
+      notification.error({
+        message: "Lỗi",
+        description: error.message || "Không thể lấy chi tiết bài viết",
+      });
+    }
+    throw error;
+  }
+};

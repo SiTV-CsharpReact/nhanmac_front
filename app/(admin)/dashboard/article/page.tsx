@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Table, Button, Tag, Tooltip, Form, Modal, notification, Space, Popconfirm } from "antd";
+import { Table, Button, Tag, Tooltip, Form, Modal, notification, Space, Popconfirm,Typography } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { dateFormat, statusXB } from "@/config/config";
 import { formatMoney, getConstantLabel, getTagColor } from "@/utils/util";
@@ -16,19 +16,20 @@ import ViewArticle from "./components/ViewArticle";
 import TitlePageAdmin from "@/components/share/TitlePageAdmin";
 import type { TablePaginationConfig } from "antd/es/table";
 import '@ant-design/v5-patch-for-react-19';
+import { env } from "@/config/env";
 interface TableParams {
   pagination?: TablePaginationConfig;
   sortField?: string;
   sortOrder?: string;
   filters?: Record<string, any>;
 }
-
+const { Text } = Typography;
 interface TableItem extends Post {
   key: number;
 }
 
 const initialParams = {
-  created: [dayjs().subtract(1, "days"), dayjs()], // ví dụ 'YYYY-MM-DD'
+  created: [dayjs().subtract(1, "month"), dayjs()], // ví dụ 'YYYY-MM-DD'
   pageNumber: 1,
   pageSize: 10,
   sectionid: undefined,
@@ -45,6 +46,35 @@ export const defaultPagin = {
   pageSize: 10,
   total: 0,
 }
+interface EllipsisWithTooltipProps {
+  text: React.ReactNode;
+  maxWidth?: number; // tùy chọn giới hạn chiều rộng
+}
+
+const EllipsisWithTooltip: React.FC<EllipsisWithTooltipProps> = ({
+  text,
+  maxWidth = 380,
+}) => {
+  const [isEllipsis, setIsEllipsis] = useState(false);
+
+  return (
+    <Tooltip title={isEllipsis ? (typeof text === "string" ? text : undefined) : ""}>
+      <Text
+        ellipsis={{
+          tooltip: false,
+          onEllipsis: (ellipsis) => {
+            setIsEllipsis(ellipsis);
+          },
+        }}
+        style={{ maxWidth, display: "block" }}
+      >
+        {text}
+      </Text>
+    </Tooltip>
+  );
+};
+
+// export default EllipsisWithTooltip;
 
 const Page: React.FC = () => {
   const [data, setData] = useState<TableItem[]>([]);
@@ -163,13 +193,14 @@ const Page: React.FC = () => {
     {
       title: "#",
       dataIndex: "id",
-      width: 60
+      align:'center',
+      width: 50
     },
     {
 
       title: "Trạng thái",
       dataIndex: "state",
-      width: 120,
+      width: 80,
       render: (text: string) => {
         return (
           <Tag color={getTagColor(statusXB, text)}>
@@ -187,18 +218,37 @@ const Page: React.FC = () => {
           {dayjs(text).format("DD/MM/YYYY")}
         </span>
       ),
-      width: 130
+      width: 100
     },
     {
       title: "Tiêu đề",
       dataIndex: "title",
       key: "title",
-      render: (text: string) => <span className="font-semibold">{text}</span>,
+      width: 350, // đặt width cố định để ellipsis hoạt động tốt
+      render: (text: string) => <EllipsisWithTooltip text={text} />,
     },
     {
       title: "Alias",
       dataIndex: "alias",
       key: "alias",
+      width: 250, // đặt width cố định để ellipsis hoạt động tốt
+      render: (text: string) => <EllipsisWithTooltip text={text} maxWidth={250}/>,
+    },
+    {
+      title: "Link bài viết",
+      // key: "alias",
+      width:300, // đặt width cố định để ellipsis hoạt động tốt
+      render: (text, record) => (
+      
+        <EllipsisWithTooltip
+          text={
+            <a href={`${env.host}${record.alias}-${record.id}.html`} target="_blank" rel="noopener noreferrer">
+              {`${record.alias}-${record.id}.html`}
+            </a>
+          }
+          maxWidth={280}
+        />
+      ),
     },
     {
       title: "Thao tác",
@@ -306,11 +356,12 @@ const Page: React.FC = () => {
             },
             showSizeChanger: true,
           }}
-          scroll={{ x: 'max-content', y: 500 }} 
+          scroll={{ x: 'max-content'  }} 
           loading={loading}
           onChange={handleTableChange}
           rowKey="id"
-          className="px-4"
+          // className="px-4"
+          className="[&_.ant-table-cell]:!p-2.5"
         />
         <CustomModal
           header={`${isSttModal?.typeModal == 0 ? `Chi tiết` : isSttModal?.typeModal == 1 ? `Thêm mới` : `Chỉnh sửa`

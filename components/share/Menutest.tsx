@@ -206,6 +206,7 @@ export default function MenuTest() {
 
 
                 <div className="absolute left-1/2 -translate-x-1/2 md:hidden md:translate-x-0">
+                <Link href={'/'} >
                     <Image
                         src="/images/logo.png"
                         width={56}
@@ -213,6 +214,7 @@ export default function MenuTest() {
                         alt="Logo"
                         className="md:mx-0"
                     />
+                    </Link>
                 </div>
                 {/* Desktop menu */}
                 <nav className="hidden md:block">
