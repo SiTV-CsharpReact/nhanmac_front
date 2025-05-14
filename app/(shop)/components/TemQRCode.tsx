@@ -23,33 +23,35 @@ export default async function TemQRCode() {
                     <div className="h-1 bg-[#2F80ED] mx-auto w-1/2 max-w-[255px] mb-5 sm:w-[255px]"></div>
                     <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                         {postList.map((label, i) => (
-                               <Link href={`${label.alias +label.id}.html`} key={`${label.id}-${i}`}
-                                 // onClick={()=>Cookies.set('activeParent', 'Ti')}
-                               
-                               >
-                            <div
-                                key={`${label.id}-${i}`}
-                                className="bg-white shadow-custom p-0 flex flex-col items-center"
+                            <Link href={`${label.alias + label.id}.html`} key={`${label.id}-${i}`}
+                            // onClick={()=>Cookies.set('activeParent', 'Ti')}
+
                             >
-                                <div className="w-full bg-gray-100 mb-2 flex items-center justify-center">
-                                    {label.urls ? (
-                                        <Image
-                                            src={label.urls}
-                                            alt={label.image_desc || "Ảnh sản phẩm"}
-                                            height={173}
-                                            width={245}
-                                        />
-                                    ) : (
-                                        // Có thể hiển thị ảnh mặc định hoặc placeholder
-                                        <div className="w-[245px] h-[173px] bg-gray-200 flex items-center justify-center text-gray-400">
-                                            Ảnh không có sẵn
-                                        </div>
-                                    )}
+                                <div
+                                    key={`${label.id}-${i}`}
+                                    className="bg-white shadow-custom p-0 flex flex-col items-center"
+                                >
+                                    <div className="relative w-full aspect-[245/173] bg-gray-100 mb-2 overflow-hidden rounded-md">
+                                        {label.urls ? (
+                                            <Image
+                                                src={`https://nhanmac.vn/${label.urls}`}
+                                                alt={label.image_desc || "Ảnh sản phẩm"}
+                                                fill
+                                                style={{ objectFit: 'cover' }}
+                                                sizes="(max-width: 768px) 100vw, 245px"
+                                                className="rounded-md"
+                                                priority={i < 2}
+                                            />
+                                        ) : (
+                                            <div className="w-full h-full flex items-center justify-center text-gray-400">
+                                                Ảnh không có sẵn
+                                            </div>
+                                        )}
+                                    </div>
+                                    <p className="text-[15px] font-normal text-[#2F80ED] text-left p-2.5">
+                                        {label.content_title}
+                                    </p>
                                 </div>
-                                <p className="text-[15px] font-normal text-[#2F80ED] text-left p-2.5">
-                                    {label.content_title}
-                                </p>
-                            </div>
                             </Link>
                         ))}
                     </div>

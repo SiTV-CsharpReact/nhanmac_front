@@ -34,21 +34,24 @@ export default async function CategoryList() {
                             // const url = '/' + label?.link.replace(/^index\.php\?/, '').replace(/&/g, '/').replace(/=/g, '-');
 
                             return (
-                                <Link href={`${label.alias +label.id}.html`} key={`${label.id}-${i}`} 
+                                <Link href={`${label.alias + label.id}.html`} key={`${label.id}-${i}`}
                                 // onClick={
                                 //     ()=>Cookies.set('activeParent', 'Tem kim loại')}
-                                    >
+                                >
                                     <div className="bg-white shadow-custom p-0 flex flex-col items-center cursor-pointer">
-                                        <div className="w-full bg-gray-100 mb-2 flex items-center justify-center">
+                                        <div className="relative w-full aspect-[245/173] bg-gray-100 mb-2 overflow-hidden rounded-md">
                                             {label.urls ? (
                                                 <Image
-                                                    src={label.urls}
+                                                    src={`https://nhanmac.vn/${label.urls}`}
                                                     alt={label.image_desc || "Ảnh sản phẩm"}
-                                                    height={173}
-                                                    width={245}
+                                                    fill
+                                                    style={{ objectFit: 'cover' }}
+                                                    sizes="(max-width: 768px) 100vw, 245px"
+                                                    className="rounded-md"
+                                                    priority={i < 2}
                                                 />
                                             ) : (
-                                                <div className="w-[245px] h-[173px] bg-gray-200 flex items-center justify-center text-gray-400">
+                                                <div className="w-full h-full flex items-center justify-center text-gray-400">
                                                     Ảnh không có sẵn
                                                 </div>
                                             )}

@@ -121,7 +121,8 @@ export default async function PostNews() {
                 ) : (
                     <ul>
                         {posts.map((post) => (
-                             <Link href={`/${post.alias}`} title={post.title} key={post.id}>
+                             <Link href={`/${post.alias}`} title={post.title} key={post.id} className="group">
+                                
                             <li key={post.id} className="flex bg-white gap-2 mb-3 hover:bg-gray-100 rounded p-2">
                                 <Image
                                     src={post?.urls ?? "/images/Carousel.png"}
@@ -135,7 +136,7 @@ export default async function PostNews() {
                                 
                                 <span
                        
-                                    className="m-4 text-base line-clamp-2"
+                                    className="m-4 text-base line-clamp-2 group-hover:text-[#2F80ED]"
                                     aria-label={`Đọc bài viết: ${post.title}`}
                                 >
                                     {post.title}

@@ -33,13 +33,13 @@ const [loading, setLoading] = useState(false); // loading state
     <main className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
       <div className="bg-white shadow-lg rounded-lg flex w-full max-w-4xl overflow-hidden">
         {/* Bên trái: Hình ảnh minh họa */}
-        <div className="w-1/2 bg-gray-100 hidden md:flex items-center justify-center">
+        <div className="w-1/2 bg-[#f5dcc0] hidden md:flex items-center justify-center">
           <Image
-            src="/images/login.png"
-            width={600}
-            height={575}
+            src="/images/logo.png"
+            width={200}
+            height={80}
             alt="not found"
-            className="w-full h-full"
+            // className="w-full h-full"
             priority
           />
         </div>
@@ -70,11 +70,7 @@ const [loading, setLoading] = useState(false); // loading state
               </Button>
             </Form.Item>
 
-            <div className="text-right text-sm mt-2">
-              <a href="#" className="text-blue-600 hover:underline">
-                Quên mật khẩu?
-              </a>
-            </div>
+           
           </Form>
         </div>
       </div>

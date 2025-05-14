@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import { Carousel } from "antd";
-import CountUpNumber from "@/components/share/CountUpNumber";
 import SlideImage from "./slide/SlideImage";
 import { Metadata } from "next";
 import CategoryList from "./components/CategoryList";
@@ -91,7 +90,7 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-              <span className="text-base font-medium animate-subtitle">
+              <span className="text-base font-medium animate-subtitle animate-slide-left">
                 Hơn 10 năm kinh nghiệm
               </span>
             </div>
@@ -114,23 +113,23 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-              <span className="text-base font-medium animate-subtitle">
+              <span className="text-base font-medium animate-subtitle animate-slide-left">
                 Khoảng 20.000 khách hàng đã tin tưởng và sử dụng
               </span>
             </div>
           </div>
           <div className="col-span-1 md:col-span-8 md:ml-39 text-center md:text-right mt-2 md:mt-0">
             <div className="text-right mb-12">
-              <span className="text-[#2F80ED] font-semibold text-2xl">
+              <span className="text-[#2F80ED] font-semibold text-2xl animate-slide-right">
                 CÔNG TY CỔ PHẦN CÔNG NGHỆ THIÊN LƯƠNG
               </span>
               <br />
-              <span className="block max-w-3xl mx-auto text-base font-medium mt-4.5">
+              <span className="block max-w-3xl mx-auto text-base font-medium mt-4.5 animate-slide-right ">
                 Với phương châm <strong>&quot;Nỗ lực hết mình vì mục tiêu khách hàng đặt ra&quot;</strong>, chúng tôi không ngừng hoàn thiện, nâng cấp máy móc, tăng cường sáng tạo, biết lắng nghe để thấu hiểu ý tưởng và đáp ứng yêu cầu Quý khách. Tem nhãn mác của chúng tôi góp phần nâng cao giá trị sản phẩm của bạn.
               </span>
               <div className="mt-2">
                 <a className="flex float-right" href="/about" title="Đọc thêm về Thiên Lương">
-                  <span className="text-[#2F80ED] font-medium text-base mr-0.5">
+                  <span className="text-[#2F80ED] font-medium text-base mr-0.5 animate-slide-right ">
                     Đọc thêm
                   </span>
                   <Image
@@ -149,21 +148,21 @@ export default function Home() {
 
       {/* Danh mục sản phẩm */}
       <section className="w-full mb-13 mt-10">
-{/*  
+ 
         <CategoryList />
   
         <TemNhuaList />
-        <TemQRCode /> */}
+        <TemQRCode />
         <div className="grid place-items-center mt-4">
           <div className="container">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* <NhanVai />
+              <NhanVai />
 
-              <NhanDecal /> */}
+              <NhanDecal />
             </div>
           </div>
         </div>
-        {/* <TemNganhNghe /> */}
+        <TemNganhNghe />
 
       </section>
 
@@ -222,7 +221,7 @@ export default function Home() {
                 ))}
               </Carousel>
             </div>
-           {/* <TinTuc/> */}
+           <TinTuc/>
             {/* ... Tin tức hoặc các section khác */}
           </div>
         </div>

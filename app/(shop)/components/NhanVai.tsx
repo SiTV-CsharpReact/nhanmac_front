@@ -23,7 +23,7 @@ export default async function NhanVai() {
                             <div className="mb-2 flex items-center justify-center w-[245px] !h-[195px] overflow-hidden rounded">
                                 {label.urls ? (
                                     <Image
-                                        src={label.urls}
+                                    src={`https://nhanmac.vn/${label.urls}`}
                                         alt={label.image_desc || "Ảnh sản phẩm"}
                                         width={245}
                                         height={200}

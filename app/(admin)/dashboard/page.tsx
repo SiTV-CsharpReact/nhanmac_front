@@ -7,14 +7,9 @@ const AdminPostManagement: React.FC = () => {
 
   return (
     <div style={{ paddingLeft:12 }}>
-     <Image
-            src="/images/login.png"
-            width={600}
-            height={575}
-            alt="not found"
-            className="w-full h-full"
-            priority
-          />
+    <span>
+      Chào mừng bạn đến trang quản trị 
+      </span>
     </div>
   );
 };

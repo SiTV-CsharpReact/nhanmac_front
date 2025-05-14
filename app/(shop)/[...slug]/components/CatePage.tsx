@@ -14,7 +14,7 @@ export default function CatePage({ postList }: CatePageProps) {
         <div className="md:col-span-3">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {postList.map((item) => (
-                    <Link href={`/products/${item.alias}-${item.id}`} key={`${item.alias}-${item.id}`}>
+                    <Link href={`/${item.alias}${item.id}.html`} key={`${item.alias}-${item.id}`}>
                         <div className="bg-white shadow rounded p-4 hover:shadow-md transition cursor-pointer h-full flex flex-col">
                             <img
                                 src={item.urls || "/images/default.jpg"}
