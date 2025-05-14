@@ -149,21 +149,21 @@ export default function Home() {
 
       {/* Danh mục sản phẩm */}
       <section className="w-full mb-13 mt-10">
- 
+{/*  
         <CategoryList />
   
         <TemNhuaList />
-        <TemQRCode />
+        <TemQRCode /> */}
         <div className="grid place-items-center mt-4">
           <div className="container">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <NhanVai />
+              {/* <NhanVai />
 
-              <NhanDecal />
+              <NhanDecal /> */}
             </div>
           </div>
         </div>
-        <TemNganhNghe />
+        {/* <TemNganhNghe /> */}
 
       </section>
 
@@ -222,7 +222,7 @@ export default function Home() {
                 ))}
               </Carousel>
             </div>
-           <TinTuc/>
+           {/* <TinTuc/> */}
             {/* ... Tin tức hoặc các section khác */}
           </div>
         </div>

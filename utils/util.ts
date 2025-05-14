@@ -76,10 +76,10 @@ export const formatMoney = (x:number, currency) => {
   // utils/slugUtils.ts
 export function parseSlug(slug: string) {
   const cleanSlug = slug.replace(/\.html$/, "");
-  const match = cleanSlug.match(/-(\d+)$/); // ao-thun-123
+  const match = cleanSlug.match(/-(\d+)$/); // tìm số cuối cùng sau dấu "-"
   return {
     id: match ? Number(match[1]) : null,
-    alias: match ? null : cleanSlug,
+    alias: match ? cleanSlug.substring(0, match.index) : cleanSlug,
   };
 }
 

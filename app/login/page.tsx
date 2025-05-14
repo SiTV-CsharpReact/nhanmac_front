@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import React from "react";
+import React, { useState } from "react";
 import { Form, Input, Button, message } from "antd";
 import "../globals.css";
 import {  useRouter } from 'next/navigation';
@@ -12,9 +12,10 @@ import '@ant-design/v5-patch-for-react-19';
 
 const Page = () => {
   const router = useRouter();
-
+const [loading, setLoading] = useState(false); // loading state
   const onFinish = async (values: any) => {
     try {
+      setLoading(true)
       const data = await login(values); // ✅ Dùng hàm login
       message.success("Đăng nhập thành công!");
       Cookies.set('access_token', data.Data.usertype, { expires: 1 });
@@ -22,6 +23,9 @@ const Page = () => {
       router.push('/dashboard/menu');
     } catch (error: any) {
       message.error(error.message || "Lỗi đăng nhập");
+    }
+    finally{
+       setLoading(false); // stop loading
     }
   };
 
@@ -61,7 +65,7 @@ const Page = () => {
             </Form.Item>
 
             <Form.Item>
-              <Button type="primary" htmlType="submit" className="w-full">
+              <Button type="primary" htmlType="submit" className="w-full" disabled={loading} loading={loading}>
                 Đăng nhập
               </Button>
             </Form.Item>
