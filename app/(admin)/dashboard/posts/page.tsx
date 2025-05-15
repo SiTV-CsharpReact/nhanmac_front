@@ -1,10 +1,27 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Table, Button, Modal, Form, Input, Upload, message, Tooltip } from "antd";
+import {
+  Table,
+  Button,
+  Modal,
+  Form,
+  Input,
+  Upload,
+  message,
+  Tooltip,
+  Spin,
+  Select,
+} from "antd";
 import Image from "next/image";
 import TitlePageAdmin from "@/components/share/TitlePageAdmin";
 import { Post } from "@/types/contentItem";
-import { fetchPost, updateSlideOrder, updateContent } from "@/modules/admin/slideApi";
+import {
+  fetchPost,
+  updateSlideOrder,
+  updateContent,
+  fetchSearchContents,
+  fetchContentId,
+} from "@/modules/admin/slideApi";
 import {
   DndContext,
   closestCenter,
@@ -27,8 +44,8 @@ import { UploadOutlined, EyeOutlined } from "@ant-design/icons";
 import type { UploadFile } from "antd/es/upload/interface";
 import { getBase64 } from "@/utils/util";
 import { env } from "@/config/env";
-import '@ant-design/v5-patch-for-react-19';
-
+import "@ant-design/v5-patch-for-react-19";
+import debounce from "lodash/debounce";
 interface SortableRowProps {
   id: string;
   children: React.ReactNode;
@@ -56,8 +73,8 @@ function SortableRow({ id, children }: SortableRowProps) {
       ref={setNodeRef}
       style={style}
       {...attributes}
-    // Không gán listeners cho toàn bộ <tr> để tránh chặn click các nút
-    // listeners sẽ được gán riêng cho cột handle bên dưới
+      // Không gán listeners cho toàn bộ <tr> để tránh chặn click các nút
+      // listeners sẽ được gán riêng cho cột handle bên dưới
     >
       {React.Children.map(children, (child, index) => {
         if (index === 0) {
@@ -76,7 +93,7 @@ function SortableRow({ id, children }: SortableRowProps) {
     </tr>
   );
 }
-
+const { Option } = Select;
 const AdminPostManagement: React.FC = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(false);
@@ -87,13 +104,18 @@ const AdminPostManagement: React.FC = () => {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
   const [previewTitle, setPreviewTitle] = useState("");
+  const [fetching, setFetching] = useState(false);
+  const [searchText, setSearchText] = useState("");
+  const [options, setOptions] = useState<Post[]>([]);
+  const [fetchingDetail, setFetchingDetail] = useState(false);
+  const [formData, setFormData] = useState<Post | null>(null);
 
   const fetchData = async () => {
     setLoading(true);
     try {
       const response = await fetchPost();
       if (response.Code === 200 && response.Data) {
-        setPosts(response.Data);
+        setPosts(response?.Data);
       } else {
         setPosts([]);
       }
@@ -113,13 +135,29 @@ const AdminPostManagement: React.FC = () => {
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (over && active.id !== over.id) {
-      const oldIndex = posts.findIndex((item) => String(item.id) === String(active.id));
-      const newIndex = posts.findIndex((item) => String(item.id) === String(over.id));
+      const oldIndex = posts.findIndex(
+        (item) => String(item.id) === String(active.id)
+      );
+      const newIndex = posts.findIndex(
+        (item) => String(item.id) === String(over.id)
+      );
       const newItems = arrayMove(posts, oldIndex, newIndex);
       setPosts(newItems);
       toast.success("Sắp xếp thành công!");
     }
   };
+
+  // Debounce để tránh gọi API quá nhiều lần khi gõ
+  const debounceFetcher = React.useMemo(() => {
+    const loadOptions = (value: string) => {
+      setSearchText(value);
+      fetchSearchContent(value).then((res) => {
+        setOptions(res);
+      });
+    };
+
+    return debounce(loadOptions, 500);
+  }, []);
 
   const handleSaveOrder = async () => {
     setLoading(true);
@@ -128,6 +166,7 @@ const AdminPostManagement: React.FC = () => {
       const response = await updateSlideOrder(orderedIds);
       if (response.Code === 200) {
         toast.success("Lưu thứ tự thành công!");
+        fetchData();
       } else {
         toast.error("Lỗi khi lưu thứ tự: " + response.Message);
       }
@@ -138,67 +177,12 @@ const AdminPostManagement: React.FC = () => {
     setLoading(false);
   };
 
-  const showModal = (record: Post) => {
-    setEditingRecord(record);
-    form.setFieldsValue({
-      title: record.title,
-      image_desc: record.image_desc,
-    });
-    if (record.urls) {
-      setFileList([
-        {
-          uid: '-1',
-          name: record.images || 'image',
-          status: 'done',
-          url: record.urls,
-        }
-      ]);
-    }
-    setIsModalOpen(true);
-  };
-
   const handleCancel = () => {
     setIsModalOpen(false);
     form.resetFields();
     setFileList([]);
     setEditingRecord(null);
   };
-
-  const handlePreview = async (file: UploadFile) => {
-    if (!file.url && !file.preview) {
-      file.preview = await getBase64(file.originFileObj as File);
-    }
-    setPreviewImage(file.url || (file.preview as string));
-    setPreviewOpen(true);
-    setPreviewTitle(file.name || file.url!.substring(file.url!.lastIndexOf('/') + 1));
-  };
-
-  const handleChange = ({ fileList: newFileList }: { fileList: UploadFile[] }) => {
-    setFileList(newFileList);
-  };
-
-  const uploadProps = {
-    name: 'file',
-    action: `${env.apiUrl}/upload/image`,
-    accept: 'image/*',
-    listType: 'picture-card',
-    fileList,
-    onPreview: handlePreview,
-    onChange: handleChange,
-    beforeUpload: (file: File) => {
-      const isImage = file.type.startsWith('image/');
-      if (!isImage) {
-        message.error('Chỉ được upload file ảnh!');
-      }
-      const isLt5M = file.size / 1024 / 1024 < 5;
-      if (!isLt5M) {
-        message.error('Ảnh phải nhỏ hơn 5MB!');
-      }
-      return isImage && isLt5M;
-    },
-    maxCount: 1,
-  };
-
   const RowDragHandleCell = ({ rowId }: { rowId: string }) => {
     const {
       attributes,
@@ -231,22 +215,39 @@ const AdminPostManagement: React.FC = () => {
           &#8942;&#8942;
         </span>
       </Tooltip>
-
     );
-  }
+  };
+
+  // Hàm gọi API tìm kiếm (gọi hàm fetchSearchContents đã định nghĩa ở nơi khác)
+  const fetchSearchContent = async (query: string): Promise<Post[]> => {
+    if (!query) return [];
+
+    setFetching(true);
+    try {
+      const response = await fetchSearchContents(query);
+      if (response.Code === 200) {
+        return response.Data;
+      }
+
+      return [];
+    } catch (error) {
+      console.error(error);
+      return [];
+    } finally {
+      setFetching(false);
+    }
+  };
+
   const handleOk = async () => {
     try {
       const values = await form.validateFields();
       if (!editingRecord) return;
 
       const formData = {
-        ...values,
-        urls: fileList[0]?.response?.Data?.imageUrl || fileList[0]?.url,
-        images: fileList[0]?.name,
-        image: ''
+        article_id:values.articleID,
       };
 
-      const response = await updateContent(editingRecord.id, formData);
+      const response = await updateContent(editingRecord.ordering, formData);
       if (response.Code === 200) {
         message.success("Cập nhật thành công!");
         handleCancel();
@@ -268,62 +269,11 @@ const AdminPostManagement: React.FC = () => {
       align: "center",
       render: (_: any, record: Post) => (
         <RowDragHandleCell rowId={record.id.toString()} />
-      )
-    },
-    { title: "ID", dataIndex: "id", key: "id", width: 60 },
-    { title: "Tiêu đề", dataIndex: "title", key: "title", ellipsis: true },
-    {
-      title: "Ảnh",
-      dataIndex: "urls",
-      key: "urls",
-      render: (urls: string, record: Post) =>
-        urls && (
-          <div className="relative group">
-            <Image src={urls} width={100} height={50} alt="Ảnh" />
-            <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-2">
-              <Button
-                type="primary"
-                size="small"
-                icon={<EyeOutlined />}
-                onClick={() => {
-                  setPreviewImage(urls);
-                  setPreviewTitle(record.title || 'Xem ảnh');
-                  setPreviewOpen(true);
-                }}
-              >
-              </Button>
-              {/* <Button 
-                type="primary" 
-                size="small"
-                onClick={() => showModal(record)}
-              >
-                Sửa
-              </Button> */}
-            </div>
-          </div>
-        ),
-    },
-    {
-      title: "Chú thích ảnh",
-      dataIndex: "image_desc",
-      key: "image_desc",
-      width: 300,
-    },
-    {
-      title: "Ngày tạo",
-      dataIndex: "created",
-      key: "created",
-      width: 160,
-      render: (date: string | Date) => (
-        <span>{dayjs(date).format("DD/MM/YYYY HH:mm:ss")}</span>
       ),
     },
-    {
-      title: "Link",
-      dataIndex: "alias",
-      key: "image_desc",
-      width: 350,
-    },
+    { title: "STT", dataIndex: "ordering", width: 60 },
+    { title: "ID bài viết", dataIndex: "id", key: "id", width: 100 },
+    { title: "Tiêu đề", dataIndex: "title", key: "title", ellipsis: true },
     {
       title: "Thao tác",
       key: "action",
@@ -335,8 +285,15 @@ const AdminPostManagement: React.FC = () => {
             type="text"
             icon={<EditIcon />}
             onClick={(e) => {
+              setTimeout(() => {
+                form.resetFields(); // reset sau 100ms
+              }, 100);
+              form.setFieldValue("articleID", "");
+              setOptions([]);
+              setFormData(null);
               e.stopPropagation(); // Ngăn kéo thả khi click nút
-              showModal(record);
+              setIsModalOpen(true);
+              setEditingRecord(record)
             }}
             title="Sửa menu"
           />
@@ -361,87 +318,131 @@ const AdminPostManagement: React.FC = () => {
     return <SortableRow id={String(rowKey)}>{children}</SortableRow>;
   };
 
+  const onSelect = async (value: number) => {
+    const id = Number(value);
+    setFetchingDetail(true);
+    try {
+      const detail = await fetchContentId(id);
+      console.log(`${env.hostBackend}${detail.Data.urls}`);
+      setFormData(detail.Data);
+    } catch (error) {
+      console.error("Lỗi khi lấy chi tiết bài viết", error);
+      setFormData(null);
+    } finally {
+      setFetchingDetail(false);
+    }
+  };
+
   return (
     <div className="px-3">
       <div className="p-2 bg-white rounded flex justify-between items-center">
         <TitlePageAdmin text={"Quản lý slide"} />
-        <Button type="primary" onClick={handleSaveOrder} loading={loading} className="!bg-[#2f80ed]">
+        <Button
+          type="primary"
+          onClick={handleSaveOrder}
+          loading={loading}
+          className="!bg-[#2f80ed]"
+        >
           Lưu thứ tự
         </Button>
       </div>
-
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragEnd={handleDragEnd}
-      >
-        <Table
-          // className="mt-3"
-          rowKey="id"
-          columns={columns}
-          dataSource={posts}
-          loading={loading}
-          pagination={false}
-          scroll={{ x: true }}
-          className="mt-3 [&_.ant-table-cell]:!p-2"
-          components={{
-            body: {
-              wrapper: DraggableContainer,
-              row: DraggableBodyRow,
-            },
-          }}
-        />
-      </DndContext>
-
+      <Spin spinning={loading}>
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <Table
+            // className="mt-3"
+            rowKey="id"
+            columns={columns}
+            dataSource={posts}
+            // loading={loading}
+            pagination={false}
+            scroll={{ x: true }}
+            className="mt-3 [&_.ant-table-cell]:!p-2"
+            components={{
+              body: {
+                wrapper: DraggableContainer,
+                row: DraggableBodyRow,
+              },
+            }}
+          />
+        </DndContext>
+      </Spin>
       <Modal
-        title="Sửa slide"
+        title={`Chọn bài viết muốn thay đổi cho "${editingRecord?.title}"`}
         open={isModalOpen}
         onOk={handleOk}
         onCancel={handleCancel}
+        okButtonProps={{ disabled: !formData }}
         width={800}
-        styles={{ body: { paddingBottom: 8, padding: 16 }, footer: { padding: 16 } }}
-
+        styles={{
+          body: { paddingBottom: 8, padding: 16 },
+          footer: { padding: 16 },
+        }}
       >
-        <Form
-          form={form}
-          layout="vertical"
-          initialValues={editingRecord || {}}
-        >
-          <Form.Item
-            name="title"
-            label="Tiêu đề"
-            rules={[{ required: true, message: 'Vui lòng nhập tiêu đề!' }]}
-          >
-            <Input />
+        <Form layout="vertical" form={form}>
+          <Form.Item label="Tìm kiếm bài viết" name="articleID">
+            <Select
+              showSearch
+              style={{ width: 300 }}
+              placeholder="Tìm kiếm bài viết"
+              filterOption={false} // tắt filter client để dùng server search
+              onSearch={debounceFetcher}
+              notFoundContent={fetching ? <Spin size="small" /> : null}
+              onChange={(value) => onSelect(Number(value))}
+              optionLabelProp="label"
+            >
+              {options.map((post) => (
+                <Option
+                  key={post.id}
+                  value={post.id}
+                  label={post.title}
+                >
+                  {post.title}
+                </Option>
+              ))}
+            </Select>
           </Form.Item>
-          <Form.Item
-            label="Ảnh"
-            name="image"
-          >
-            <Upload {...uploadProps}>
-              {fileList.length === 0 && <div>
-                <UploadOutlined />
-                <div style={{ marginTop: 8 }}>Upload</div>
-              </div>}
-            </Upload>
-          </Form.Item>
-          <Form.Item
-            name="image_desc"
-            label="Chú thích ảnh"
-          >
-            <Input.TextArea rows={4} />
-          </Form.Item>
-          <Form.Item
-            name="alias"
-            label="Link"
-            rules={[{ required: true, message: 'Vui lòng nhập đường link bài viết!' }]}
-          >
-            <Input  />
-          </Form.Item>
-         
+          {formData && (
+            <>
+              <Form.Item label="ID bài viết">
+                <Input value={formData.id} readOnly disabled />
+              </Form.Item>
+              <Form.Item label="Tiêu đề">
+                <Input value={formData.title} readOnly disabled />
+              </Form.Item>
+              <Form.Item label="Ảnh">
+                {/* <Image src={`${env.hostBackend}${formData.urls}`} width={200} height={200} alt={formData.title}/> */}
+
+                {formData.urls && (
+                  <div className="relative w-50 h-25 cursor-pointer overflow-hidden rounded group">
+                    <Image
+                      src={formData.urls}
+                      alt="Ảnh"
+                      width={200}
+                      height={100}
+                      className="object-cover"
+                    />
+                    <EyeOutlined
+                      onClick={() => {
+                        setPreviewImage(formData.urls);
+                        setPreviewTitle(formData.title || "Xem ảnh");
+                        setPreviewOpen(true);
+                      }}
+                      className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 
+               text-white text-2xl opacity-0 group-hover:opacity-100 
+               transition-opacity duration-300 hover:text-blue-400"
+                      style={{ zIndex: 10, color: "white" }}
+                    />
+                  </div>
+                )}
+              </Form.Item>
+            </>
+          )}
         </Form>
       </Modal>
-
       <Modal
         open={previewOpen}
         title={previewTitle}
@@ -449,7 +450,7 @@ const AdminPostManagement: React.FC = () => {
         onCancel={() => setPreviewOpen(false)}
         styles={{ body: { paddingBottom: 8, padding: 16 } }}
       >
-        <img alt="preview" style={{ width: '100%' }} src={previewImage} />
+        <img alt="preview" style={{ width: "100%" }} src={previewImage} />
       </Modal>
     </div>
   );

@@ -10,7 +10,6 @@ import FacebookPagePlugin from "../plugin/FaceBookPlugin";
 const Footer = () => {
   return (
     <footer className="bg-gray-700 text-white">
-
       <div className="grid grid-cols-1 md:grid-cols-5 gap-14 mx-auto pt-8 container">
         {/* Cột 1: Logo và thông tin công ty */}
         <div className="space-y-3 md:col-span-2">
@@ -94,36 +93,39 @@ const Footer = () => {
           </div>
 
           {/* Zalo và Facebook Group */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+          <div
+            className="grid grid-cols-1 md:grid-cols-2 gap-6  w-80 h-[120px] rounded-[10px]"
+            style={{
+              background:
+                "linear-gradient(90deg, #D9D9D9 0%, #84ADE8 45.67%, #0068FF 100%)",
+            }}
+          >
             {/* Zalo */}
-            <div className="relative">
+            <div className="flex items-center gap-5 max-w-md">
               <Image
-                src="/images/footer-zalo.png"
+                src="/images/qr-zalo.png"
                 alt="Zalo QR Code"
-                width={369}
-                height={118}
-                className="rounded"
+                width={112}
+                height={112}
+                className="rounded object-cover pl-2"
               />
-              <Image
-                src="/icons/Icon_of_Zalo.svg"
-                alt="Icon Zalo"
-                width={70}
-                height={70}
-                className="absolute top-6 left-4"
-              />
+              <div className="flex flex-col">
+                <p className="text-[#05224A] text-lg font-bold mb-1 whitespace-nowrap">
+                  Hỗ trợ khách hàng 24/7
+                </p>
+                <span className="text-[#EB5757] font-semibold">Ms.Lan Anh</span>
+                <span className="text-[#EB5757] font-semibold">
+                  0912.424.368
+                </span>
+              </div>
             </div>
 
             {/* Facebook Group */}
-            <div>
-              <div className="fb-page"
-                data-href="https://www.facebook.com/nhanmac.vn"
-                data-width="380"
-                data-hide-cover="false"
-                data-show-facepile="false">
-                  
-                </div>
-            </div>
+           
           </div>
+           <div>
+             <div className="fb-page" data-href="https://www.facebook.com/nhanmac.vn" data-tabs="timeline" data-width="368" data-height="118" data-small-header="false" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true"><blockquote cite="https://www.facebook.com/nhanmac.vn" className="fb-xfbml-parse-ignore"><a href="https://www.facebook.com/nhanmac.vn">Công ty cổ phần công nghệ Thiên Lương</a></blockquote></div>
+            </div>
           <div className="pt-8 flex">
             <Image
               src="/icons/clock.svg"
@@ -149,7 +151,6 @@ const Footer = () => {
           Công Nghệ Thiên Lương. Nghiêm cấm sao chép dưới mọi hình thức.
         </p>
       </div>
-
     </footer>
   );
 };

@@ -86,6 +86,7 @@ export const fetchContentId = async (id: number): Promise<ApiResponse<Post>> => 
   }
 };
 
+
 // Lấy bài viết theo alias
 
 // Tạo bài viết mới
@@ -190,6 +191,31 @@ export const uploadImage = async (file: File): Promise<ApiResponse<{ imageUrl: s
       notification.error({
         message: "Lỗi",
         description: error.message || "Không thể upload ảnh",
+      });
+    }
+    throw error;
+  }
+};
+export const fetchSearchContents = async (query: string): Promise<ApiResponse<Post>> => {
+  try {
+    const response = await fetch(`${env.apiUrl}/slides/search?q=${encodeURIComponent(query)}`);
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data: ApiResponse<Post> = await response.json();
+
+    if (data.Code !== 200) {
+      throw new Error(data.Message || 'Có lỗi xảy ra khi tìm kiếm');
+    }
+
+    return data;
+  } catch (error: any) {
+    if (typeof window !== 'undefined') {
+      notification.error({
+        message: 'Lỗi',
+        description: error.message || 'Không thể tìm kiếm bài viết',
       });
     }
     throw error;
