@@ -5,12 +5,9 @@ import { Carousel } from "antd";
 import SlideImage from "./slide/SlideImage";
 import { Metadata } from "next";
 import CategoryList from "./components/CategoryList";
-import TemNhuaList from "./components/TemNhuaList";
-import TemQRCode from "./components/TemQRCode";
-import NhanVai from "./components/NhanVai";
 import NhanDecal from "./components/NhanDecal";
-import TemNganhNghe from "./components/TemNganhNghe";
 import TinTuc from "./components/TinTuc";
+import Link from "next/link";
 
 // 1. Metadata cho SEO
 export const metadata: Metadata = {
@@ -128,7 +125,7 @@ export default function Home() {
                 Với phương châm <strong>&quot;Nỗ lực hết mình vì mục tiêu khách hàng đặt ra&quot;</strong>, chúng tôi không ngừng hoàn thiện, nâng cấp máy móc, tăng cường sáng tạo, biết lắng nghe để thấu hiểu ý tưởng và đáp ứng yêu cầu Quý khách. Tem nhãn mác của chúng tôi góp phần nâng cao giá trị sản phẩm của bạn.
               </span>
               <div className="mt-2">
-                <a className="flex float-right" href="/about" title="Đọc thêm về Thiên Lương">
+                <Link className="flex float-right" href="/tem-nhan-mac-cong-ty-thien-luong-307.html" title="Đọc thêm về Thiên Lương">
                   <span className="text-[#2F80ED] font-medium text-base mr-0.5 animate-slide-right ">
                     Đọc thêm
                   </span>
@@ -139,7 +136,7 @@ export default function Home() {
                     height={27}
                     alt="Đọc thêm"
                   />
-                </a>
+                </Link>
               </div>
             </div>
           </div>
@@ -149,20 +146,20 @@ export default function Home() {
       {/* Danh mục sản phẩm */}
       <section className="w-full mb-13 mt-10">
  
-        {/* <CategoryList />
+        <CategoryList categoryKey='nhan-kim-loai' bgWhite={false}/>
   
-        <TemNhuaList />
-        <TemQRCode /> */}
+        {/* <TemNhuaList /> */}
+        {/* <TemQRCode /> */}
         <div className="grid place-items-center mt-4">
           <div className="container">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* <NhanVai />
+            <NhanDecal textTitle="Nhãn Vải" categoryKey="nhan-vai"/>
 
-              <NhanDecal /> */}
+              <NhanDecal textTitle="Nhãn Decal" categoryKey="nhan-decal-"/>
             </div>
           </div>
         </div>
-        {/* <TemNganhNghe /> */}
+        <CategoryList categoryKey='nhan-kim-loai' bgWhite={true}/>
 
       </section>
 

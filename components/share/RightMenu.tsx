@@ -18,7 +18,7 @@ const RightMenu = () => {
       </a>
 
       <a
-        href="https://facebook.com/..."
+        href="https://facebook.com/nhanmac.vn"
         target="_blank"
         rel="noopener noreferrer"
         className="flex items-center justify-center w-12 h-12 rounded-full bg-[#2F80ED] text-white text-xl"

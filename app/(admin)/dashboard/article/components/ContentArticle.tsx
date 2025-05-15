@@ -185,6 +185,7 @@ const ContentArticle: React.FC<typeContentArticle> = ({
         // Tạo mới
         const response = await createContent(formData);
         if (response.Code === 200) {
+          message.success(response.Message || "Tạo bài viết thành công!");
           reloadPage()
         } else {
           message.error(response.Message || "Tạo bài viết thất bại!");
@@ -218,7 +219,7 @@ const ContentArticle: React.FC<typeContentArticle> = ({
         metakey: data.metakey,
         metadesc: data.metadesc,
         sectionid: data.sectionid,
-        alias: data.alias
+        alias: data.alias,
       });
       setAlias(data.alias);
       setEditorData(data.introtext || "");

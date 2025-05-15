@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Post } from "@/types/contentItem";
-
+import Image from 'next/image';
 type CatePageProps = {
     postList: Post[];
 };
@@ -13,20 +13,42 @@ export default function CatePage({ postList }: CatePageProps) {
     return (
         <div className="md:col-span-3">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {postList.map((item) => (
-                    <Link href={`/${item.alias}${item.id}.html`} key={`${item.alias}-${item.id}`}>
-                        <div className="bg-white shadow rounded p-4 hover:shadow-md transition cursor-pointer h-full flex flex-col">
-                            <img
-                                src={item.urls || "/images/default.jpg"}
-                                alt={item.content_title}
-                                className="w-full h-48 object-cover mb-3 rounded"
-                            />
-                            <h3 className="text-sm font-normal leading-5 line-clamp-2 text-[#2F80ED] mt-auto">
-                                {item.content_title}
-                            </h3>
-                        </div>
-                    </Link>
-                ))}
+            {postList.map((label, i) => {
+                            console.log(label);
+                            // Tạo url từ label.link hoặc label.link (bạn cần chắc chắn biến đúng tên)
+                            // const url = '/' + label?.link.replace(/^index\.php\?/, '').replace(/&/g, '/').replace(/=/g, '-');
+
+                            return (
+                                <Link href={`${label.alias +'-'+ label.id}.html`} key={`${label.id}-${i}`}
+                                className="group bg-white shadow-custom rounded  flex flex-col items-center overflow-hidden cursor-pointer"
+                                >
+                                    <div className="bg-white shadow-custom p-0 flex flex-col items-center cursor-pointer">
+                                        <div className="relative w-full aspect-[245/173] bg-gray-100 mb-2 overflow-hidden rounded-md">
+                                            {label.urls ? (
+                                                <Image
+                                                    src={  label.urls?.startsWith("http")
+                                                    ? label.urls
+                                                    : `https://nhanmac.vn/${label.urls}`}
+                                                    alt={label.image_desc || "Ảnh sản phẩm"}
+                                                    fill
+                                                    style={{ objectFit: 'cover' }}
+                                                    sizes="(max-width: 768px) 100vw, 245px"
+                                                    className="rounded-md transition-transform duration-300 ease-in-out group-hover:scale-110"
+                                                    priority={i < 2}
+                                                />
+                                            ) : (
+                                                <div className="w-full h-full flex items-center justify-center text-gray-400">
+                                                    Ảnh không có sẵn
+                                                </div>
+                                            )}
+                                        </div>
+                                        <p className="text-[15px] font-normal text-[#2F80ED] text-left p-2.5 transition-colors duration-300 group-hover:text-orange-500">
+                                            {label.content_title}
+                                        </p>
+                                    </div>
+                                </Link>
+                            );
+                        })}
             </div>
 
         </div>

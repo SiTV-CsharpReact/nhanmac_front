@@ -65,9 +65,9 @@ export const updateSlideOrder = async (orderedIds: number[]): Promise<ApiRespons
   };
 
 // Lấy chi tiết bài viết theo ID
-export const fetchContentId = async (id: number): Promise<ApiResponse<Post>> => {
+export const fetchContentShortId = async (id: number): Promise<ApiResponse<Post>> => {
   try {
-    const response = await fetch(`${env.apiUrl}/contents/${id}`);
+    const response = await fetch(`${env.apiUrl}/contents/short/${id}`);
     const data: ApiResponse<Post> = await response.json();
     
     if (data.Code !== 200) {

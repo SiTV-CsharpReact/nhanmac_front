@@ -10,16 +10,19 @@ type Category = {
     image: string;
     imageAlt?: string;
 };
-
-export default async function CategoryList() {
+type Props = {
+    categoryKey: string;
+    bgWhite:boolean
+}
+const CategoryList = async ({ categoryKey,bgWhite }: Props) => {
     let postList: Post[] = [];
     // Fetch dữ liệu từ API (thay URL thành API thật của bạn)
-    const res = await fetchCateAlias('nhan-kim-loai' as string, 1, 5);
+    const res = await fetchCateAlias(categoryKey as string, 1, 5);
     postList = res.Data?.list || [];
     console.log(postList)    //   const categories: Category[] = await res.json();
 
     return (
-        <div className="p-1 py-2 md:p-6 space-y-12 bg-[#EAF2FE] grid place-items-center">
+        <div className={`p-1 py-2 md:p-6 space-y-12 ${bgWhite?`bg-white`:`bg-[#EAF2FE]`} grid place-items-center`}>
             <div className="container">
 
                 <div className="text-center">
@@ -29,14 +32,9 @@ export default async function CategoryList() {
                     <div className="h-1 bg-[#2F80ED] mx-auto w-1/2 max-w-[255px] mb-5 sm:w-[255px]"></div>
                     <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                         {postList.map((label, i) => {
-                            console.log(label);
-                            // Tạo url từ label.link hoặc label.link (bạn cần chắc chắn biến đúng tên)
-                            // const url = '/' + label?.link.replace(/^index\.php\?/, '').replace(/&/g, '/').replace(/=/g, '-');
-
                             return (
                                 <Link href={`${label.alias + label.id}.html`} key={`${label.id}-${i}`}
-                                // onClick={
-                                //     ()=>Cookies.set('activeParent', 'Tem kim loại')}
+                                className="group bg-white shadow-custom rounded  flex flex-col items-center overflow-hidden cursor-pointer"
                                 >
                                     <div className="bg-white shadow-custom p-0 flex flex-col items-center cursor-pointer">
                                         <div className="relative w-full aspect-[245/173] bg-gray-100 mb-2 overflow-hidden rounded-md">
@@ -47,7 +45,7 @@ export default async function CategoryList() {
                                                     fill
                                                     style={{ objectFit: 'cover' }}
                                                     sizes="(max-width: 768px) 100vw, 245px"
-                                                    className="rounded-md"
+                                                    className="rounded-md transition-transform duration-300 ease-in-out group-hover:scale-110"
                                                     priority={i < 2}
                                                 />
                                             ) : (
@@ -56,7 +54,7 @@ export default async function CategoryList() {
                                                 </div>
                                             )}
                                         </div>
-                                        <p className="text-[15px] font-normal text-[#2F80ED] text-left p-2.5">
+                                        <p className="text-[15px] font-normal text-[#2F80ED] text-left p-2.5 transition-colors duration-300 group-hover:text-orange-500">
                                             {label.content_title}
                                         </p>
                                     </div>
@@ -70,3 +68,4 @@ export default async function CategoryList() {
         </div>
     );
 }
+export default CategoryList;

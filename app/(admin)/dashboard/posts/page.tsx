@@ -20,7 +20,7 @@ import {
   updateSlideOrder,
   updateContent,
   fetchSearchContents,
-  fetchContentId,
+  fetchContentShortId,
 } from "@/modules/admin/slideApi";
 import {
   DndContext,
@@ -127,6 +127,7 @@ const AdminPostManagement: React.FC = () => {
   };
 
   useEffect(() => {
+    console.log("Fetching...");
     fetchData();
   }, []);
 
@@ -322,7 +323,7 @@ const AdminPostManagement: React.FC = () => {
     const id = Number(value);
     setFetchingDetail(true);
     try {
-      const detail = await fetchContentId(id);
+      const detail = await fetchContentShortId(id);
       console.log(`${env.hostBackend}${detail.Data.urls}`);
       setFormData(detail.Data);
     } catch (error) {
@@ -417,9 +418,14 @@ const AdminPostManagement: React.FC = () => {
                 {/* <Image src={`${env.hostBackend}${formData.urls}`} width={200} height={200} alt={formData.title}/> */}
 
                 {formData.urls && (
+                  console.log(formData.urls),
                   <div className="relative w-50 h-25 cursor-pointer overflow-hidden rounded group">
                     <Image
-                      src={formData.urls}
+                      src={
+                        formData.urls?.startsWith("http")
+                          ? formData.urls
+                          : `https://nhanmac.vn/${formData.urls}`
+                      }
                       alt="Ảnh"
                       width={200}
                       height={100}
@@ -427,7 +433,7 @@ const AdminPostManagement: React.FC = () => {
                     />
                     <EyeOutlined
                       onClick={() => {
-                        setPreviewImage(formData.urls);
+                        setPreviewImage(`https://nhanmac.vn/${formData.urls}`);
                         setPreviewTitle(formData.title || "Xem ảnh");
                         setPreviewOpen(true);
                       }}

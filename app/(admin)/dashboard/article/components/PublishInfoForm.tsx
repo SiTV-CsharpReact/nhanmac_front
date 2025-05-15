@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { Form, DatePicker, Select, Collapse } from "antd";
 import { CalendarOutlined } from "@ant-design/icons";
 import { useSectionWithCategories } from "@/hooks/useParentCate";
@@ -11,9 +11,18 @@ export default function PublishInfoForm({ form }: { form: any }) {
   const { sections, getCategoriesBySection, loading } = useSectionWithCategories();
   const selectedSection = Form.useWatch("sectionid", form); // Theo dõi section_id
 
-  // Khi selectedSection thay đổi, reset giá trị chuyên mục con (catid)
+  const prevSectionRef = useRef<string | number | undefined>();
+
   useEffect(() => {
-    form.setFieldsValue({ catid: undefined });
+    const prevSection = prevSectionRef.current;
+
+    // Nếu đã có giá trị trước đó và nó thay đổi thì mới reset
+    if (prevSection && selectedSection && prevSection !== selectedSection) {
+      form.setFieldsValue({ catid: undefined });
+    }
+
+    // Cập nhật lại giá trị trước đó
+    prevSectionRef.current = selectedSection;
   }, [selectedSection, form]);
 
   return (

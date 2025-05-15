@@ -17,16 +17,13 @@ export const fetchCateAlias = async (
   pageSize: number = 9
 ): Promise<ApiResponse<Post[]>> => {
   try {
-    // const offset = (page - 1) * pageSize;
     const url = new URL(`${env.apiUrl}/categories/${alias}`);
     url.searchParams.append("page", page.toString());
     url.searchParams.append("pageSize", pageSize.toString());
-    console.log(url.toString())
 
     const response = await fetch(url.toString(), { cache: "no-store" });
 
     const data: ApiResponse<Post[]> = await response.json();
-    console.log(data);
     if (data.Code !== 200) {
       throw new Error(data.Message || "Có lỗi xảy ra");
     }

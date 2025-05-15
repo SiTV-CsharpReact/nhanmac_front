@@ -69,6 +69,31 @@ export const fetchContentId = async (id: number): Promise<ApiResponse<Post>> => 
   }
 };
 
+export const fetchContentShortId = async (id: number): Promise<ApiResponse<Post>> => {
+  try {
+    const response = await fetch(`${env.apiUrl}/contents/short/${id}`,{
+      // next: {
+      //   revalidate: 60, // Cache trong 60 giây
+      // },
+    });
+    const data: ApiResponse<Post> = await response.json();
+    
+    if (data.Code !== 200) {
+      throw new Error(data.Message || 'Có lỗi xảy ra');
+    }
+    
+    return data;
+  } catch (error: any) {
+    if (typeof window !== "undefined") {
+      notification.error({
+        message: "Lỗi",
+        description: error.message || "Không thể lấy chi tiết bài viết",
+      });
+    }
+    throw error;
+  }
+};
+
 // Lấy bài viết theo alias
 export const fetchContentAlias = async (alias: string): Promise<ApiResponse<Post>> => {
   try {

@@ -167,8 +167,9 @@ const Page: React.FC = () => {
           message: "Thành công",
           description: "Đã xóa bài viết thành công!",
         });
-        setOnReload(true); // Refresh lại danh sách sau khi xóa
+      
       }
+      setOnReload(true); // Refresh lại danh sách sau khi xóa
     } catch (error) {
       // Error đã được xử lý trong API
     }
@@ -218,13 +219,13 @@ const Page: React.FC = () => {
           {dayjs(text).format("DD/MM/YYYY")}
         </span>
       ),
-      width: 100
+      width: 120
     },
     {
       title: "Tiêu đề",
       dataIndex: "title",
       key: "title",
-      width: 350, // đặt width cố định để ellipsis hoạt động tốt
+      width: 330, // đặt width cố định để ellipsis hoạt động tốt
       render: (text: string) => <EllipsisWithTooltip text={text} />,
     },
     {
@@ -237,7 +238,7 @@ const Page: React.FC = () => {
     {
       title: "Link bài viết",
       // key: "alias",
-      width:300, // đặt width cố định để ellipsis hoạt động tốt
+      width:280, // đặt width cố định để ellipsis hoạt động tốt
       render: (text, record) => (
       
         <EllipsisWithTooltip
@@ -252,10 +253,10 @@ const Page: React.FC = () => {
     },
     {
       title: "Thao tác",
-      width: 120,
+      width: 70,
       // fixed:'right',
       render: (_, record) => (
-        <div className="flex gap-5 cursor-pointer">
+        <div className="flex gap-3 cursor-pointer">
           <Tooltip title="Xem">
             <FileSearchOutlined
               style={{ fontSize: 18 }}
@@ -361,7 +362,7 @@ const Page: React.FC = () => {
           onChange={handleTableChange}
           rowKey="id"
           // className="px-4"
-          className="[&_.ant-table-cell]:!p-2.5"
+          className="[&_.ant-table-cell]:!p-2.5 px-4"
         />
         <CustomModal
           header={`${isSttModal?.typeModal == 0 ? `Chi tiết` : isSttModal?.typeModal == 1 ? `Thêm mới` : `Chỉnh sửa`

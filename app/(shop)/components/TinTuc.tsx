@@ -21,7 +21,7 @@ export default async function TinTuc() {
             key={`${label.id}-${i}`}
             className="group bg-white shadow-custom rounded p-2 flex flex-col items-center overflow-hidden cursor-pointer"
           >
-            <div className="relative w-full aspect-[245/173] bg-gray-100 mb-2 overflow-hidden rounded-md">
+            <div className="relative w-full  h-[198px] aspect-[245/173] bg-gray-100 mb-2 overflow-hidden rounded-md">
               {label.urls ? (
                 <Image
                   src={`https://nhanmac.vn/${label.urls}`}

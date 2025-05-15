@@ -26,4 +26,5 @@ export interface Category {
     alias: string;
     alias_parent: string;
     parent_id: number;
+    published:number
   }

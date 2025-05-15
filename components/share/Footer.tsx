@@ -101,31 +101,30 @@ const Footer = () => {
             }}
           >
             {/* Zalo */}
-            <div className="flex items-center gap-5 max-w-md">
+            <div className="flex gap-5 items-start">
               <Image
                 src="/images/qr-zalo.png"
                 alt="Zalo QR Code"
-                width={112}
-                height={112}
-                className="rounded object-cover pl-2"
+                width={120}
+                height={120}
+                className="rounded object-contain p-2"
+                style={{ objectFit: "contain" }}
               />
-              <div className="flex flex-col">
-                <p className="text-[#05224A] text-lg font-bold mb-1 whitespace-nowrap">
+              <div className="flex flex-col "> {/* đẩy xuống 1 chút */}
+                <p className="text-[#05224A] text-lg font-bold mb-1 whitespace-nowrap mt-4">
                   Hỗ trợ khách hàng 24/7
                 </p>
                 <span className="text-[#EB5757] font-semibold">Ms.Lan Anh</span>
-                <span className="text-[#EB5757] font-semibold">
-                  0912.424.368
-                </span>
+                <span className="text-[#EB5757] font-semibold">0912.424.368</span>
               </div>
             </div>
 
             {/* Facebook Group */}
-           
+
           </div>
-           <div>
-             <div className="fb-page" data-href="https://www.facebook.com/nhanmac.vn" data-tabs="timeline" data-width="368" data-height="118" data-small-header="false" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true"><blockquote cite="https://www.facebook.com/nhanmac.vn" className="fb-xfbml-parse-ignore"><a href="https://www.facebook.com/nhanmac.vn">Công ty cổ phần công nghệ Thiên Lương</a></blockquote></div>
-            </div>
+          <div>
+            <div className="fb-page" data-href="https://www.facebook.com/nhanmac.vn" data-tabs="timeline" data-width="368" data-height="118" data-small-header="false" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true"><blockquote cite="https://www.facebook.com/nhanmac.vn" className="fb-xfbml-parse-ignore"><a href="https://www.facebook.com/nhanmac.vn">Công ty cổ phần công nghệ Thiên Lương</a></blockquote></div>
+          </div>
           <div className="pt-8 flex">
             <Image
               src="/icons/clock.svg"

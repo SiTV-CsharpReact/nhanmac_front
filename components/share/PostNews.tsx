@@ -121,27 +121,30 @@ export default async function PostNews() {
                 ) : (
                     <ul>
                         {posts.map((post) => (
-                             <Link href={`/${post.alias}`} title={post.title} key={post.id} className="group">
-                                
-                            <li key={post.id} className="flex bg-white gap-2 mb-3 hover:bg-gray-100 rounded p-2">
-                                <Image
-                                    src={post?.urls ?? "/images/Carousel.png"}
-                                    width={80}
-                                    height={60}
-                                    alt={`Ảnh minh họa cho bài viết ${post.title}`}
-                                    className="object-cover rounded"
-                                    priority={false}
-                                    loading="lazy"
-                                />
-                                
-                                <span
-                       
-                                    className="m-4 text-base line-clamp-2 group-hover:text-[#2F80ED]"
-                                    aria-label={`Đọc bài viết: ${post.title}`}
-                                >
-                                    {post.title}
-                                </span>
-                            </li>
+                            console.log(post?.urls),
+                            <Link href={`${post.alias +'-'+ post.id}.html`}  title={post.title} key={post.id} className="group">
+
+                                <li key={post.id} className="flex bg-white gap-2 mb-3 hover:bg-gray-100 rounded p-2">
+                                    <Image
+                                        src={post.urls?.startsWith("http")
+                                        ? post.urls
+                                        : `https://nhanmac.vn/${post.urls}`}
+                                        width={80}
+                                        height={60}
+                                        alt={`Ảnh minh họa cho bài viết ${post.title}`}
+                                        className="object-cover rounded"
+                                        priority={false}
+                                        loading="lazy"
+                                    />
+
+                                    <span
+
+                                        className="m-4 text-base line-clamp-2 group-hover:text-[#2F80ED]"
+                                        aria-label={`Đọc bài viết: ${post.title}`}
+                                    >
+                                        {post.title}
+                                    </span>
+                                </li>
                             </Link>
                         ))}
                     </ul>
@@ -152,5 +155,5 @@ export default async function PostNews() {
         </>
 
 
-  );
+    );
 }

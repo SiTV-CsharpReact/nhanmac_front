@@ -2,7 +2,6 @@ import { fetchCateAlias } from '@/modules/client/menuApi';
 import { Post } from '@/types/contentItem';
 import Image from 'next/image';
 import Link from 'next/link';
-import Cookies from 'js-cookie';
 export default async function NhanVai() {
     let postList: Post[] = [];
     const res = await fetchCateAlias('nhan-vai' as string, 1, 4);

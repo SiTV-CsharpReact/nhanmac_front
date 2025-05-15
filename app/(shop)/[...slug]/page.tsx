@@ -8,7 +8,6 @@ import { parseSlug } from "@/utils/util";
 import Pagination from "./components/Pagination";
 import CatePage from "./components/CatePage";
 import { Metadata, ResolvingMetadata } from "next";
-import { fetchContentId } from "@/modules/admin/contentApi";
 import Script from "next/script";
 
 type Props = {
@@ -115,39 +114,40 @@ export default async function Page({
     let totalPages = 0;
     let textTitle;
     console.log({ id, alias })
-    let  { data } = await fetchContentBySlugId(alias, id)
-        if (id !== null) {
-            sttPageId = true;
-            // res.Data là 1 Post object
-            if (data?.Data?.correctUrl) {
-                console.log("zo day ne", data?.Data?.correctUrl);
-                textTitle = data.Data?.article?.parent_cat_name;
-                postList = [data.Data.article];
-                return redirect(data?.Data?.correctUrl)
-            } 
-            else {
-                console.log(data?.Data);
-                textTitle = data.Data?.parent_cat_name;
-                postList = [data.Data]; // gói vào mảng để dễ xử lý nếu cần
-
-            }
-        } 
+    let { data } = id !== null && await fetchContentBySlugId(alias, id)
+    const res  = id === null && await fetchCateAlias(alias as string, page, pageSize)
+    if (id !== null) {
+        sttPageId = true;
+        // res.Data là 1 Post object
+        if (data?.Data?.correctUrl) {
+            console.log("zo day ne", data?.Data?.correctUrl);
+            textTitle = data.Data?.article?.parent_cat_name;
+            postList = [data.Data.article];
+            return redirect(data?.Data?.correctUrl)
+        }
         else {
-            const res = await fetchCateAlias(alias as string, page, pageSize);
-            sttPageId = false;
-            postList = res.Data?.list || [];
-            total = res.Data?.total || 0;
-            totalPages = res.Data?.totalPages || 0;
-        }
+            console.log(data?.Data);
+            textTitle = data.Data?.parent_cat_name;
+            postList = [data.Data]; // gói vào mảng để dễ xử lý nếu cần
 
-        if (!postList || postList.length === 0) {
-            return (
-                <p className="text-center mt-10 text-gray-500">
-                    Không có bài viết nào.
-                </p>
-            );
         }
-    
+    }
+    else {
+       
+        sttPageId = false;
+        postList = res.Data?.list || [];
+        total = res.Data?.total || 0;
+        totalPages = res.Data?.totalPages || 0;
+    }
+
+    if (!postList || postList.length === 0) {
+        return (
+            <p className="text-center mt-10 text-gray-500">
+                Không có bài viết nào.
+            </p>
+        );
+    }
+
     // catch (error) {
     //     console.log(error);
     //     // redirect("/not-found");
