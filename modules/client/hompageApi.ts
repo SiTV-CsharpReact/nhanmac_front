@@ -10,7 +10,7 @@ import { env } from "@/config/env";
 // API lấy danh sách slide
 export const fetchSlides = async (): Promise<ApiResponse<Post[]>> => {
   try {
-    const response = await fetch(`${env.apiUrl}/slides`);
+   const response = await fetch(`${env.apiUrl}/slides`, { cache: 'force-cache' });
     const data: ApiResponse<Post[]> = await response.json();
     
     if (data.Code !== 200) {

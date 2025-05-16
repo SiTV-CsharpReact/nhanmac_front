@@ -42,14 +42,6 @@ const testimonials = [
   },
 ];
 
-const sections = [{ title: "TEM KIM LOẠI" }];
-const sections2 = [{ title: "TEM NHỰA DA-MICA" }, { title: "TEM QR CODE" }];
-const sections3 = [{ title: "TEM NGÀNH NGHỀ" }];
-
-const labels = [
-  // ... như cũ
-];
-
 export default function Home() {
   const settings = {
     dots: true,

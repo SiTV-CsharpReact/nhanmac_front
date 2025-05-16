@@ -95,7 +95,7 @@ const SlideImage = () => {
                   priority={true}
                   loading="eager"
                 />
-                <h3 className="text-[15px] p-3  font-normal leading-5 line-clamp-2 text-[#2F80ED] group-hover:text-orange-500">
+                <h3 className="text-[16px] p-2 pt-5  font-normal leading-5 line-clamp-2 text-[#2F80ED] group-hover:text-orange-500">
                   {item.title}
                 </h3>
               </Link>

@@ -73,6 +73,7 @@ export default function MenuTest() {
         nameParent&& Cookies.set('activeParent', nameParent); 
         const url = '/' + link.replace(/^index\.php\?/, '').replace(/&/g, '/').replace(/=/g, '-');
         router.push(url);
+        setOpen(false)
       };
 
     const renderMenuHorizontal = (items: MenuItem[]) => {

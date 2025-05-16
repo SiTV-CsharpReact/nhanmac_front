@@ -94,7 +94,7 @@ export default function CategoryTable() {
         setAlias("");
         form.resetFields(),
         form.setFieldsValue({
-          section: 0,
+          section: '',
           published: 1
         })
       }
@@ -175,6 +175,7 @@ export default function CategoryTable() {
       key: "action",
       width: 80,
       render: (_: any, record: Category) => (
+        console.log(_),
         <div className="flex gap-5">
           <div className="pt-1" onClick={(e) => {
             e?.stopPropagation();
@@ -183,7 +184,7 @@ export default function CategoryTable() {
             <EditIcon
             />
           </div>
-          <Tooltip title="Xóa">
+          {!_.children &&<Tooltip title="Xóa">
             <Popconfirm
               title={`Bạn có chắc muốn xóa "${record.title}"?`}
               onConfirm={(e) => {
@@ -203,7 +204,8 @@ export default function CategoryTable() {
                 onClick={(e) => e.stopPropagation()} // Ngăn sự kiện lan ra ngoài khi bấm nút
               />
             </Popconfirm>
-          </Tooltip>
+          </Tooltip>}
+          
         </div>
       ),
     },
@@ -271,7 +273,7 @@ export default function CategoryTable() {
             <Form.Item label="Danh mục cha" name="section">
               <Select
                 allowClear
-                options={selectOptions}
+                options={selectOptions.slice(1)}
                 placeholder="-- Chọn danh mục cha --"
               />
             </Form.Item>

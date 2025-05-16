@@ -2,6 +2,8 @@
 
 import Image from "next/image";
 import FacebookPagePlugin from "../plugin/FaceBookPlugin";
+import FacebookSDK from "./FacebookSDK";
+import FacebookPage from "./FacebookPage";
 // import dynamic from "next/dynamic";
 
 // Dynamic import FacebookGroup, chỉ render trên client
@@ -93,38 +95,53 @@ const Footer = () => {
           </div>
 
           {/* Zalo và Facebook Group */}
-          <div
-            className="grid grid-cols-1 md:grid-cols-2 gap-6  w-80 h-[120px] rounded-[10px]"
-            style={{
-              background:
-                "linear-gradient(90deg, #D9D9D9 0%, #84ADE8 45.67%, #0068FF 100%)",
-            }}
-          >
+        <div className="flex flex-col md:flex-row gap-5">
             {/* Zalo */}
-            <div className="flex gap-5 items-start">
-              <Image
-                src="/images/qr-zalo.png"
-                alt="Zalo QR Code"
-                width={120}
-                height={120}
-                className="rounded object-contain p-2"
-                style={{ objectFit: "contain" }}
-              />
-              <div className="flex flex-col "> {/* đẩy xuống 1 chút */}
-                <p className="text-[#05224A] text-lg font-bold mb-1 whitespace-nowrap mt-4">
-                  Hỗ trợ khách hàng 24/7
-                </p>
-                <span className="text-[#EB5757] font-semibold">Ms.Lan Anh</span>
-                <span className="text-[#EB5757] font-semibold">0912.424.368</span>
+            <div
+              className="grid grid-cols-1 md:grid-cols-2 gap-6 rounded-[10px] w-1/2 h-[120px]"
+              style={{
+                background:
+                  "linear-gradient(90deg, #D9D9D9 0%, #84ADE8 45.67%, #0068FF 100%)",
+              }}
+            >
+              <div className="flex gap-5">
+                <Image
+                  src="/images/qr-zalo.png"
+                  alt="Zalo QR Code"
+                  width={120}
+                  height={120}
+                  className="rounded object-contain p-2"
+                  style={{ objectFit: "contain" }}
+                />
+                <div className="flex flex-col mt-4">
+                  {" "}
+                  {/* đẩy xuống 1 chút */}
+                  <p className="text-[#05224A] text-lg font-bold mb-1 whitespace-nowrap">
+                    Hỗ trợ khách hàng 24/7
+                  </p>
+                  <span className="text-[#EB5757] font-semibold">
+                    Ms.Lan Anh
+                  </span>
+                  <span className="text-[#EB5757] font-semibold">
+                    0912.424.368
+                  </span>
+                </div>
               </div>
             </div>
 
-            {/* Facebook Group */}
+            {/* Facebook iframe */}
+            <iframe
+              src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fweb.facebook.com%2Fnhanmac.vn&tabs=timeline&width=500&height=300&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=true&appId=254328106490883"
+              width="100%" // cho iframe chiếm hết chiều ngang div cha
+              height="120"
+              style={{ border: "none", overflow: "hidden" }}
+              scrolling="no"
+              frameBorder="0"
+              allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+              className="w-1/2 rounded-[10px]"
+            />
+          </div>
 
-          </div>
-          <div>
-            <div className="fb-page" data-href="https://www.facebook.com/nhanmac.vn" data-tabs="timeline" data-width="368" data-height="118" data-small-header="false" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true"><blockquote cite="https://www.facebook.com/nhanmac.vn" className="fb-xfbml-parse-ignore"><a href="https://www.facebook.com/nhanmac.vn">Công ty cổ phần công nghệ Thiên Lương</a></blockquote></div>
-          </div>
           <div className="pt-8 flex">
             <Image
               src="/icons/clock.svg"

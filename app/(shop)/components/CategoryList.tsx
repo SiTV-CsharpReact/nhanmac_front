@@ -54,7 +54,7 @@ const CategoryList = async ({ categoryKey,bgWhite }: Props) => {
                                                 </div>
                                             )}
                                         </div>
-                                        <p className="text-[15px] font-normal text-[#2F80ED] text-left p-2.5 transition-colors duration-300 group-hover:text-orange-500">
+                                        <p className="text-[15px] line-clamp-2 font-normal text-[#2F80ED] text-left p-2 transition-colors duration-300 group-hover:text-orange-500">
                                             {label.content_title}
                                         </p>
                                     </div>

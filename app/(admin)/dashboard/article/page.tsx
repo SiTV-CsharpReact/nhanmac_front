@@ -219,7 +219,7 @@ const Page: React.FC = () => {
           {dayjs(text).format("DD/MM/YYYY")}
         </span>
       ),
-      width: 120
+      width: 125
     },
     {
       title: "Tiêu đề",
@@ -318,7 +318,7 @@ const Page: React.FC = () => {
 
   return (
     <div className="mx-4  w-full">
-      <div className="bg-white pt-2">
+      <div className="bg-white pt-2 rounded">
         <TitlePageAdmin text={'Quản lý bài viết'} />
         <SearchComponent
           setOnReload={() => setOnReload(prev => !prev)}
@@ -357,7 +357,7 @@ const Page: React.FC = () => {
             },
             showSizeChanger: true,
           }}
-          scroll={{ x: 'max-content'  }} 
+          // scroll={{ x: 'max-content'  }} 
           loading={loading}
           onChange={handleTableChange}
           rowKey="id"

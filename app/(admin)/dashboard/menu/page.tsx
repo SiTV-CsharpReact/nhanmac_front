@@ -56,7 +56,7 @@ const columns = (
     dataIndex: "link",
     key: "link",
     render: (link: string) => (
-      <span className="text-blue-600 underline uppercase">{link}</span>
+      <a href={`/${link}`}  target="_blank" className="text-blue-600 underline uppercase">{link}</a>
     ),
   },
   {
@@ -120,6 +120,7 @@ const columns = (
             }}
             title="Sửa menu"
           />
+         
           <Popconfirm
             title={`Bạn có chắc muốn xóa menu "${record.name}"?`}
             onConfirm={(e) => {
@@ -139,6 +140,7 @@ const columns = (
               onClick={(e) => e.stopPropagation()} // Ngăn sự kiện lan ra ngoài khi bấm nút
             />
           </Popconfirm>
+   
         </div>
       );
     },
@@ -214,6 +216,7 @@ export default function MenuManager() {
         message: "Thành công",
         description: "Đã thêm menu con!",
       });
+      setModalOpen(false);
       setAddSubModalOpen(false);
       addSubForm.resetFields();
       setParentForSub(null);
@@ -238,7 +241,6 @@ export default function MenuManager() {
 
   // Sửa menu
   const handleEditMenu = async (values: any) => {
-    console.log(values);
     if (!editingMenu) return;
     try {
       await editMenu(editingMenu.id, {
@@ -296,7 +298,7 @@ export default function MenuManager() {
   };
 
   return (
-    <div className="max-w-6xl pl-4">
+    <div className="max-w-4xl pl-4">
       <div
         style={{
           display: "flex",
@@ -313,7 +315,11 @@ export default function MenuManager() {
           // type="primary"
           icon={<PlusOutlined />}
           className="bg-[#7367F0] hover:bg-violet-600"
-          onClick={() => setModalOpen(true)}
+          onClick={() => {
+               setTimeout(() => {
+                form.resetFields(); // reset sau 100ms
+              }, 100);
+            setModalOpen(true)}}
           style={{ background: "#7367F0", color: "white" }}
         >
           Thêm mới
@@ -326,6 +332,7 @@ export default function MenuManager() {
         pagination={false}
         expandable={{ expandRowByClick: true, indentSize: 24 }}
         loading={loading}
+         scroll={{ y: 550 }} 
         style={{ width: 1200 }}
         // className="border rounded"
         rowClassName={rowClassName}

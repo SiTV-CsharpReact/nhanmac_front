@@ -24,7 +24,6 @@ function getPageNumbers(page: number, totalPages: number) {
 
 export default function Pagination({ page, totalPages, alias }: PaginationProps) {
   const pages = getPageNumbers(page, totalPages);
-
   return (
     <nav className="flex justify-center items-center gap-2 mt-6 select-none" aria-label="Pagination">
       {/* Previous */}
