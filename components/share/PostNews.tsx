@@ -139,19 +139,21 @@ export default async function PostNews() {
                 key={post.id}
                 className="group"
               >
-                <li className="flex bg-white gap-4 mb-3 hover:bg-gray-100 rounded p-2 items-center !h-[96px]">
+                <li className="bg-white gap-4 mb-3 hover:bg-gray-100 rounded  !h-[96px] grid grid-cols-[150px_1fr]">
                   {/* Container ảnh cố định kích thước */}
-                  <div className="relative w-[150px] h-[82px] bg-gray-100 rounded-md overflow-hidden">
+                  <div className="relative w-[150px] h-[96px] bg-gray-100 overflow-hidden">
                     {post.urls ? (
                       <Image
-                        src={  post.urls?.startsWith("http")
-                          ? post.urls
-                          : `https://nhanmac.vn/${post.urls}`}
+                        src={
+                          post.urls?.startsWith("http")
+                            ? post.urls
+                            : `https://nhanmac.vn/${post.urls}`
+                        }
                         alt={post.image_desc || "Ảnh sản phẩm"}
                         fill
                         style={{ objectFit: "cover" }}
-                        sizes="(max-width: 768px) 100vw, 120px"
-                        className="rounded-md transition-transform duration-300 ease-in-out group-hover:scale-110"
+                        sizes="(max-width: 768px) 100vw, 150px"
+                        className="rounded-l-md transition-transform duration-300 ease-in-out group-hover:scale-110"
                         priority={i < 2}
                       />
                     ) : (
@@ -162,12 +164,13 @@ export default async function PostNews() {
                   </div>
 
                   <span
-                    className="m-4 text-base line-clamp-2 group-hover:text-[#2F80ED] pt-1"
+                    className="mr-3 mt-3 text-base  group-hover:text-[#2F80ED]"
                     aria-label={`Đọc bài viết: ${post.title}`}
                   >
                     {post.title}
                   </span>
                 </li>
+
               </Link>
             ))}
           </ul>

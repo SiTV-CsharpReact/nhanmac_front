@@ -21,7 +21,7 @@ export default function CatePage({ postList }: CatePageProps) {
               className="group bg-white shadow-custom rounded  flex flex-col items-center overflow-hidden cursor-pointer"
             >
               <div className="bg-white shadow-custom p-0 flex flex-col items-center cursor-pointer">
-                <div className="relative w-full aspect-[245/173] bg-gray-100 mb-2 overflow-hidden rounded-md">
+                <div className="relative w-full aspect-[245/173] h-[173px] bg-gray-100  overflow-hidden rounded-md">
                   {label.urls ? (
                     <Image
                       src={

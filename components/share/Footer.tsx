@@ -4,6 +4,7 @@ import Image from "next/image";
 import FacebookPagePlugin from "../plugin/FaceBookPlugin";
 import FacebookSDK from "./FacebookSDK";
 import FacebookPage from "./FacebookPage";
+import Link from "next/link";
 // import dynamic from "next/dynamic";
 
 // Dynamic import FacebookGroup, chỉ render trên client
@@ -80,25 +81,33 @@ const Footer = () => {
         <div className="md:col-span-3 pt-6">
           {/* Menu */}
           <div className="flex flex-wrap justify-between text-white text-sm mb-6">
+          <Link href="/">
             <h3 className="text-lg font-medium pb-2 cursor-pointer hover:text-blue-400">
               Trang chủ
             </h3>
+            </Link>
+            <Link href="/tem-nhan-mac-cong-ty-thien-luong-307.html">
             <h3 className="text-lg font-medium pb-2 cursor-pointer hover:text-blue-400">
               Giới thiệu
             </h3>
+            </Link>
+            <Link href="/contact">
             <h3 className="text-lg font-medium pb-2 cursor-pointer hover:text-blue-400">
               Tin tức
             </h3>
+            </Link>
+            <Link href="/contact">
             <h3 className="text-lg font-medium pb-2 cursor-pointer hover:text-blue-400">
               Liên hệ
             </h3>
+            </Link>
           </div>
 
           {/* Zalo và Facebook Group */}
         <div className="flex flex-col md:flex-row gap-5">
             {/* Zalo */}
             <div
-              className="grid grid-cols-1 md:grid-cols-2 gap-6 rounded-[10px] w-1/2 h-[120px]"
+              className="grid grid-cols-1 md:grid-cols-2 gap-6 rounded-[10px] w-1/2 h-[125px]"
               style={{
                 background:
                   "linear-gradient(90deg, #D9D9D9 0%, #84ADE8 45.67%, #0068FF 100%)",
@@ -131,14 +140,15 @@ const Footer = () => {
 
             {/* Facebook iframe */}
             <iframe
-              src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fweb.facebook.com%2Fnhanmac.vn&tabs=timeline&width=500&height=300&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=true&appId=254328106490883"
-              width="100%" // cho iframe chiếm hết chiều ngang div cha
-              height="120"
+            //  src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fweb.facebook.com%2Fnhanmac.vn&tabs=timeline&width=500&height=300&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=true&appId=254328106490883"
+            src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fnhanmac.vn&tabs=timeline&width=360&height=110&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=true&appId=254328106490883"  
+            width="100%" // cho iframe chiếm hết chiều ngang div cha
+              height="125"
               style={{ border: "none", overflow: "hidden" }}
               scrolling="no"
               frameBorder="0"
               allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
-              className="w-1/2 rounded-[10px]"
+              className="w-1/2 rounded"
             />
           </div>
 

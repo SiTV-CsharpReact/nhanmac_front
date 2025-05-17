@@ -39,6 +39,17 @@ const SlideImage = () => {
   if (!slides.length) {
     return null;
   }
+  const settings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 1000,
+    arrows: false,
+    dotsClass: "slick-dots",
+  };
 
   return (
     <section
@@ -46,7 +57,7 @@ const SlideImage = () => {
       className="grid grid-cols-1 lg:grid-cols-12 gap-4"
     >
       <div className="lg:col-span-7">
-        <Carousel arrows infinite={false} className="mb-2.5">
+        <Carousel {...settings} className="mb-2.5">
           {slides.slice(0, 3).map((slide) => (
             console.log(`https://nhanmac.vn/${slide.urls}`),
             <div
@@ -90,12 +101,12 @@ const SlideImage = () => {
                   alt={item.title || "Slide image"}
                   title={item.title}
                   width={300}
-                  height={160}
-                  className="h-40 w-full object-cover  duration-300 ease-in-out group-hover:scale-110"
+                  height={180}
+                  className="h-[180px] w-full object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
                   priority={true}
                   loading="eager"
                 />
-                <h3 className="text-[16px] p-2 pt-5  font-normal leading-5 line-clamp-2 text-[#2F80ED] group-hover:text-orange-500">
+                <h3 className="text-[16px] p-2 pt-3  font-normal leading-5 line-clamp-2 text-[#2F80ED] group-hover:text-orange-500">
                   {item.title}
                 </h3>
               </Link>

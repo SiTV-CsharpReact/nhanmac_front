@@ -304,7 +304,7 @@ const ContentArticle: React.FC<typeContentArticle> = ({
             >
               <Space>
                 <Typography.Text strong>
-                  Công ty Cổ phần Thương mại Du lịch Lan Phương
+                  Công ty Cổ phần công nghệ Thiên Lương
                 </Typography.Text>
                 {typeModal == 2 &&
                   <Tag

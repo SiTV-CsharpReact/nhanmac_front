@@ -23,7 +23,7 @@ const NhanDecal = async ({ categoryKey, textTitle }: Props) => {
                         className="group bg-white shadow-custom rounded  items-center overflow-hidden cursor-pointer"
                     >
                         <div className="bg-white shadow-custom rounded  flex flex-col h-full">
-                            <div className="relative w-full h-[198px] mb-2 rounded overflow-hidden bg-gray-100">
+                            <div className="relative w-full h-[173px] rounded overflow-hidden bg-gray-100">
                                 {label?.urls ? (
                                     <Image
                                         src={`https://nhanmac.vn/${label.urls}`}

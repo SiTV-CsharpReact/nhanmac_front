@@ -10,14 +10,64 @@ import TinTuc from "./components/TinTuc";
 import Link from "next/link";
 
 // 1. Metadata cho SEO
-export const metadata: Metadata = {
-  title: "Công ty sản xuất tem nhãn uy tín | Tem nhãn 3A",
-  description: "Chuyên sản xuất tem nhãn, nhãn mác, logo nhựa, kim loại, decal, QR code, nhãn vải... Đảm bảo chất lượng, giá tốt, giao hàng nhanh.",
-  keywords: "tem nhãn, sản xuất tem, tem nhựa, tem kim loại, tem decal, tem QR code, nhãn vải, nhãn mác",
+export const metadata :Metadata= {
+  title: "Công ty cổ phần công nghệ Thiên Lương",
+  description: "Thiên Lương - Chuyên in ấn các loại tem nhãn mác kim loại, in đề can, in decal, in tem nhôm, in tem vỡ, in decal trong, in tem nhôm xước, nhãn vải, nhãn tem giấy",
+  keywords: "tem nhãn mác| tem nhãn| tem mác| nhãn mác| đề can| in decal| decal vỡ | decan nhựa | tem bảo hành | tem nhôm | nhãn nhôm | tem vỡ | decal trong | tem nhôm xước | tem ăn mòn | nhãn mác kim loại | nhan mac kim loai | mác động cơ | mác máy | tem cửa cuốn | nhãn két | mặt nạ két | tem PVC | tem nhôm | tem mica | tem nổi | logo | logo kim loại | logo nhôm | logo đồng, logo inox |",
+  authors: [{ name: "VietNamNet News" }],
+  creator: "Admin News",
+  publisher: "Admin News",
+  metadataBase: new URL("https://nhanmac.vn"),
+  alternates: {
+    canonical: "https://nhanmac.vn",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    nocache: false,
+    googleBot: {
+      index: true,
+      follow: true,
+      noimageindex: false,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
   openGraph: {
-    title: "Công ty sản xuất tem nhãn uy tín | Tem nhãn 3A",
-    description: "Chuyên sản xuất tem nhãn, nhãn mác, logo nhựa, kim loại, decal, QR code, nhãn vải...",
-    images: ["/images/og-image.jpg"],
+    title: "Công ty cổ phần công nghệ Thiên Lương - Chuyên nhãn mác",
+    description: "Thiên Lương - Chuyên in ấn các loại tem nhãn mác kim loại, in đề can, in decal, in tem nhôm, in tem vỡ, in decal trong, in tem nhôm xước, nhãn vải, nhãn tem giấy",
+    url: "https://nhanmac.vn",
+    siteName: "Nhanmac News",
+    images: [
+      {
+        url: "https://res-files.vnncdn.net/files/2024/1/2/thumb-share-muc.jpg?width=0&s=HSERQwEg5JJy06LMtSHMbw",
+        width: 800,
+        height: 600,
+        alt: "VietNamNet",
+      },
+    ],
+    locale: "vi_VN",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Công ty cổ phần công nghệ Thiên Lương - Chuyên nhãn mac",
+    description: "Thiên Lương - Chuyên in ấn các loại tem nhãn mác kim loại, in đề can, in decal, in tem nhôm, in tem vỡ, in decal trong, in tem nhôm xước, nhãn vải, nhãn tem giấy",
+    images: ["https://nhanmac.vn/templates/nhanmac/favicon.ico"],
+    site: "@nhanmac", // nếu có
+    creator: "@nhanmac", // nếu có
+  },
+  verification: {
+    google: "T0fsyz7y2VTfHfmaNwV3rjMXPhLOSNXfY93pMqnD5NQ",
+  },
+  icons: {
+    icon: "https://nhanmac.vn/templates/nhanmac/favicon.ico",
+    apple: [
+      { url: "https://nhanmac.vn/templates/nhanmac/favicon.ico", sizes: "72x72" },
+      { url: "https://nhanmac.vn/templates/nhanmac/favicon.ico", sizes: "114x114" },
+      { url: "https://nhanmac.vn/templates/nhanmac/favicon.ico", sizes: "57x57" },
+    ],
   },
 };
 
@@ -25,19 +75,19 @@ const testimonials = [
   {
     comment:
       "Sản phẩm tem nhãn của 3A vượt trội so với các đơn vị khác. Chất lượng, bền màu và đặc biệt là dịch vụ tư vấn rất tận tâm.",
-    author: "Ms. Nguyễn Thị An - Công ty May Mặc ABC",
+    author: "Ms. Nguyễn Thị An - Công ty May Mặc Tân Bình",
     company: "Công ty May Mặc ",
   },
   {
     comment:
-      "3A đã giúp chúng tôi có những mẫu tem nhãn đẹp, ấn tượng. Rất hài lòng về sự chuyên nghiệp và sáng tạo của đội ngũ thiết kế.",
-    author: "Mr. Trần Văn Bình - Cơ sở Da Giày XYZ",
+      "3A đã giúp chúng tôi có những mẫu tem nhãn đẹp, ấn tượng. Rất hài lòng về sự chuyên nghiệp và sáng tạo của đội ngũ thiết kế rất tỉ mỉ bắt mắt.",
+    author: "Mr. Trần Văn Bình - Cơ sở Da Giày SuperSport",
     company: "Cơ sở Da Giày ",
   },
   {
     comment:
-      "Chúng tôi đánh giá cao sự uy tín và chất lượng của 3A. Tem nhãn được giao đúng hẹn, chất lượng đảm bảo, giá cả cạnh tranh.",
-    author: "Mrs. Lê Thị Cúc - HTX Nông Sản",
+      "Chúng tôi đánh giá cao sự uy tín và chất lượng của 3A. Tem nhãn được giao đúng hẹn, chất lượng đảm bảo, giá cả cạnh tranh mà đem đên chất lượng cùng dịch vụ quá tốt.",
+    author: "Mrs. Lê Thị Cúc - HTX Nông Sản Sạch cho mọi nhà",
     company: "HTX Nông Sản 123",
   },
 ];
@@ -164,7 +214,7 @@ export default function Home() {
                 CẢM NHẬN KHÁCH HÀNG
               </h2>
               <div className="h-1 bg-[#2F80ED] mx-auto w-[255px] mb-2.5"></div>
-              <Carousel {...settings} className="pb-9">
+              <Carousel {...settings} className="pb-8">
                 {testimonials.map((testimonial, index) => (
                   <div key={testimonial.author + index} className="bg-white">
                     <div className="grid grid-cols-12 gap-5 p-5">

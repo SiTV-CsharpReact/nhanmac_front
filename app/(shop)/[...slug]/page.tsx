@@ -74,6 +74,14 @@ export async function generateMetadata(
         index: true,
         follow: true,
       },
+      icons: {
+        icon: "https://nhanmac.vn/templates/nhanmac/favicon.ico",
+        apple: [
+          { url: "https://nhanmac.vn/templates/nhanmac/favicon.ico", sizes: "72x72" },
+          { url: "https://nhanmac.vn/templates/nhanmac/favicon.ico", sizes: "114x114" },
+          { url: "https://nhanmac.vn/templates/nhanmac/favicon.ico", sizes: "57x57" },
+        ],
+      },
     };
   } catch (error) {
     console.error("Lỗi khi tạo metadata:", error);

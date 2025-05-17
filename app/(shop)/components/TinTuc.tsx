@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 export default async function TinTuc() {
   let postList: Post[] = [];
-  const res = await fetchCateAlias('nhan-kim-loai' as string, 1, 5);
+  const res = await fetchCateAlias('tin-tong-hop' as string, 1, 5);
   postList = res.Data?.list || [];
 
   return (
@@ -17,11 +17,11 @@ export default async function TinTuc() {
       <div className="grid grid-cols-2 gap-4">
         {postList.slice(0, 2).map((label, i) => (
           <Link
-            href={`${label.alias + label.id}.html`}
+            href={`${label.alias +'-'+ label.id}.html`}
             key={`${label.id}-${i}`}
-            className="group bg-white shadow-custom rounded p-2 flex flex-col items-center overflow-hidden cursor-pointer"
+            className="group bg-white shadow-custom rounded flex flex-col items-center overflow-hidden cursor-pointer"
           >
-            <div className="relative w-full  h-[198px] aspect-[245/173] bg-gray-100 mb-2 overflow-hidden rounded-md">
+            <div className="relative w-full  h-[173px] aspect-[245/173] bg-gray-100  overflow-hidden rounded-md">
               {label.urls ? (
                 <Image
                   src={`https://nhanmac.vn/${label.urls}`}
@@ -38,7 +38,7 @@ export default async function TinTuc() {
                 </div>
               )}
             </div>
-            <p className="text-[15px] font-normal text-[#2F80ED] text-left p-2.5 transition-colors duration-300 group-hover:text-orange-500">
+            <p className="text-[15px] font-normal text-[#2F80ED] text-left p-2 pt-3 transition-colors duration-300 group-hover:text-orange-500">
               {label.content_title}
             </p>
           </Link>
