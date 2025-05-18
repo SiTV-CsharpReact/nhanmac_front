@@ -32,7 +32,7 @@ const SearchComponent: React.FC<SearchComponentProps> = ({
 }) => {
   const { selectOptions, loading } = useCategories();
   const initialValues = {
-    created: [dayjs().subtract(1, "month"), dayjs()], // RangePicker expects array of moments
+    created: [dayjs().subtract(3, "month"), dayjs()], // RangePicker expects array of moments
     state: 1,
     sectionid: undefined,
     keyword: "",

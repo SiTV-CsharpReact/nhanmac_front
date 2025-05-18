@@ -5,7 +5,7 @@ const RightMenu = () => {
   return (
     <div className="right-3 fixed top-1/2 md:right-7 flex flex-col gap-2 -translate-y-1/2 z-[999]">
       <a
-        href="tel:..."
+        href="tel:0912424368"
         className="flex items-center justify-center w-12 h-12 rounded-full bg-[#EB5757] text-white text-xl"
       >
         <Image
@@ -33,7 +33,7 @@ const RightMenu = () => {
       </a>
 
       <a
-        href="https://zalo.me/..."
+        href="https://zalo.me/84912424368"
         target="_blank"
         rel="noopener noreferrer"
         className="flex items-center justify-center w-12 h-12 rounded-full bg-[#E7E6E6] border-2 border-[#2F80ED] text-white text-xl"
@@ -48,7 +48,7 @@ const RightMenu = () => {
       </a>
 
       <a
-        href="mailto:..."
+        href="mailto:nhanmac.vn@gmail.com"
         className="flex items-center justify-center w-12 h-12 rounded-full bg-white border-2 border-[#EB5757] text-white text-xl"
       >
         <Image

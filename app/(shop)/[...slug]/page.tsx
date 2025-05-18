@@ -43,27 +43,27 @@ export async function generateMetadata(
       }
     }
 
-    if (!postList[0]) {
-      return {
-        title: "Sản phẩm không tồn tại",
-        description: "Không tìm thấy thông tin sản phẩm",
-      };
-    }
+    // if (!postList[0]) {
+    //   return {
+    //     title: "Sản phẩm không tồn tại",
+    //     description: "Không tìm thấy thông tin sản phẩm",
+    //   };
+    // }
 
     return {
       title: postList[0]?.title || `Sản phẩm ${id}`,
       description: postList[0]?.metadesc || `Chi tiết sản phẩm mã ${id}`,
       keywords: postList[0]?.metakey || "",
       openGraph: {
-        title: postList[0].title,
-        description: postList[0].description,
+        title: postList[0]?.title,
+        description: postList[0]?.description,
         images: [postList[0]?.images],
         type: "article",
         url: postList[0]?.urls,
       },
       twitter: {
         card: "summary_large_image",
-        title: postList[0].title,
+        title: postList[0]?.title,
         description: postList[0]?.metadesc || `Chi tiết sản phẩm mã ${id}`,
         images: [postList[0]?.images],
       },
@@ -96,12 +96,12 @@ export default async function Page(props: {
   params: Params
   searchParams: SearchParams
 }) {
-   const params = await props.params
+  const params = await props.params
   const sp = await props.searchParams
   const slug = params.slug
   const invalidFiles = ["favicon.ico", "upload", "sitemap.xml"];
   if (slug.length === 1 && invalidFiles.includes(slug[0].toLowerCase())) {
-    return null; 
+    return null;
   }
 
   const { id, alias } = parseSlug(slug[0]);
@@ -117,8 +117,8 @@ export default async function Page(props: {
   let totalPages = 0;
   let textTitle;
   // console.log({ id, alias });
- 
-     let { data } = id !== null && (await fetchContentBySlugId(alias, id));
+
+  let { data } = id !== null && (await fetchContentBySlugId(alias, id));
   const res =
     id === null && (await fetchCateAlias(alias as string, page, pageSize));
   if (id !== null) {
@@ -138,14 +138,16 @@ export default async function Page(props: {
     postList = res.Data?.list || [];
     total = res.Data?.total || 0;
     totalPages = res.Data?.totalPages || 0;
+    textTitle = res.Data?.list[0]?.category_title
+    console.log(textTitle)
   }
 
   if (!postList || postList.length === 0) {
-  redirect('not-found')
+    redirect('not-found')
   }
 
- 
- 
+
+
   // catch (error) {
   //     console.log(error);
   //     // redirect("/not-found");
@@ -187,27 +189,26 @@ export default async function Page(props: {
           <article className="w-full md:w-2/3">
             {sttPageId ? (
               postList[0]?.introtext ? (
-                 <Suspense fallback={<Loading />}>
-                <section
-                  className="prose max-w-full" // max-w-full để không giới hạn chiều rộng trên mobile
-                  dangerouslySetInnerHTML={{
-                    __html: postList[0].introtext
+                console.log('href="/nhan-kim-loai/593-decal-in-an--64.html"'.replace(
+                  /href="(?:index\.php\/)?[^"]*\/(\d+)-([^\/"]+)\.html"/g,
+                  (match, id, slug) => `href="${slug}-${id}.html"`
+                )),
+                <Suspense fallback={<Loading />}>
+                  <section
+                    className="prose max-w-full"
+                    dangerouslySetInnerHTML={{
+                      __html: postList[0].introtext
                       .replace(
-                        /href="index\.php\/[^\/]+\/[^\/]+\/(\d+)-([^"]+)\.html"/g,
-                        (match, id, slug) => {
-                          // id là số (ví dụ 519)
-                          // slug là phần còn lại sau id và dấu '-'
-                          // Đổi thành: slug + '-' + id + '.html'
-                          return `href="${slug}-${id}.html"`;
-                        }
+                        /href="(?:index\.php\/)?[^"]*\/(\d+)-([a-zA-Z0-9\-]+)(?:\.html)?"/g,
+                        (match, id, slug) => `href="${slug}-${id}.html"`
                       )
-                      .replace(
-                        /src="(upload\/image\/[^"]+)"/g,
-                        (match, src) => `src="https://nhanmac.vn/${src}"`
-                      ),
-                  }}
-                  
-                />
+                      
+                        .replace(
+                          /src="(upload\/image\/[^"]+)"/g,
+                          (match, src) => `src="https://nhanmac.vn/${src}"`
+                        ),
+                    }}
+                  />
                 </Suspense>
               ) : (
                 <p className="text-gray-500">Đang cập nhật nội dung...</p>
@@ -233,9 +234,9 @@ export default async function Page(props: {
 
           {/* Sidebar */}
           <aside className="w-full md:w-1/3 flex flex-col gap-6">
-           
-              <PostNews />
-           
+
+            <PostNews />
+
           </aside>
         </div>
       </div>

@@ -356,7 +356,7 @@ const ContentArticle: React.FC<typeContentArticle> = ({
             )}
             <Row gutter={16}>
               <Col span={12}>
-                <Form.Item label="Mô tả ảnh" name="image_desc">
+                <Form.Item label="Mô tả ảnh (không nhập sẽ auto lấy phần tiêu đề)" name="image_desc">
                   <Input placeholder="Mô tả ảnh minh họa" />
                 </Form.Item>
               </Col>
@@ -388,10 +388,10 @@ const ContentArticle: React.FC<typeContentArticle> = ({
 
             <Form.Item >
               <Button type="primary" htmlType="submit" onClick={() => setTypeSub(1)}>
-                {typeModal === 1 ? "Lưu bài viết" : "Cập nhật bài viết"}
+                {typeModal === 1 ? "Xuất bản" : "Cập nhật bài viết"}
               </Button>
               <Button type="default" htmlType="submit" className="!ml-3" onClick={() => setTypeSub(0)}>
-                Lưu tạm thời
+               Chưa xuất bản
               </Button>
             </Form.Item>
 

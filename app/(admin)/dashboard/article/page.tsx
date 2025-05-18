@@ -29,7 +29,7 @@ interface TableItem extends Post {
 }
 
 const initialParams = {
-  created: [dayjs().subtract(1, "month"), dayjs()], // ví dụ 'YYYY-MM-DD'
+  created: [dayjs().subtract(3, "month"), dayjs()], // ví dụ 'YYYY-MM-DD'
   pageNumber: 1,
   pageSize: 10,
   sectionid: undefined,

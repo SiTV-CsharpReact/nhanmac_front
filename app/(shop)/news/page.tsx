@@ -94,7 +94,7 @@ export default function Page() {
             </div>
 
             {/* Hỗ trợ trực tuyến */}
-            <div className="bg-blue-50 p-4 rounded">
+            <div className="bg-blue-50 p-4 rounded mt-2">
               <h2 className="text-2xl font-semibold mb-2 text-center">
                 Hỗ trợ trực tuyến
               </h2>

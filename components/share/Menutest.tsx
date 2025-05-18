@@ -143,7 +143,7 @@ export default function MenuTest() {
     const renderMenuMobile = (items: MenuItem[]) => (
         <ul className="flex flex-col gap-2">
             {items.map(item => (
-                <li key={item.id} onClick={() => toggleMobileMenu(item.id)}>
+                <li key={item.id}>
                     <div className="flex justify-between items-center">
                         <button
                              onClick={() => handleClick(item.link)}

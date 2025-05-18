@@ -30,7 +30,7 @@ const SocialIcon = ({
 // Component SupportSection (giữ nguyên)
 const SupportSection = () => (
   <div
-    className="bg-blue-50 p-4 rounded"
+    className="bg-blue-50 p-4 rounded "
     itemScope
     itemType="https://schema.org/ContactPage"
   >
@@ -95,7 +95,7 @@ const SupportSection = () => (
               bgColor="bg-[#2F80ED]"
             />
             <SocialIcon
-              href="mailto:info@nhanmac.vn"
+              href="mailto:nhanmac.vn@gmail.com"
               icon="/icons/brand-gmail-no-border.svg"
               alt="Gmail liên hệ"
               bgColor="bg-white border-2 border-[#EB5757]"
@@ -118,10 +118,10 @@ export default async function PostNews() {
   }
 
   return (
-    <>
+    <div className="sticky top-42.5 ">
       <section
         aria-label="Danh sách bài viết mới"
-        className="bg-blue-50 p-4 rounded"
+        className="bg-blue-50 p-4 rounded xl:h-[530px]  lg:h-[400px] lg:overflow-auto"
       >
         <h2 className="text-2xl font-semibold mb-2 text-center">
           Bài viết mới
@@ -164,7 +164,7 @@ export default async function PostNews() {
                   </div>
 
                   <span
-                    className="mr-3 mt-3 text-base  group-hover:text-[#2F80ED]"
+                    className="mr-3 mt-3 text-base line-clamp-2 lg:line-clamp-none group-hover:text-[#2F80ED]"
                     aria-label={`Đọc bài viết: ${post.title}`}
                   >
                     {post.title}
@@ -177,7 +177,9 @@ export default async function PostNews() {
         )}
       </section>
 
-      <SupportSection />
-    </>
+      <aside className="self-start mt-3">
+        <SupportSection />
+      </aside>
+    </div>
   );
 }

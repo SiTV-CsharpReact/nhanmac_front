@@ -42,11 +42,11 @@ const SlideImage = () => {
   const settings = {
     dots: true,
     infinite: true,
-    speed: 500,
+    speed: 1000,
     slidesToShow: 1,
     slidesToScroll: 1,
     autoplay: true,
-    autoplaySpeed: 1000,
+    autoplaySpeed: 3000,
     arrows: false,
     dotsClass: "slick-dots",
   };
@@ -106,7 +106,7 @@ const SlideImage = () => {
                   priority={true}
                   loading="eager"
                 />
-                <h3 className="text-[16px] p-2 pt-3  font-normal leading-5 line-clamp-2 text-[#2F80ED] group-hover:text-orange-500">
+                <h3 className="text-[16px] p-2 pt-3  font-normal leading-5 text-[#2F80ED] group-hover:text-orange-500">
                   {item.title}
                 </h3>
               </Link>

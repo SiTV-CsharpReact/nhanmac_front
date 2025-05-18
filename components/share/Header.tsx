@@ -23,7 +23,9 @@ const Header = () => {
   return (
     <header className="sticky top-0 z-40" aria-label="Header">
       <address className="not-italic w-full bg-[#2F80ED] flex justify-center hidden md:flex">
-        <div className="container pl-2 py-2 flex flex-wrap items-center text-white text-sm gap-2">
+        <div className=" container flex justify-between  items-center text-white text-sm ">
+          <div className="pl-2 py-2 flex flex-wrap items-center gap-2">
+
           {/* Điện thoại */}
           <a
             href="tel:0912424368"
@@ -79,7 +81,7 @@ const Header = () => {
 
           {/* Mail */}
           <a
-            href="mailto:info@nhanmac.vn"
+            href="mailto:nhanmac.vn@gmail.com"
             className="flex items-center gap-0.5 hover:underline"
             title="Gửi email"
             aria-label="Gửi email"
@@ -92,7 +94,12 @@ const Header = () => {
               className="w-6 h-6"
             />
           </a>
-
+          </div>
+          <div className="marquee-wrapper flex justify-center overflow-hidden max-w-[500px] w-full relative mx-auto">
+            <div className="marquee-text text-base">
+              Nhà chuyên sản xuất tem nhãn mác trên mọi chất liệu ✨
+            </div>
+          </div>
           {/* Số người trực tuyến */}
           <OnlineCount />
         </div>

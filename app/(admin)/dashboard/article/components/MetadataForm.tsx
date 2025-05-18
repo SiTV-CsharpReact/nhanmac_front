@@ -9,7 +9,7 @@ export default function MetadataForm() {
     <Collapse defaultActiveKey={['1']} style={{ marginBottom: 24 }}>
       <Panel header="Thông tin SEO" key="1">
 
-          <Form.Item label="Tiêu đề SEO:" name="metadesc">
+          <Form.Item label="Description:" name="metadesc">
             <TextArea rows={3} placeholder="Nhập sự miêu tả..." />
           </Form.Item>
           <Form.Item label="Tags,keywords" name="metakey">
