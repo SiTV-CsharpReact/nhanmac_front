@@ -28,7 +28,10 @@ export const fetchContent = async (params: FetchContentParams = {}): Promise<Api
     const data: ApiResponse<ListPost[]> = await response.json();
     
     if (data.Code !== 200) {
-      throw new Error(data.Message || 'Có lỗi xảy ra');
+       data.Data = [];
+      // Bạn có thể log lỗi hoặc xử lý thông báo ở đây nếu muốn
+      console.warn('API trả về lỗi:', data.Message || 'Có lỗi xảy ra');
+      // Trả về data đã điều chỉnh
     }
     
     return data;
@@ -54,7 +57,10 @@ export const fetchContentId = async (id: number): Promise<ApiResponse<Post>> => 
     const data: ApiResponse<Post> = await response.json();
     
     if (data.Code !== 200) {
-      throw new Error(data.Message || 'Có lỗi xảy ra');
+       data.Data = [];
+      // Bạn có thể log lỗi hoặc xử lý thông báo ở đây nếu muốn
+      console.warn('API trả về lỗi:', data.Message || 'Có lỗi xảy ra');
+      // Trả về data đã điều chỉnh
     }
     
     return data;
@@ -79,7 +85,10 @@ export const fetchContentShortId = async (id: number): Promise<ApiResponse<Post>
     const data: ApiResponse<Post> = await response.json();
     
     if (data.Code !== 200) {
-      throw new Error(data.Message || 'Có lỗi xảy ra');
+       data.Data = [];
+      // Bạn có thể log lỗi hoặc xử lý thông báo ở đây nếu muốn
+      console.warn('API trả về lỗi:', data.Message || 'Có lỗi xảy ra');
+     
     }
     
     return data;
@@ -106,7 +115,10 @@ export const fetchContentAlias = async (alias: string): Promise<ApiResponse<Post
     const data: ApiResponse<Post> = await response.json();
     console.log(data)
     if (data.Code !== 200) {
-      throw new Error(data.Message || 'Có lỗi xảy ra');
+       data.Data = [];
+      // Bạn có thể log lỗi hoặc xử lý thông báo ở đây nếu muốn
+      console.warn('API trả về lỗi:', data.Message || 'Có lỗi xảy ra');
+     
     }
     
     return data;
@@ -134,7 +146,10 @@ export const createContent = async (content: Partial<Post>): Promise<ApiResponse
     const data: ApiResponse<Post> = await response.json();
     
     if (data.Code !== 200) {
-      throw new Error(data.Message || 'Có lỗi xảy ra');
+       data.Data = [];
+      // Bạn có thể log lỗi hoặc xử lý thông báo ở đây nếu muốn
+      console.warn('API trả về lỗi:', data.Message || 'Có lỗi xảy ra');
+     
     }
     
     return data;
@@ -162,7 +177,10 @@ export const updateContent = async (id: number, content: Partial<Post>): Promise
     const data: ApiResponse<Post> = await response.json();
     
     if (data.Code !== 200) {
-      throw new Error(data.Message || 'Có lỗi xảy ra');
+       data.Data = [];
+      // Bạn có thể log lỗi hoặc xử lý thông báo ở đây nếu muốn
+      console.warn('API trả về lỗi:', data.Message || 'Có lỗi xảy ra');
+     
     }
     
     return data;
@@ -186,7 +204,10 @@ export const deleteContent = async (id: number): Promise<ApiResponse<void>> => {
     const data: ApiResponse<void> = await response.json();
     
     if (data.Code !== 200) {
-      throw new Error(data.Message || 'Có lỗi xảy ra');
+       data.Data = [];
+      // Bạn có thể log lỗi hoặc xử lý thông báo ở đây nếu muốn
+      console.warn('API trả về lỗi:', data.Message || 'Có lỗi xảy ra');
+     
     }
     
     return data;
@@ -214,7 +235,10 @@ export const uploadImage = async (file: File): Promise<ApiResponse<{ imageUrl: s
     const data: ApiResponse<{ imageUrl: string }> = await response.json();
     
     if (data.Code !== 200) {
-      throw new Error(data.Message || 'Có lỗi xảy ra');
+       data.Data = [];
+      // Bạn có thể log lỗi hoặc xử lý thông báo ở đây nếu muốn
+      console.warn('API trả về lỗi:', data.Message || 'Có lỗi xảy ra');
+     
     }
     
     return data;

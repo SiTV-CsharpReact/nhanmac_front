@@ -1,4 +1,3 @@
-import { use } from 'react'
 import PostNews from "@/components/share/PostNews";
 import TitlePage from "@/components/share/TitlePage";
 import { Post } from "@/types/contentItem";
@@ -12,25 +11,27 @@ import { Metadata, ResolvingMetadata } from "next";
 import Script from "next/script";
 import { Suspense } from "react";
 import Loading from "@/components/share/Loading";
+// @ts-ignore
+type Props = {
+  params: Promise<{ slug: string }>;
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
+};
 
 type Params = Promise<{ slug: string }>
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>
 
-type Props = {
-  params: {
-    slug: string;
-  };
-  searchParams?: { [key: string]: string | string[] | undefined };
-};
 // type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>
 export async function generateMetadata(
-  { params }: Props,
+  props: {
+    params: Params
+    searchParams: SearchParams
+  },
   parent: ResolvingMetadata
 ): Promise<Metadata> {
   try {
-    const { slug } = await params;
+    const params = await props.params
+    const  slug  = params.slug;
     const { id, alias } = parseSlug(slug[0]);
-    let res;
     let postList: Post[] = [];
     if (id !== null) {
       const { data } = await fetchContentBySlugId(alias, id);
@@ -38,7 +39,6 @@ export async function generateMetadata(
         postList = [data.Data.article];
         // redirect(data?.Data?.correctUrl)
       } else {
-        console.log(data?.Data);
         postList = [data.Data]; // gói vào mảng để dễ xử lý nếu cần
       }
     }
@@ -91,15 +91,19 @@ export async function generateMetadata(
     };
   }
 }
+// @ts-ignore
 
 export default async function Page(props: {
   params: Params
   searchParams: SearchParams
 }) {
   const params = await props.params
-  const sp = await props.searchParams
-  const slug = params.slug
+  const searchParams = await props.searchParams;
+
+  const slug = params.slug;
+  const sp = searchParams;
   const invalidFiles = ["favicon.ico", "upload", "sitemap.xml"];
+
   if (slug.length === 1 && invalidFiles.includes(slug[0].toLowerCase())) {
     return null;
   }
@@ -116,11 +120,18 @@ export default async function Page(props: {
   let total = 0;
   let totalPages = 0;
   let textTitle;
-  // console.log({ id, alias });
-
-  let { data } = id !== null && (await fetchContentBySlugId(alias, id));
-  const res =
-    id === null && (await fetchCateAlias(alias as string, page, pageSize));
+  let data;
+  let res;
+  if (id !== null) {
+    const response = await fetchContentBySlugId(alias, id);
+    data = response.data;
+  } else {
+    res = await fetchCateAlias(alias as string, page, pageSize);
+    if (!res || res.Data.length === 0) {
+      redirect('/not-found');
+      return null;
+    }
+  }
   if (id !== null) {
     sttPageId = true;
     // res.Data là 1 Post object
@@ -129,7 +140,6 @@ export default async function Page(props: {
       postList = [data.Data.article];
       return redirect(data?.Data?.correctUrl);
     } else {
-      console.log(data?.Data);
       textTitle = data.Data?.parent_cat_name;
       postList = [data.Data]; // gói vào mảng để dễ xử lý nếu cần
     }
@@ -139,19 +149,13 @@ export default async function Page(props: {
     total = res.Data?.total || 0;
     totalPages = res.Data?.totalPages || 0;
     textTitle = res.Data?.list[0]?.category_title
-    console.log(textTitle)
   }
 
   if (!postList || postList.length === 0) {
-    redirect('not-found')
+    redirect('/not-found');
+    return null;
   }
 
-
-
-  // catch (error) {
-  //     console.log(error);
-  //     // redirect("/not-found");
-  // }
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "NewsArticle",
@@ -189,20 +193,16 @@ export default async function Page(props: {
           <article className="w-full md:w-2/3">
             {sttPageId ? (
               postList[0]?.introtext ? (
-                console.log('href="/nhan-kim-loai/593-decal-in-an--64.html"'.replace(
-                  /href="(?:index\.php\/)?[^"]*\/(\d+)-([^\/"]+)\.html"/g,
-                  (match, id, slug) => `href="${slug}-${id}.html"`
-                )),
                 <Suspense fallback={<Loading />}>
                   <section
                     className="prose max-w-full"
                     dangerouslySetInnerHTML={{
                       __html: postList[0].introtext
-                      .replace(
-                        /href="(?:index\.php\/)?[^"]*\/(\d+)-([a-zA-Z0-9\-]+)(?:\.html)?"/g,
-                        (match, id, slug) => `href="${slug}-${id}.html"`
-                      )
-                      
+                        .replace(
+                          /href="(?:index\.php\/)?[^"]*\/(\d+)-([a-zA-Z0-9\-]+)(?:\.html)?"/g,
+                          (match, id, slug) => `href="${slug}-${id}.html"`
+                        )
+
                         .replace(
                           /src="(upload\/image\/[^"]+)"/g,
                           (match, src) => `src="https://nhanmac.vn/${src}"`

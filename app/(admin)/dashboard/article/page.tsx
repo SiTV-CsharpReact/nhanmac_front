@@ -41,7 +41,7 @@ interface StatusModal {
   typeModal: number | undefined;
 }
 
-export const defaultPagin = {
+const defaultPagin = {
   current: 1,
   pageSize: 10,
   total: 0,

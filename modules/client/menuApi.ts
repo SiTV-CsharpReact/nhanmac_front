@@ -25,7 +25,10 @@ export const fetchCateAlias = async (
 
     const data: ApiResponse<Post[]> = await response.json();
     if (data.Code !== 200) {
-      throw new Error(data.Message || "Có lỗi xảy ra");
+      data.Data = [];
+      // Bạn có thể log lỗi hoặc xử lý thông báo ở đây nếu muốn
+      console.warn('API trả về lỗi:', data.Message || 'Có lỗi xảy ra');
+     
     }
     return data;
   } catch (error: any) {
@@ -51,7 +54,10 @@ export const fetchCate = async (alias: string): Promise<ApiResponse<Post[]>> => 
     const data: ApiResponse<Post[]> = await response.json();
     console.log(data)
     if (data.Code !== 200) {
-      throw new Error(data.Message || 'Có lỗi xảy ra');
+       data.Data = [];
+      // Bạn có thể log lỗi hoặc xử lý thông báo ở đây nếu muốn
+      console.warn('API trả về lỗi:', data.Message || 'Có lỗi xảy ra');
+     
     }
     
     return data;
