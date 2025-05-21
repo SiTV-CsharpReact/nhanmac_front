@@ -2450,7 +2450,7 @@ lodash@^4.17.21, lodash@^4.7.0:
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
   integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
 
-loose-envify@^1.1.0, loose-envify@^1.4.0:
+loose-envify@^1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/loose-envify/-/loose-envify-1.4.0.tgz#71ee51fa7be4caec1a63839f7e682d8132d30caf"
   integrity sha512-lyuxPGr/Wfhrlem2CL/UcnUc1zcqKAImBDzukY7Y5F/yQiNdko6+fRLevlw1HgMySw7f611UIY408EtxRSoK3Q==
@@ -3080,13 +3080,12 @@ react-countup@^6.5.3:
   dependencies:
     countup.js "^2.8.0"
 
-react-dom@18.3.1:
-  version "18.3.1"
-  resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-18.3.1.tgz#c2265d79511b57d479b3dd3fdfa51536494c5cb4"
-  integrity sha512-5m4nQKp+rZRb09LNH59GM4BxTh9251/ylbKIbpe7TpGxfJ+9kv6BLkLBXIjjspbgbnIBNqlI23tRnTWT0snUIw==
+react-dom@^19.2.0-canary-f7396427-20250501:
+  version "19.2.0-canary-f7396427-20250501"
+  resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-19.2.0-canary-f7396427-20250501.tgz#286eb7a33134f9c927177e4a9fa7053ab41dcb9f"
+  integrity sha512-JvLEcsj2r90H2bxUUAvk32ES8tQ+RCjAcG250FUg5m+dRHV/0RrdyvyihepjSZnb5aJzLcA8MYbNZBLtY7EzWQ==
   dependencies:
-    loose-envify "^1.1.0"
-    scheduler "^0.23.2"
+    scheduler "0.27.0-canary-f7396427-20250501"
 
 react-hot-toast@^2.5.2:
   version "2.5.2"
@@ -3123,12 +3122,10 @@ react-redux@^7.2.0:
     prop-types "^15.7.2"
     react-is "^17.0.2"
 
-react@18.3.1:
-  version "18.3.1"
-  resolved "https://registry.yarnpkg.com/react/-/react-18.3.1.tgz#49ab892009c53933625bd16b2533fc754cab2891"
-  integrity sha512-wS+hAgJShR0KhEvPJArfuPVN1+Hz1t0Y6n5jLrGQbkb4urgPE/0Rve+1kMB1v/oWgHgm4WIcV+i7F2pTVj+2iQ==
-  dependencies:
-    loose-envify "^1.1.0"
+react@^19.2.0-canary-f7396427-20250501:
+  version "19.2.0-canary-f7396427-20250501"
+  resolved "https://registry.yarnpkg.com/react/-/react-19.2.0-canary-f7396427-20250501.tgz#e9dff3dccbb7aa105d31f3da8785d1414c9d46b3"
+  integrity sha512-LkatECekplJ8vc00NICTvAXwt1RGATNHCsj0hLOjB2mt3vp8cELGNddl8C84H41PoTlawvJoG0TrKARfeLvF+Q==
 
 redux@^4.0.0, redux@^4.0.4:
   version "4.2.1"
@@ -3181,12 +3178,10 @@ saxes@^5.0.1:
   dependencies:
     xmlchars "^2.2.0"
 
-scheduler@^0.23.2:
-  version "0.23.2"
-  resolved "https://registry.yarnpkg.com/scheduler/-/scheduler-0.23.2.tgz#414ba64a3b282892e944cf2108ecc078d115cdc3"
-  integrity sha512-UOShsPwz7NrMUqhR6t0hWjFduvOzbtv7toDH1/hIrfRNIDBnnBWd0CwJTGvTpngVlmwGCdP9/Zl/tVrDqcuYzQ==
-  dependencies:
-    loose-envify "^1.1.0"
+scheduler@0.27.0-canary-f7396427-20250501:
+  version "0.27.0-canary-f7396427-20250501"
+  resolved "https://registry.yarnpkg.com/scheduler/-/scheduler-0.27.0-canary-f7396427-20250501.tgz#393c44df84d7e5557301f1c6d261624026ace8d7"
+  integrity sha512-5K30aApfUx2fLid4/JoTcqJ4OPRTrOZDmpB1c8e7iB/uVWkWhaY/foJMKgu94f6f8fk8IWOQ42QGsoZHGgjP1g==
 
 scroll-into-view-if-needed@^3.1.0:
   version "3.1.0"

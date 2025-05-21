@@ -27,10 +27,10 @@
     "next": "15.3.1",
     "next-seo": "^6.6.0",
     "next-sitemap": "^4.2.3",
-    "react": "18.3.1",
     "react-beautiful-dnd": "^13.1.1",
+    "react": "^19.2.0-canary-f7396427-20250501",
     "react-countup": "^6.5.3",
-    "react-dom": "18.3.1",
+    "react-dom": "^19.2.0-canary-f7396427-20250501",
     "react-hot-toast": "^2.5.2"
   },
   "devDependencies": {
